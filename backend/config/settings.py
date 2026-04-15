@@ -11,21 +11,21 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env(
+    DEBUG=(bool, False),
+    ALLOWED_HOSTS=(list, []),
+    CORS_ALLOWED_ORIGINS=(list, []),
+)
+environ.Env.read_env(BASE_DIR / '.env')
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-4av095uf*bq=$ri%a204(g@n99kv10lrs^*m%1ks%)ep$9tfln'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env('DEBUG')
+ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
 
 # Application definition
@@ -53,9 +53,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:4200',
-]
+CORS_ALLOWED_ORIGINS = env('CORS_ALLOWED_ORIGINS')
 
 ROOT_URLCONF = 'config.urls'
 

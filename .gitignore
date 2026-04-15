@@ -1,0 +1,64 @@
+# ===== Python / Django =====
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+.Python
+build/
+dist/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Migrations — behalten! (nur Cache ausschließen)
+
+# ===== Node / Angular =====
+node_modules/
+.angular/
+dist/
+tmp/
+out-tsc/
+bazel-out/
+*.tsbuildinfo
+
+# ===== IDE / Editor =====
+.vscode/
+.idea/
+.claude/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== Env / Secrets =====
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# ===== Coverage / Tests =====
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+coverage/
