@@ -45,3 +45,32 @@ table {
 .level-empty {
   color: #ccc;
 }
+
+.level-display {
+  display: inline-block;
+  min-width: 28px;
+  min-height: 28px;
+  line-height: 28px;
+  text-align: center;
+
+  &.editable {
+    cursor: pointer;
+    border-radius: 50%;
+    transition: box-shadow 0.15s;
+
+    &:hover {
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+    }
+  }
+}
+
+.inline-level-select {
+  width: 48px;
+  height: 28px;
+  font-size: 14px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}

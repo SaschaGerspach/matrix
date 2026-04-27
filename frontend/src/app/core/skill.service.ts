@@ -39,6 +39,7 @@ export interface MatrixSkill {
 }
 
 export interface MatrixAssignment {
+  id: number;
   employee: number;
   skill: number;
   level: number;
@@ -117,12 +118,20 @@ export class SkillService {
     return this.http.delete(`${environment.apiUrl}/skill-categories/${id}/`);
   }
 
-  createAssignment(skillId: number, level: number, employeeId: number): Observable<unknown> {
-    return this.http.post(`${environment.apiUrl}/skill-assignments/`, {
+  createAssignment(skillId: number, level: number, employeeId: number): Observable<MatrixAssignment> {
+    return this.http.post<MatrixAssignment>(`${environment.apiUrl}/skill-assignments/`, {
       skill: skillId,
       level,
       employee: employeeId,
     });
+  }
+
+  updateAssignment(id: number, level: number): Observable<MatrixAssignment> {
+    return this.http.patch<MatrixAssignment>(`${environment.apiUrl}/skill-assignments/${id}/`, { level });
+  }
+
+  deleteAssignment(id: number): Observable<unknown> {
+    return this.http.delete(`${environment.apiUrl}/skill-assignments/${id}/`);
   }
 
   teamAssignments(status?: string): Observable<TeamAssignment[]> {

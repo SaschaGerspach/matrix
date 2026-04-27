@@ -72,7 +72,7 @@ class MatrixSkillSerializer(serializers.Serializer):
 class MatrixAssignmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = SkillAssignment
-        fields = ('employee', 'skill', 'level', 'status')
+        fields = ('id', 'employee', 'skill', 'level', 'status')
 
 
 class SkillRequirementSerializer(serializers.ModelSerializer):

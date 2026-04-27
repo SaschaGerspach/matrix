@@ -10,6 +10,7 @@ import { MatTableModule } from '@angular/material/table';
 
 import { environment } from '../../../environments/environment';
 import { MatrixAssignment, MatrixEmployee, MatrixSkill, SkillCategory, SkillService } from '../../core/skill.service';
+import { MeService } from '../../core/me.service';
 import { Team, TeamService } from '../../core/team.service';
 
 @Component({
@@ -30,6 +31,7 @@ import { Team, TeamService } from '../../core/team.service';
 export class DashboardComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly skillService = inject(SkillService);
+  private readonly meService = inject(MeService);
   private readonly teamService = inject(TeamService);
 
   readonly employees = signal<MatrixEmployee[]>([]);
@@ -37,6 +39,10 @@ export class DashboardComponent implements OnInit {
   readonly teams = signal<Team[]>([]);
   readonly categories = signal<SkillCategory[]>([]);
   readonly loading = signal(false);
+  readonly canEdit = signal(false);
+
+  readonly levels = [1, 2, 3, 4, 5];
+  editingCell: { employeeId: number; skillId: number } | null = null;
 
   selectedTeam: number | undefined;
   selectedCategory: number | undefined;
@@ -49,6 +55,9 @@ export class DashboardComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.meService.getProfile().subscribe((p) => {
+      this.canEdit.set(p.is_team_lead || p.is_admin);
+    });
     this.teamService.list().subscribe((t) => this.teams.set(t));
     this.skillService.listCategories().subscribe((c) => this.categories.set(c));
     this.loadMatrix();
@@ -88,6 +97,44 @@ export class DashboardComponent implements OnInit {
   getLevel(employeeId: number, skillId: number): number | null {
     const a = this.assignmentMap.get(`${employeeId}_${skillId}`);
     return a ? a.level : null;
+  }
+
+  startEdit(employeeId: number, skillId: number): void {
+    if (this.canEdit()) {
+      this.editingCell = { employeeId, skillId };
+    }
+  }
+
+  cancelEdit(): void {
+    this.editingCell = null;
+  }
+
+  isEditing(employeeId: number, skillId: number): boolean {
+    return this.editingCell?.employeeId === employeeId && this.editingCell?.skillId === skillId;
+  }
+
+  setLevel(employeeId: number, skillId: number, level: number): void {
+    this.editingCell = null;
+    const key = `${employeeId}_${skillId}`;
+    const existing = this.assignmentMap.get(key);
+    const currentLevel = existing?.level ?? 0;
+
+    if (level === currentLevel) return;
+
+    if (existing && level > 0) {
+      const prev = { ...existing };
+      this.assignmentMap.set(key, { ...existing, level });
+      this.skillService.updateAssignment(existing.id, level).subscribe({
+        error: () => this.assignmentMap.set(key, prev),
+      });
+    } else if (!existing && level > 0) {
+      const temp: MatrixAssignment = { id: 0, employee: employeeId, skill: skillId, level, status: 'pending' };
+      this.assignmentMap.set(key, temp);
+      this.skillService.createAssignment(skillId, level, employeeId).subscribe({
+        next: (result) => this.assignmentMap.set(key, { ...temp, id: result.id }),
+        error: () => this.assignmentMap.delete(key),
+      });
+    }
   }
 
   exportCsv(): void {

@@ -48,10 +48,25 @@
         <ng-container [matColumnDef]="'skill_' + skill.id">
           <th mat-header-cell *matHeaderCellDef>{{ skill.name }}</th>
           <td mat-cell *matCellDef="let row" class="level-cell">
-            @if (getLevel(row.id, skill.id); as level) {
-              <span class="level-badge level-{{ level }}">{{ level }}</span>
+            @if (canEdit() && isEditing(row.id, skill.id)) {
+              <select class="inline-level-select"
+                      (change)="setLevel(row.id, skill.id, +$any($event.target).value)"
+                      (blur)="cancelEdit()">
+                <option value="0" [selected]="!getLevel(row.id, skill.id)">–</option>
+                @for (l of levels; track l) {
+                  <option [value]="l" [selected]="getLevel(row.id, skill.id) === l">{{ l }}</option>
+                }
+              </select>
             } @else {
-              <span class="level-empty">–</span>
+              <span (click)="startEdit(row.id, skill.id)"
+                    [class.editable]="canEdit()"
+                    class="level-display">
+                @if (getLevel(row.id, skill.id); as level) {
+                  <span class="level-badge level-{{ level }}">{{ level }}</span>
+                } @else {
+                  <span class="level-empty">–</span>
+                }
+              </span>
             }
           </td>
         </ng-container>
