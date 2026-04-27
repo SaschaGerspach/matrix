@@ -47,7 +47,9 @@
     "EMPTY": "No skill gaps found."
   },
   "EMPLOYEES": {
-    "TITLE": "Employees"
+    "TITLE": "Employees",
+    "SEARCH": "Search",
+    "SEARCH_PLACEHOLDER": "Name or email..."
   },
   "TEAM_COMPARISON": {
     "TITLE": "Team Comparison",

@@ -20,7 +20,7 @@ const EN = {
   ADD_SKILL_DIALOG: { TITLE: 'Add Skill', SKILL: 'Skill', LEVEL: 'Level (1-5)', CANCEL: 'Cancel', ADD: 'Add' },
   TEAM_REVIEW: { TITLE: 'Team Review', EMPTY: 'No pending assignments to review.', CONFIRM: 'Confirm' },
   SKILL_GAPS: { TITLE: 'Skill Gaps', EMPTY: 'No skill gaps found.' },
-  EMPLOYEES: { TITLE: 'Employees' },
+  EMPLOYEES: { TITLE: 'Employees', SEARCH: 'Search', SEARCH_PLACEHOLDER: 'Name or email...' },
   TEAM_COMPARISON: { TITLE: 'Team Comparison', SELECT_TEAMS: 'Select teams', COMPARE: 'Compare' },
   EMPLOYEE_PROFILE: {
     BACK: 'Back', SKILL_OVERVIEW: 'Skill Overview', SKILLS: 'Skills',

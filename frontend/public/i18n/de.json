@@ -47,7 +47,9 @@
     "EMPTY": "Keine Skill-Lücken gefunden."
   },
   "EMPLOYEES": {
-    "TITLE": "Mitarbeiter"
+    "TITLE": "Mitarbeiter",
+    "SEARCH": "Suche",
+    "SEARCH_PLACEHOLDER": "Name oder E-Mail..."
   },
   "TEAM_COMPARISON": {
     "TITLE": "Team-Vergleich",

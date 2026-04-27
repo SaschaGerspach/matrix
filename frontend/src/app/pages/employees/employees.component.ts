@@ -1,5 +1,8 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
@@ -11,7 +14,7 @@ import { Employee, EmployeeService } from '../../core/employee.service';
 @Component({
   selector: 'app-employees',
   standalone: true,
-  imports: [MatPaginatorModule, MatProgressSpinnerModule, MatTableModule, TranslateModule],
+  imports: [FormsModule, MatFormFieldModule, MatInputModule, MatPaginatorModule, MatProgressSpinnerModule, MatTableModule, TranslateModule],
   templateUrl: './employees.component.html',
   styleUrl: './employees.component.scss',
 })
@@ -25,14 +28,19 @@ export class EmployeesComponent implements OnInit {
   readonly error = signal<string | null>(null);
   readonly displayedColumns = ['first_name', 'last_name', 'email'];
   readonly pageSize = 25;
+  searchTerm = '';
 
   ngOnInit(): void {
     this.loadPage(1);
   }
 
+  onSearch(): void {
+    this.loadPage(1);
+  }
+
   loadPage(page: number): void {
     this.loading.set(true);
-    this.employeeService.list(page).subscribe({
+    this.employeeService.list(page, this.searchTerm.trim()).subscribe({
       next: (res) => {
         this.data.set(res.results);
         this.totalCount.set(res.count);

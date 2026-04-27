@@ -24,6 +24,18 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     serializer_class = EmployeeSerializer
     permission_classes = (IsAdminOrReadOnly,)
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        search = self.request.query_params.get('search', '').strip()
+        if search:
+            from django.db.models import Q
+            qs = qs.filter(
+                Q(first_name__icontains=search)
+                | Q(last_name__icontains=search)
+                | Q(email__icontains=search)
+            )
+        return qs
+
     @action(detail=False, methods=['post'], parser_classes=(MultiPartParser,), url_path='import-csv')
     def import_csv(self, request):
         file = request.FILES.get('file')

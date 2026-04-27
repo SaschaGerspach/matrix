@@ -1,5 +1,11 @@
 <h2>{{ 'EMPLOYEES.TITLE' | translate }}</h2>
 
+<mat-form-field appearance="outline" class="search-field">
+  <mat-label>{{ 'EMPLOYEES.SEARCH' | translate }}</mat-label>
+  <input matInput [(ngModel)]="searchTerm" (keyup.enter)="onSearch()"
+         [placeholder]="'EMPLOYEES.SEARCH_PLACEHOLDER' | translate">
+</mat-form-field>
+
 @if (loading()) {
   <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
 } @else if (error()) {

@@ -43,8 +43,9 @@ export interface EmployeeProfile {
 export class EmployeeService {
   private readonly http = inject(HttpClient);
 
-  list(page = 1): Observable<PaginatedResponse<Employee>> {
-    const params = new HttpParams().set('page', page);
+  list(page = 1, search = ''): Observable<PaginatedResponse<Employee>> {
+    let params = new HttpParams().set('page', page);
+    if (search) params = params.set('search', search);
     return this.http.get<PaginatedResponse<Employee>>(`${environment.apiUrl}/employees/`, { params });
   }
 

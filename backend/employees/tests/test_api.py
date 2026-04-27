@@ -59,3 +59,17 @@ def test_unauthenticated_access_rejected():
     c = APIClient()
     r = c.get(URL)
     assert r.status_code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN)
+
+
+def test_search_filters_employees(regular_client):
+    Employee.objects.create(first_name='Ada', last_name='Lovelace', email='ada@example.com')
+    Employee.objects.create(first_name='Alan', last_name='Turing', email='alan@example.com')
+    Employee.objects.create(first_name='Grace', last_name='Hopper', email='grace@example.com')
+
+    r = regular_client.get(URL, {'search': 'ada'})
+    assert r.status_code == status.HTTP_200_OK
+    assert r.data['count'] == 1
+    assert r.data['results'][0]['first_name'] == 'Ada'
+
+    r = regular_client.get(URL, {'search': 'example'})
+    assert r.data['count'] == 3

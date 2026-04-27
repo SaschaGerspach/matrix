@@ -61,4 +61,24 @@ describe('EmployeesComponent', () => {
     expect(component.error()).toBe('Failed to load employees.');
     expect(component.loading()).toBeFalse();
   });
+
+  it('sends search term to API', () => {
+    fixture.detectChanges();
+    http.expectOne((r) => r.url === `${environment.apiUrl}/employees/`).flush({
+      count: 0, next: null, previous: null, results: [],
+    });
+
+    component.searchTerm = 'Ada';
+    component.onSearch();
+
+    const req = http.expectOne((r) =>
+      r.url === `${environment.apiUrl}/employees/` && r.params.get('search') === 'Ada',
+    );
+    req.flush({
+      count: 1, next: null, previous: null,
+      results: [{ id: 1, first_name: 'Ada', last_name: 'Lovelace', full_name: 'Ada Lovelace', email: 'a@x.com', user: null }],
+    });
+
+    expect(component.data().length).toBe(1);
+  });
 });
