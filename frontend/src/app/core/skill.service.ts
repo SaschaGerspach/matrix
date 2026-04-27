@@ -63,6 +63,16 @@ export interface SkillGap {
   gap: number;
 }
 
+export interface SkillRequirement {
+  id: number;
+  team: number;
+  team_name: string;
+  skill: number;
+  skill_name: string;
+  category_name: string;
+  required_level: number;
+}
+
 export interface TeamAssignment {
   id: number;
   employee: number;
@@ -87,8 +97,24 @@ export class SkillService {
     return this.http.get<Skill[]>(`${environment.apiUrl}/skills/`);
   }
 
+  createSkill(name: string, category: number): Observable<Skill> {
+    return this.http.post<Skill>(`${environment.apiUrl}/skills/`, { name, category });
+  }
+
+  deleteSkill(id: number): Observable<unknown> {
+    return this.http.delete(`${environment.apiUrl}/skills/${id}/`);
+  }
+
   listCategories(): Observable<SkillCategory[]> {
     return this.http.get<SkillCategory[]>(`${environment.apiUrl}/skill-categories/`);
+  }
+
+  createCategory(name: string): Observable<SkillCategory> {
+    return this.http.post<SkillCategory>(`${environment.apiUrl}/skill-categories/`, { name });
+  }
+
+  deleteCategory(id: number): Observable<unknown> {
+    return this.http.delete(`${environment.apiUrl}/skill-categories/${id}/`);
   }
 
   createAssignment(skillId: number, level: number, employeeId: number): Observable<unknown> {
@@ -118,5 +144,19 @@ export class SkillService {
 
   skillGaps(): Observable<SkillGap[]> {
     return this.http.get<SkillGap[]>(`${environment.apiUrl}/skill-gaps/`);
+  }
+
+  listRequirements(): Observable<SkillRequirement[]> {
+    return this.http.get<SkillRequirement[]>(`${environment.apiUrl}/skill-requirements/`);
+  }
+
+  createRequirement(team: number, skill: number, requiredLevel: number): Observable<SkillRequirement> {
+    return this.http.post<SkillRequirement>(`${environment.apiUrl}/skill-requirements/`, {
+      team, skill, required_level: requiredLevel,
+    });
+  }
+
+  deleteRequirement(id: number): Observable<unknown> {
+    return this.http.delete(`${environment.apiUrl}/skill-requirements/${id}/`);
   }
 }

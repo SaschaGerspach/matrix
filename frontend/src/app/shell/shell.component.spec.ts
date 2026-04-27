@@ -64,6 +64,19 @@ describe('ShellComponent', () => {
     expect(el.textContent).toContain('Team Review');
   });
 
+  it('does not show Admin for non-admins', () => {
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).not.toContain('Admin');
+  });
+
+  it('shows Admin for admins', () => {
+    component.isAdmin.set(true);
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('Admin');
+  });
+
   it('logs out and navigates to login', () => {
     const navigateSpy = spyOn(router, 'navigate');
     component.logout();

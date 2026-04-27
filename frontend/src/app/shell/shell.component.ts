@@ -19,10 +19,14 @@ export class ShellComponent implements OnInit {
   private readonly router = inject(Router);
 
   readonly isTeamLead = signal(false);
+  readonly isAdmin = signal(false);
 
   ngOnInit(): void {
     this.meService.getProfile().subscribe({
-      next: (profile) => this.isTeamLead.set(profile.is_team_lead),
+      next: (profile) => {
+        this.isTeamLead.set(profile.is_team_lead);
+        this.isAdmin.set(profile.is_admin);
+      },
     });
   }
 

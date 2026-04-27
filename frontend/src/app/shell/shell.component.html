@@ -8,6 +8,9 @@
     }
     <a mat-button routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
     <a mat-button routerLink="/employees" routerLinkActive="active">Employees</a>
+    @if (isAdmin()) {
+      <a mat-button routerLink="/admin" routerLinkActive="active">Admin</a>
+    }
   </nav>
   <span class="spacer"></span>
   <button mat-button type="button" (click)="logout()">Sign out</button>

@@ -1,0 +1,130 @@
+<h2>Admin</h2>
+
+<mat-tab-group>
+  <mat-tab label="Categories">
+    <div class="tab-content">
+      <div class="add-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Category name</mat-label>
+          <input matInput [(ngModel)]="newCategoryName" (keyup.enter)="addCategory()">
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="addCategory()">Add</button>
+      </div>
+
+      <table mat-table [dataSource]="categories()">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-icon-button color="warn" (click)="deleteCategory(row.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['name', 'actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['name', 'actions']"></tr>
+      </table>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="Skills">
+    <div class="tab-content">
+      <div class="add-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Skill name</mat-label>
+          <input matInput [(ngModel)]="newSkillName">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Category</mat-label>
+          <mat-select [(ngModel)]="newSkillCategory">
+            @for (cat of categories(); track cat.id) {
+              <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="addSkill()">Add</button>
+      </div>
+
+      <table mat-table [dataSource]="skills()">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+        </ng-container>
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef>Category</th>
+          <td mat-cell *matCellDef="let row">{{ getCategoryName(row.category) }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-icon-button color="warn" (click)="deleteSkill(row.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['name', 'category', 'actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['name', 'category', 'actions']"></tr>
+      </table>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="Requirements">
+    <div class="tab-content">
+      <div class="add-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Team</mat-label>
+          <mat-select [(ngModel)]="newReqTeam">
+            @for (team of teams(); track team.id) {
+              <mat-option [value]="team.id">{{ team.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Skill</mat-label>
+          <mat-select [(ngModel)]="newReqSkill">
+            @for (skill of skills(); track skill.id) {
+              <mat-option [value]="skill.id">{{ skill.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Required level</mat-label>
+          <mat-select [(ngModel)]="newReqLevel">
+            @for (lvl of [1, 2, 3, 4, 5]; track lvl) {
+              <mat-option [value]="lvl">{{ lvl }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="addRequirement()">Add</button>
+      </div>
+
+      <table mat-table [dataSource]="requirements()">
+        <ng-container matColumnDef="team_name">
+          <th mat-header-cell *matHeaderCellDef>Team</th>
+          <td mat-cell *matCellDef="let row">{{ row.team_name }}</td>
+        </ng-container>
+        <ng-container matColumnDef="skill_name">
+          <th mat-header-cell *matHeaderCellDef>Skill</th>
+          <td mat-cell *matCellDef="let row">{{ row.skill_name }}</td>
+        </ng-container>
+        <ng-container matColumnDef="required_level">
+          <th mat-header-cell *matHeaderCellDef>Required Level</th>
+          <td mat-cell *matCellDef="let row">{{ row.required_level }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-icon-button color="warn" (click)="deleteRequirement(row.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['team_name', 'skill_name', 'required_level', 'actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['team_name', 'skill_name', 'required_level', 'actions']"></tr>
+      </table>
+    </div>
+  </mat-tab>
+</mat-tab-group>

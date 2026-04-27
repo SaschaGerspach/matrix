@@ -39,6 +39,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/employees/employees.component').then((m) => m.EmployeesComponent),
       },
+      {
+        path: 'admin',
+        loadComponent: () =>
+          import('./pages/admin/admin.component').then((m) => m.AdminComponent),
+      },
       { path: '', pathMatch: 'full', redirectTo: 'my-skills' },
     ],
   },
