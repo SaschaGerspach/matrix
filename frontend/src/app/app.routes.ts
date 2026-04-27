@@ -59,6 +59,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/admin/admin.component').then((m) => m.AdminComponent),
       },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./pages/settings/settings.component').then((m) => m.SettingsComponent),
+      },
       { path: '', pathMatch: 'full', redirectTo: 'my-skills' },
     ],
   },

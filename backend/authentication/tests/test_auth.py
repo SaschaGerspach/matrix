@@ -10,6 +10,7 @@ pytestmark = pytest.mark.django_db
 
 LOGIN_URL = '/api/auth/login/'
 LOGOUT_URL = '/api/auth/logout/'
+CHANGE_PW_URL = '/api/auth/change-password/'
 
 
 @pytest.fixture
@@ -51,4 +52,47 @@ def test_logout_deletes_token(user):
 def test_logout_requires_authentication():
     client = APIClient()
     response = client.post(LOGOUT_URL)
+    assert response.status_code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN)
+
+
+def test_change_password_succeeds(user):
+    client = APIClient()
+    client.force_authenticate(user=user)
+    response = client.post(CHANGE_PW_URL, {
+        'current_password': 'pw12345!',
+        'new_password': 'newpass123!',
+    }, format='json')
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    user.refresh_from_db()
+    assert user.check_password('newpass123!')
+
+
+def test_change_password_rejects_wrong_current(user):
+    client = APIClient()
+    client.force_authenticate(user=user)
+    response = client.post(CHANGE_PW_URL, {
+        'current_password': 'wrong',
+        'new_password': 'newpass123!',
+    }, format='json')
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    user.refresh_from_db()
+    assert user.check_password('pw12345!')
+
+
+def test_change_password_rejects_short_new(user):
+    client = APIClient()
+    client.force_authenticate(user=user)
+    response = client.post(CHANGE_PW_URL, {
+        'current_password': 'pw12345!',
+        'new_password': 'short',
+    }, format='json')
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_change_password_requires_auth():
+    client = APIClient()
+    response = client.post(CHANGE_PW_URL, {
+        'current_password': 'pw12345!',
+        'new_password': 'newpass123!',
+    }, format='json')
     assert response.status_code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN)

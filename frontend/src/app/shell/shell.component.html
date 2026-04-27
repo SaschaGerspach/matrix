@@ -40,6 +40,9 @@
       <div class="notif-empty" (click)="$event.stopPropagation()">{{ 'NOTIFICATIONS.EMPTY' | translate }}</div>
     }
   </mat-menu>
+  <button mat-icon-button routerLink="/settings" title="{{ 'NAV.SETTINGS' | translate }}">
+    <mat-icon>settings</mat-icon>
+  </button>
   <button mat-button type="button" (click)="logout()">{{ 'NAV.SIGN_OUT' | translate }}</button>
 </mat-toolbar>
 

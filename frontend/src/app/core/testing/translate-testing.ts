@@ -8,7 +8,7 @@ const EN = {
     MY_SKILLS: 'My Skills', TEAM_REVIEW: 'Team Review', SKILL_GAPS: 'Skill Gaps',
     TEAM_COMPARISON: 'Team Comparison', DASHBOARD: 'Dashboard', KPIS: 'KPIs',
     EMPLOYEES: 'Employees', ADMIN: 'Admin', SIGN_OUT: 'Sign out',
-    TOGGLE_DARK_MODE: 'Toggle dark mode',
+    SETTINGS: 'Settings', TOGGLE_DARK_MODE: 'Toggle dark mode',
   },
   NOTIFICATIONS: { TITLE: 'Notifications', MARK_ALL_READ: 'Mark all read', EMPTY: 'No notifications' },
   LOGIN: { TITLE: 'Sign in', USERNAME: 'Username', PASSWORD: 'Password', SUBMIT: 'Sign in' },
@@ -58,6 +58,13 @@ const EN = {
     TEAM: 'Team', REQUIRED_LEVEL: 'Required Level', FIRST_NAME: 'First name',
     LAST_NAME: 'Last name', EMAIL: 'Email', DATE: 'Date', ACTION: 'Action',
     FROM: 'From', TO: 'To', CHANGED_BY: 'Changed by', DESCRIPTION: 'Description',
+  },
+  SETTINGS: {
+    TITLE: 'Settings', CHANGE_PASSWORD: 'Change Password',
+    CURRENT_PASSWORD: 'Current password', NEW_PASSWORD: 'New password',
+    CONFIRM_PASSWORD: 'Confirm new password', SAVE_PASSWORD: 'Save',
+    WRONG_PASSWORD: 'Current password is incorrect.',
+    PASSWORDS_MISMATCH: 'Passwords do not match.', LANGUAGE: 'Language',
   },
   COMMON: { MEMBERS: 'members' },
 };

@@ -10,6 +10,7 @@
     "EMPLOYEES": "Mitarbeiter",
     "ADMIN": "Admin",
     "SIGN_OUT": "Abmelden",
+    "SETTINGS": "Einstellungen",
     "TOGGLE_DARK_MODE": "Dunkelmodus umschalten"
   },
   "NOTIFICATIONS": {
@@ -137,6 +138,17 @@
     "TO": "Bis",
     "CHANGED_BY": "Geändert von",
     "DESCRIPTION": "Beschreibung"
+  },
+  "SETTINGS": {
+    "TITLE": "Einstellungen",
+    "CHANGE_PASSWORD": "Passwort ändern",
+    "CURRENT_PASSWORD": "Aktuelles Passwort",
+    "NEW_PASSWORD": "Neues Passwort",
+    "CONFIRM_PASSWORD": "Neues Passwort bestätigen",
+    "SAVE_PASSWORD": "Speichern",
+    "WRONG_PASSWORD": "Aktuelles Passwort ist falsch.",
+    "PASSWORDS_MISMATCH": "Passwörter stimmen nicht überein.",
+    "LANGUAGE": "Sprache"
   },
   "COMMON": {
     "MEMBERS": "Mitglieder"

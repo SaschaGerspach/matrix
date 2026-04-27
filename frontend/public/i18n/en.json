@@ -10,6 +10,7 @@
     "EMPLOYEES": "Employees",
     "ADMIN": "Admin",
     "SIGN_OUT": "Sign out",
+    "SETTINGS": "Settings",
     "TOGGLE_DARK_MODE": "Toggle dark mode"
   },
   "NOTIFICATIONS": {
@@ -137,6 +138,17 @@
     "TO": "To",
     "CHANGED_BY": "Changed by",
     "DESCRIPTION": "Description"
+  },
+  "SETTINGS": {
+    "TITLE": "Settings",
+    "CHANGE_PASSWORD": "Change Password",
+    "CURRENT_PASSWORD": "Current password",
+    "NEW_PASSWORD": "New password",
+    "CONFIRM_PASSWORD": "Confirm new password",
+    "SAVE_PASSWORD": "Save",
+    "WRONG_PASSWORD": "Current password is incorrect.",
+    "PASSWORDS_MISMATCH": "Passwords do not match.",
+    "LANGUAGE": "Language"
   },
   "COMMON": {
     "MEMBERS": "members"
