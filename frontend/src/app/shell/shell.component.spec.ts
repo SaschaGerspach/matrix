@@ -62,6 +62,7 @@ describe('ShellComponent', () => {
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
     expect(el.textContent).toContain('Team Review');
+    expect(el.textContent).toContain('Team Comparison');
   });
 
   it('does not show Admin for non-admins', () => {

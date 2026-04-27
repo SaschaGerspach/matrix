@@ -1,0 +1,30 @@
+<h2>Team Comparison</h2>
+
+<div class="controls">
+  <mat-form-field appearance="outline">
+    <mat-label>Select teams</mat-label>
+    <mat-select [(ngModel)]="selectedTeamIds" multiple>
+      @for (team of teams(); track team.id) {
+        <mat-option [value]="team.id">{{ team.name }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-raised-button color="primary"
+          [disabled]="selectedTeamIds.length < 2"
+          (click)="compare()">
+    Compare
+  </button>
+</div>
+
+@if (loading()) {
+  <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+} @else if (hasData()) {
+  <div class="chart-wrapper">
+    <canvas baseChart
+            type="bar"
+            [data]="barData"
+            [options]="barOptions">
+    </canvas>
+  </div>
+}

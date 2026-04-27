@@ -280,6 +280,37 @@ class SkillAssignmentViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+class TeamComparisonView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        from teams.models import Team
+
+        team_ids = request.query_params.getlist('teams')
+        if not team_ids:
+            return Response([])
+
+        teams = Team.objects.filter(id__in=team_ids)
+        skills = Skill.objects.select_related('category').order_by('category__name', 'name')
+
+        result = []
+        for skill in skills:
+            entry = {'skill_id': skill.id, 'skill_name': skill.name, 'category_name': skill.category.name, 'teams': {}}
+            for team in teams:
+                member_ids = list(team.members.values_list('id', flat=True))
+                if not member_ids:
+                    entry['teams'][team.name] = None
+                    continue
+                assignments = SkillAssignment.objects.filter(
+                    employee_id__in=member_ids, skill=skill,
+                )
+                levels = [a.level for a in assignments]
+                entry['teams'][team.name] = round(sum(levels) / len(member_ids), 2) if levels else 0
+            result.append(entry)
+
+        return Response(result)
+
+
 class SkillHistoryViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SkillAssignmentHistorySerializer
     permission_classes = (IsAuthenticated,)

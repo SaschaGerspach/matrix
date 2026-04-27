@@ -45,6 +45,11 @@ export const routes: Routes = [
           import('./pages/employee-profile/employee-profile.component').then((m) => m.EmployeeProfileComponent),
       },
       {
+        path: 'team-comparison',
+        loadComponent: () =>
+          import('./pages/team-comparison/team-comparison.component').then((m) => m.TeamComparisonComponent),
+      },
+      {
         path: 'admin',
         loadComponent: () =>
           import('./pages/admin/admin.component').then((m) => m.AdminComponent),
