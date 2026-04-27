@@ -88,6 +88,11 @@ export interface TeamAssignment {
   created_at: string;
 }
 
+export interface SkillTrendData {
+  skill_name: string;
+  points: { date: string; level: number }[];
+}
+
 export interface TeamComparisonEntry {
   skill_id: number;
   skill_name: string;
@@ -190,6 +195,13 @@ export class SkillService {
 
   deleteRequirement(id: number): Observable<unknown> {
     return this.http.delete(`${environment.apiUrl}/skill-requirements/${id}/`);
+  }
+
+  skillTrends(employeeId: number): Observable<SkillTrendData[]> {
+    const params = new HttpParams().set('employee', employeeId);
+    return this.http.get<SkillTrendData[]>(
+      `${environment.apiUrl}/skill-trends/`, { params },
+    );
   }
 
   teamComparison(teamIds: number[]): Observable<TeamComparisonEntry[]> {

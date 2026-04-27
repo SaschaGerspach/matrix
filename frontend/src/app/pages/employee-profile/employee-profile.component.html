@@ -63,6 +63,21 @@
     <p>No skills assigned yet.</p>
   }
 
+  @if (hasTrends()) {
+    <mat-card class="trend-card">
+      <mat-card-header>
+        <mat-card-title>Skill Trends</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <canvas baseChart
+                type="line"
+                [data]="trendData"
+                [options]="trendOptions">
+        </canvas>
+      </mat-card-content>
+    </mat-card>
+  }
+
   @if (history().length) {
     <mat-card class="history-card">
       <mat-card-header>

@@ -13,6 +13,7 @@ from .views import (
     SkillViewSet,
     TeamAssignmentsViewSet,
     TeamComparisonView,
+    SkillTrendsView,
 )
 
 router = DefaultRouter()
@@ -29,4 +30,5 @@ urlpatterns = [
     path('skill-matrix/export/', SkillMatrixExportView.as_view(), name='skill-matrix-export'),
     path('skill-gaps/', SkillGapsView.as_view(), name='skill-gaps'),
     path('team-comparison/', TeamComparisonView.as_view(), name='team-comparison'),
+    path('skill-trends/', SkillTrendsView.as_view(), name='skill-trends'),
 ] + router.urls

@@ -3,12 +3,15 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, provideRouter } from '@angular/router';
-import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler } from 'chart.js';
+import {
+  Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler,
+  LineController, CategoryScale, LinearScale,
+} from 'chart.js';
 
 import { environment } from '../../../environments/environment';
 import { EmployeeProfileComponent } from './employee-profile.component';
 
-Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler);
+Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, LineController, CategoryScale, LinearScale);
 
 const profileResponse = {
   id: 1,
@@ -36,9 +39,25 @@ const historyResponse = {
   ],
 };
 
-function flushInitRequests(http: HttpTestingController, profile = profileResponse, history = historyResponse): void {
+const trendsResponse = [
+  {
+    skill_name: 'Python',
+    points: [
+      { date: '2026-04-20T10:00:00Z', level: 2 },
+      { date: '2026-04-25T10:00:00Z', level: 4 },
+    ],
+  },
+];
+
+function flushInitRequests(
+  http: HttpTestingController,
+  profile = profileResponse,
+  history = historyResponse,
+  trends = trendsResponse,
+): void {
   http.expectOne(`${environment.apiUrl}/employees/1/profile/`).flush(profile);
   http.expectOne((r) => r.url === `${environment.apiUrl}/skill-history/`).flush(history);
+  http.expectOne((r) => r.url === `${environment.apiUrl}/skill-trends/`).flush(trends);
 }
 
 describe('EmployeeProfileComponent', () => {
@@ -130,6 +149,22 @@ describe('EmployeeProfileComponent', () => {
     expect(el.textContent).not.toContain('History');
   });
 
+  it('shows trend chart when data available', () => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+
+    expect(component.hasTrends()).toBeTrue();
+    expect(component.trendData.datasets.length).toBe(1);
+    expect(component.trendData.datasets[0].label).toBe('Python');
+  });
+
+  it('hides trend chart when no data', () => {
+    fixture.detectChanges();
+    flushInitRequests(http, profileResponse, historyResponse, []);
+
+    expect(component.hasTrends()).toBeFalse();
+  });
+
   it('handles error gracefully', () => {
     fixture.detectChanges();
     http.expectOne(`${environment.apiUrl}/employees/1/profile/`).flush(null, {
@@ -138,6 +173,7 @@ describe('EmployeeProfileComponent', () => {
     http.expectOne((r) => r.url === `${environment.apiUrl}/skill-history/`).flush(
       { count: 0, next: null, previous: null, results: [] },
     );
+    http.expectOne((r) => r.url === `${environment.apiUrl}/skill-trends/`).flush([]);
     fixture.detectChanges();
 
     expect(component.loading()).toBeFalse();

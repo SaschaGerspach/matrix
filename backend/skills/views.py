@@ -311,6 +311,36 @@ class TeamComparisonView(APIView):
         return Response(result)
 
 
+class SkillTrendsView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        employee_id = request.query_params.get('employee')
+        if not employee_id:
+            return Response([])
+
+        entries = SkillAssignmentHistory.objects.filter(
+            employee_id=employee_id,
+            action__in=['created', 'updated'],
+        ).select_related('skill').order_by('timestamp')
+
+        skills_data: dict = {}
+        for entry in entries:
+            name = entry.skill.name
+            if name not in skills_data:
+                skills_data[name] = []
+            skills_data[name].append({
+                'date': entry.timestamp.isoformat(),
+                'level': entry.new_level,
+            })
+
+        result = [
+            {'skill_name': name, 'points': points}
+            for name, points in skills_data.items()
+        ]
+        return Response(result)
+
+
 class SkillHistoryViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SkillAssignmentHistorySerializer
     permission_classes = (IsAuthenticated,)
