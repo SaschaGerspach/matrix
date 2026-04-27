@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
@@ -14,6 +15,7 @@ import { Employee, EmployeeService } from '../../core/employee.service';
 })
 export class EmployeesComponent implements OnInit {
   private readonly employeeService = inject(EmployeeService);
+  private readonly router = inject(Router);
 
   readonly data = signal<Employee[]>([]);
   readonly totalCount = signal(0);
@@ -43,5 +45,9 @@ export class EmployeesComponent implements OnInit {
 
   onPage(event: PageEvent): void {
     this.loadPage(event.pageIndex + 1);
+  }
+
+  openProfile(employee: Employee): void {
+    this.router.navigate(['/employees', employee.id]);
   }
 }

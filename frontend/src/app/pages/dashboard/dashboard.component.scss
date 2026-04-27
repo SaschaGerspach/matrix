@@ -25,6 +25,16 @@ table {
   text-align: center;
 }
 
+.employee-link {
+  color: #3f51b5;
+  cursor: pointer;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .level-badge {
   display: inline-block;
   width: 28px;

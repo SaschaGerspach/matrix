@@ -14,6 +14,25 @@ export interface Employee {
   user: number | null;
 }
 
+export interface EmployeeProfileSkill {
+  id: number;
+  skill_id: number;
+  skill_name: string;
+  category_name: string;
+  level: number;
+  status: string;
+}
+
+export interface EmployeeProfile {
+  id: number;
+  first_name: string;
+  last_name: string;
+  full_name: string;
+  email: string;
+  teams: { id: number; name: string }[];
+  skills: EmployeeProfileSkill[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class EmployeeService {
   private readonly http = inject(HttpClient);
@@ -21,5 +40,9 @@ export class EmployeeService {
   list(page = 1): Observable<PaginatedResponse<Employee>> {
     const params = new HttpParams().set('page', page);
     return this.http.get<PaginatedResponse<Employee>>(`${environment.apiUrl}/employees/`, { params });
+  }
+
+  getProfile(id: number): Observable<EmployeeProfile> {
+    return this.http.get<EmployeeProfile>(`${environment.apiUrl}/employees/${id}/profile/`);
   }
 }

@@ -40,6 +40,11 @@ export const routes: Routes = [
           import('./pages/employees/employees.component').then((m) => m.EmployeesComponent),
       },
       {
+        path: 'employees/:id',
+        loadComponent: () =>
+          import('./pages/employee-profile/employee-profile.component').then((m) => m.EmployeeProfileComponent),
+      },
+      {
         path: 'admin',
         loadComponent: () =>
           import('./pages/admin/admin.component').then((m) => m.AdminComponent),

@@ -8,6 +8,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 
+import { Router } from '@angular/router';
+
 import { environment } from '../../../environments/environment';
 import { MatrixAssignment, MatrixEmployee, MatrixSkill, SkillCategory, SkillService } from '../../core/skill.service';
 import { MeService } from '../../core/me.service';
@@ -32,6 +34,7 @@ export class DashboardComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly skillService = inject(SkillService);
   private readonly meService = inject(MeService);
+  private readonly router = inject(Router);
   private readonly teamService = inject(TeamService);
 
   readonly employees = signal<MatrixEmployee[]>([]);
@@ -135,6 +138,10 @@ export class DashboardComponent implements OnInit {
         error: () => this.assignmentMap.delete(key),
       });
     }
+  }
+
+  openProfile(employeeId: number): void {
+    this.router.navigate(['/employees', employeeId]);
   }
 
   exportCsv(): void {

@@ -41,7 +41,9 @@
     <table mat-table [dataSource]="employees()">
       <ng-container matColumnDef="employee">
         <th mat-header-cell *matHeaderCellDef>Employee</th>
-        <td mat-cell *matCellDef="let row">{{ row.full_name }}</td>
+        <td mat-cell *matCellDef="let row">
+          <a class="employee-link" (click)="openProfile(row.id)">{{ row.full_name }}</a>
+        </td>
       </ng-container>
 
       @for (skill of skills(); track skill.id) {
