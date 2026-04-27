@@ -105,7 +105,16 @@
     "TEMPLATE": "Vorlage",
     "ADD_SKILL": "Skill hinzufügen",
     "APPLY": "Anwenden",
-    "SKILLS_COUNT": "Skills"
+    "SKILLS_COUNT": "Skills",
+    "TAB_IMPORT": "Import",
+    "IMPORT_EMPLOYEES": "Mitarbeiter importieren",
+    "IMPORT_SKILLS": "Skills importieren",
+    "IMPORT_EMPLOYEES_HINT": "CSV mit Spalten: first_name, last_name, email",
+    "IMPORT_SKILLS_HINT": "CSV mit Spalten: name, category",
+    "CHOOSE_FILE": "CSV-Datei auswählen",
+    "IMPORT_CREATED": "Erstellt",
+    "IMPORT_SKIPPED": "Übersprungen",
+    "IMPORT_ERRORS": "Fehler"
   },
   "TABLE": {
     "NAME": "Name",

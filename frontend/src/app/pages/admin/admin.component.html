@@ -295,4 +295,56 @@
       </table>
     </div>
   </mat-tab>
+
+  <mat-tab [label]="'ADMIN.TAB_IMPORT' | translate">
+    <div class="tab-content">
+      <h3>{{ 'ADMIN.IMPORT_EMPLOYEES' | translate }}</h3>
+      <p class="hint">{{ 'ADMIN.IMPORT_EMPLOYEES_HINT' | translate }}</p>
+      <div class="import-row">
+        <button mat-raised-button (click)="employeeFileInput.click()">
+          <mat-icon>upload_file</mat-icon>
+          {{ 'ADMIN.CHOOSE_FILE' | translate }}
+        </button>
+        <input #employeeFileInput type="file" accept=".csv" hidden (change)="onEmployeeCsvSelected($event)">
+      </div>
+      @if (employeeImportResult(); as r) {
+        <div class="import-result">
+          <p>{{ 'ADMIN.IMPORT_CREATED' | translate }}: {{ r.created }}</p>
+          <p>{{ 'ADMIN.IMPORT_SKIPPED' | translate }}: {{ r.skipped }}</p>
+          @if (r.errors.length) {
+            <p class="import-errors">{{ 'ADMIN.IMPORT_ERRORS' | translate }}: {{ r.errors.length }}</p>
+            <ul>
+              @for (err of r.errors; track err.row) {
+                <li>Row {{ err.row }}: {{ err.detail }}</li>
+              }
+            </ul>
+          }
+        </div>
+      }
+
+      <h3>{{ 'ADMIN.IMPORT_SKILLS' | translate }}</h3>
+      <p class="hint">{{ 'ADMIN.IMPORT_SKILLS_HINT' | translate }}</p>
+      <div class="import-row">
+        <button mat-raised-button (click)="skillFileInput.click()">
+          <mat-icon>upload_file</mat-icon>
+          {{ 'ADMIN.CHOOSE_FILE' | translate }}
+        </button>
+        <input #skillFileInput type="file" accept=".csv" hidden (change)="onSkillCsvSelected($event)">
+      </div>
+      @if (skillImportResult(); as r) {
+        <div class="import-result">
+          <p>{{ 'ADMIN.IMPORT_CREATED' | translate }}: {{ r.created }}</p>
+          <p>{{ 'ADMIN.IMPORT_SKIPPED' | translate }}: {{ r.skipped }}</p>
+          @if (r.errors.length) {
+            <p class="import-errors">{{ 'ADMIN.IMPORT_ERRORS' | translate }}: {{ r.errors.length }}</p>
+            <ul>
+              @for (err of r.errors; track err.row) {
+                <li>Row {{ err.row }}: {{ err.detail }}</li>
+              }
+            </ul>
+          }
+        </div>
+      }
+    </div>
+  </mat-tab>
 </mat-tab-group>

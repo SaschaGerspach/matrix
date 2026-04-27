@@ -23,6 +23,12 @@ export interface EmployeeProfileSkill {
   status: string;
 }
 
+export interface CsvImportResult {
+  created: number;
+  skipped: number;
+  errors: { row: number; detail: string }[];
+}
+
 export interface EmployeeProfile {
   id: number;
   first_name: string;
@@ -44,5 +50,11 @@ export class EmployeeService {
 
   getProfile(id: number): Observable<EmployeeProfile> {
     return this.http.get<EmployeeProfile>(`${environment.apiUrl}/employees/${id}/profile/`);
+  }
+
+  importCsv(file: File): Observable<CsvImportResult> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<CsvImportResult>(`${environment.apiUrl}/employees/import-csv/`, formData);
   }
 }

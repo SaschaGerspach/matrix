@@ -83,4 +83,38 @@ describe('AdminComponent', () => {
 
     expect(component.categories().length).toBe(0);
   });
+
+  it('imports employees via CSV', () => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+
+    const file = new File(['first_name,last_name,email\nAda,Lovelace,ada@x.com'], 'e.csv', { type: 'text/csv' });
+    const event = { target: { files: [file] } } as unknown as Event;
+    component.onEmployeeCsvSelected(event);
+
+    http.expectOne(`${environment.apiUrl}/employees/import-csv/`).flush({
+      created: 1, skipped: 0, errors: [],
+      details: { created: [{ row: 2, email: 'ada@x.com' }], skipped: [] },
+    });
+
+    expect(component.employeeImportResult()?.created).toBe(1);
+  });
+
+  it('imports skills via CSV', () => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+
+    const file = new File(['name,category\nPython,Programming'], 's.csv', { type: 'text/csv' });
+    const event = { target: { files: [file] } } as unknown as Event;
+    component.onSkillCsvSelected(event);
+
+    http.expectOne(`${environment.apiUrl}/skills/import-csv/`).flush({
+      created: 1, skipped: 0, errors: [],
+      details: { created: [{ row: 2, name: 'Python', category: 'Programming' }], skipped: [] },
+    });
+    http.expectOne(`${environment.apiUrl}/skills/`).flush([{ id: 1, name: 'Python', category: 1 }]);
+    http.expectOne(`${environment.apiUrl}/skill-categories/`).flush([{ id: 1, name: 'Programming', parent: null }]);
+
+    expect(component.skillImportResult()?.created).toBe(1);
+  });
 });

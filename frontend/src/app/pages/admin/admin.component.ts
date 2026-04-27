@@ -10,6 +10,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 
 import { TranslateModule } from '@ngx-translate/core';
 
+import { CsvImportResult, EmployeeService } from '../../core/employee.service';
 import { RoleTemplate, Skill, SkillCategory, SkillLevelDescription, SkillRequirement, SkillService } from '../../core/skill.service';
 import { Team, TeamService } from '../../core/team.service';
 
@@ -33,6 +34,7 @@ import { Team, TeamService } from '../../core/team.service';
 export class AdminComponent implements OnInit {
   private readonly skillService = inject(SkillService);
   private readonly teamService = inject(TeamService);
+  private readonly employeeService = inject(EmployeeService);
 
   readonly categories = signal<SkillCategory[]>([]);
   readonly skills = signal<Skill[]>([]);
@@ -181,5 +183,28 @@ export class AdminComponent implements OnInit {
 
   selectedTemplate(): RoleTemplate | undefined {
     return this.roleTemplates().find((t) => t.id === this.selectedTemplateId);
+  }
+
+  readonly employeeImportResult = signal<CsvImportResult | null>(null);
+  readonly skillImportResult = signal<CsvImportResult | null>(null);
+
+  onEmployeeCsvSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    this.employeeImportResult.set(null);
+    this.employeeService.importCsv(file).subscribe((result) => {
+      this.employeeImportResult.set(result);
+    });
+  }
+
+  onSkillCsvSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    this.skillImportResult.set(null);
+    this.skillService.importSkillsCsv(file).subscribe((result) => {
+      this.skillImportResult.set(result);
+      this.skillService.listSkills().subscribe((s) => this.skills.set(s));
+      this.skillService.listCategories().subscribe((c) => this.categories.set(c));
+    });
   }
 }

@@ -46,6 +46,11 @@ const EN = {
     ADD: 'Add', TEMPLATE_NAME: 'Template name', CREATE_TEMPLATE: 'Create Template',
     MANAGE_SKILLS: 'Manage Template Skills', APPLY_TO_TEAM: 'Apply Template to Team',
     TEMPLATE: 'Template', ADD_SKILL: 'Add Skill', APPLY: 'Apply', SKILLS_COUNT: 'Skills',
+    TAB_IMPORT: 'Import', IMPORT_EMPLOYEES: 'Import Employees', IMPORT_SKILLS: 'Import Skills',
+    IMPORT_EMPLOYEES_HINT: 'CSV with columns: first_name, last_name, email',
+    IMPORT_SKILLS_HINT: 'CSV with columns: name, category',
+    CHOOSE_FILE: 'Choose CSV file', IMPORT_CREATED: 'Created',
+    IMPORT_SKIPPED: 'Skipped', IMPORT_ERRORS: 'Errors',
   },
   TABLE: {
     NAME: 'Name', EMPLOYEE: 'Employee', SKILL: 'Skill', CATEGORY: 'Category',

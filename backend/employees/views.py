@@ -1,5 +1,9 @@
-from rest_framework import viewsets
+import csv
+import io
+
+from rest_framework import serializers, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -12,11 +16,66 @@ from .models import Employee
 from .serializers import EmployeeSerializer
 from .utils import get_employee
 
+REQUIRED_CSV_COLUMNS = {'first_name', 'last_name', 'email'}
+
 
 class EmployeeViewSet(viewsets.ModelViewSet):
     queryset = Employee.objects.all().order_by('last_name', 'first_name')
     serializer_class = EmployeeSerializer
     permission_classes = (IsAdminOrReadOnly,)
+
+    @action(detail=False, methods=['post'], parser_classes=(MultiPartParser,), url_path='import-csv')
+    def import_csv(self, request):
+        file = request.FILES.get('file')
+        if not file:
+            return Response({'detail': 'No file provided.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            decoded = file.read().decode('utf-8-sig')
+        except UnicodeDecodeError:
+            return Response({'detail': 'File must be UTF-8 encoded.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        reader = csv.DictReader(io.StringIO(decoded))
+        if not reader.fieldnames or not REQUIRED_CSV_COLUMNS.issubset(set(reader.fieldnames)):
+            return Response(
+                {'detail': f'CSV must contain columns: {", ".join(sorted(REQUIRED_CSV_COLUMNS))}'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        created = []
+        skipped = []
+        errors = []
+        existing_emails = set(Employee.objects.values_list('email', flat=True))
+
+        for i, row in enumerate(reader, start=2):
+            email = (row.get('email') or '').strip().lower()
+            first_name = (row.get('first_name') or '').strip()
+            last_name = (row.get('last_name') or '').strip()
+
+            if not email or not first_name or not last_name:
+                errors.append({'row': i, 'detail': 'Missing required field.'})
+                continue
+
+            if email in existing_emails:
+                skipped.append({'row': i, 'email': email})
+                continue
+
+            try:
+                serializers.EmailField().run_validators(email)
+            except serializers.ValidationError:
+                errors.append({'row': i, 'detail': f'Invalid email: {email}'})
+                continue
+
+            Employee.objects.create(first_name=first_name, last_name=last_name, email=email)
+            existing_emails.add(email)
+            created.append({'row': i, 'email': email})
+
+        return Response({
+            'created': len(created),
+            'skipped': len(skipped),
+            'errors': errors,
+            'details': {'created': created, 'skipped': skipped},
+        }, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['get'], permission_classes=(IsAuthenticated,))
     def profile(self, request, pk=None):

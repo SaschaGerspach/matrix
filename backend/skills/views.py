@@ -4,8 +4,9 @@ import io
 from django.db import models
 from django.http import HttpResponse
 from django.utils import timezone
-from rest_framework import viewsets
+from rest_framework import serializers, status as http_status, viewsets
 from rest_framework.decorators import action
+from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -80,6 +81,58 @@ class SkillViewSet(viewsets.ModelViewSet):
     serializer_class = SkillSerializer
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = None
+
+    @action(detail=False, methods=['post'], parser_classes=(MultiPartParser,), url_path='import-csv')
+    def import_csv(self, request):
+        file = request.FILES.get('file')
+        if not file:
+            return Response({'detail': 'No file provided.'}, status=http_status.HTTP_400_BAD_REQUEST)
+
+        try:
+            decoded = file.read().decode('utf-8-sig')
+        except UnicodeDecodeError:
+            return Response({'detail': 'File must be UTF-8 encoded.'}, status=http_status.HTTP_400_BAD_REQUEST)
+
+        required = {'name', 'category'}
+        reader = csv.DictReader(io.StringIO(decoded))
+        if not reader.fieldnames or not required.issubset(set(reader.fieldnames)):
+            return Response(
+                {'detail': 'CSV must contain columns: category, name'},
+                status=http_status.HTTP_400_BAD_REQUEST,
+            )
+
+        created = []
+        skipped = []
+        errors = []
+        category_cache: dict[str, SkillCategory] = {}
+        existing = set(Skill.objects.values_list('name', 'category__name'))
+
+        for i, row in enumerate(reader, start=2):
+            name = (row.get('name') or '').strip()
+            category_name = (row.get('category') or '').strip()
+
+            if not name or not category_name:
+                errors.append({'row': i, 'detail': 'Missing required field.'})
+                continue
+
+            if (name, category_name) in existing:
+                skipped.append({'row': i, 'name': name})
+                continue
+
+            if category_name not in category_cache:
+                cat, _ = SkillCategory.objects.get_or_create(name=category_name)
+                category_cache[category_name] = cat
+
+            Skill.objects.create(name=name, category=category_cache[category_name])
+            existing.add((name, category_name))
+            created.append({'row': i, 'name': name, 'category': category_name})
+
+        return Response({
+            'created': len(created),
+            'skipped': len(skipped),
+            'errors': errors,
+            'details': {'created': created, 'skipped': skipped},
+        })
 
 
 class SkillLevelDescriptionViewSet(viewsets.ModelViewSet):

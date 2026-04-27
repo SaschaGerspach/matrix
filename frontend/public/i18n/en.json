@@ -105,7 +105,16 @@
     "TEMPLATE": "Template",
     "ADD_SKILL": "Add Skill",
     "APPLY": "Apply",
-    "SKILLS_COUNT": "Skills"
+    "SKILLS_COUNT": "Skills",
+    "TAB_IMPORT": "Import",
+    "IMPORT_EMPLOYEES": "Import Employees",
+    "IMPORT_SKILLS": "Import Skills",
+    "IMPORT_EMPLOYEES_HINT": "CSV with columns: first_name, last_name, email",
+    "IMPORT_SKILLS_HINT": "CSV with columns: name, category",
+    "CHOOSE_FILE": "Choose CSV file",
+    "IMPORT_CREATED": "Created",
+    "IMPORT_SKIPPED": "Skipped",
+    "IMPORT_ERRORS": "Errors"
   },
   "TABLE": {
     "NAME": "Name",

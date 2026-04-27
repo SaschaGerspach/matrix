@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import { PaginatedResponse } from './pagination';
 
+import { CsvImportResult } from './employee.service';
 import { environment } from '../../environments/environment';
 
 export interface MySkillAssignment {
@@ -291,6 +292,12 @@ export class SkillService {
     return this.http.post<{ created: number; updated: number }>(
       `${environment.apiUrl}/role-templates/${templateId}/apply/`, { team: teamId },
     );
+  }
+
+  importSkillsCsv(file: File): Observable<CsvImportResult> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<CsvImportResult>(`${environment.apiUrl}/skills/import-csv/`, formData);
   }
 
   skillHistory(employeeId?: number): Observable<PaginatedResponse<SkillHistoryEntry>> {
