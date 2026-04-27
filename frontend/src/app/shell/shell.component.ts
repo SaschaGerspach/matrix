@@ -1,25 +1,38 @@
+import { DatePipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { AuthService } from '../core/auth.service';
 import { MeService } from '../core/me.service';
+import { NotificationItem, NotificationService } from '../core/notification.service';
 
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [MatButtonModule, MatToolbarModule, RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [
+    DatePipe, MatBadgeModule, MatButtonModule, MatIconModule, MatMenuModule,
+    MatToolbarModule, RouterLink, RouterLinkActive, RouterOutlet,
+  ],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
 })
 export class ShellComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly meService = inject(MeService);
+  readonly notificationService = inject(NotificationService);
   private readonly router = inject(Router);
 
   readonly isTeamLead = signal(false);
   readonly isAdmin = signal(false);
+  readonly notifications = signal<NotificationItem[]>([]);
+  readonly unreadCount = this.notificationService.unreadCount;
+
+  pollTimer: ReturnType<typeof setInterval> | null = null;
 
   ngOnInit(): void {
     this.meService.getProfile().subscribe({
@@ -28,9 +41,34 @@ export class ShellComponent implements OnInit {
         this.isAdmin.set(profile.is_admin);
       },
     });
+    this.notificationService.loadUnreadCount();
+    this.pollTimer = setInterval(() => this.notificationService.loadUnreadCount(), 60_000);
+  }
+
+  loadNotifications(): void {
+    this.notificationService.list().subscribe({
+      next: (r) => this.notifications.set(r.results),
+    });
+  }
+
+  markAsRead(n: NotificationItem): void {
+    if (!n.is_read) {
+      this.notificationService.markAsRead(n.id).subscribe();
+    }
+  }
+
+  markAllAsRead(): void {
+    this.notificationService.markAllAsRead().subscribe({
+      next: () => {
+        this.notifications.update((list) =>
+          list.map((n) => ({ ...n, is_read: true })),
+        );
+      },
+    });
   }
 
   logout(): void {
+    if (this.pollTimer) clearInterval(this.pollTimer);
     this.meService.clearCache();
     this.auth.logout().subscribe({
       next: () => this.router.navigate(['/login']),

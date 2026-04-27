@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'employees',
     'teams',
     'skills',
+    'notifications',
 ]
 
 MIDDLEWARE = [

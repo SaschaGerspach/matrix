@@ -18,6 +18,7 @@ from .permissions import CanConfirmSkillAssignment, SkillAssignmentPermission
 from teams.utils import get_led_member_ids, is_team_lead
 
 from employees.models import Employee
+from notifications.utils import notify_skill_confirmed, notify_skill_updated, notify_team_leads_pending
 
 from .serializers import (
     MatrixAssignmentSerializer,
@@ -273,10 +274,12 @@ class SkillAssignmentViewSet(viewsets.ModelViewSet):
             action=SkillAssignmentHistory.Action.CREATED,
             changed_by=get_employee(self.request.user),
         )
+        notify_team_leads_pending(assignment.employee, assignment.skill, assignment.level)
 
     def perform_update(self, serializer):
         old_level = serializer.instance.level
         assignment = serializer.save()
+        changed_by = get_employee(self.request.user)
         if old_level != assignment.level:
             SkillAssignmentHistory.objects.create(
                 assignment=assignment,
@@ -285,8 +288,9 @@ class SkillAssignmentViewSet(viewsets.ModelViewSet):
                 old_level=old_level,
                 new_level=assignment.level,
                 action=SkillAssignmentHistory.Action.UPDATED,
-                changed_by=get_employee(self.request.user),
+                changed_by=changed_by,
             )
+            notify_skill_updated(assignment.employee, assignment.skill, old_level, assignment.level, changed_by)
 
     def perform_destroy(self, instance):
         SkillAssignmentHistory.objects.create(
@@ -319,6 +323,7 @@ class SkillAssignmentViewSet(viewsets.ModelViewSet):
             action=SkillAssignmentHistory.Action.CONFIRMED,
             changed_by=employee,
         )
+        notify_skill_confirmed(assignment.employee, assignment.skill, employee)
         serializer = self.get_serializer(assignment)
         return Response(serializer.data)
 
