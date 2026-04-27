@@ -33,6 +33,29 @@ class Skill(models.Model):
         return self.name
 
 
+class SkillLevelDescription(models.Model):
+    skill = models.ForeignKey(
+        Skill,
+        on_delete=models.CASCADE,
+        related_name='level_descriptions',
+    )
+    level = models.PositiveSmallIntegerField()
+    description = models.TextField()
+
+    class Meta:
+        unique_together = ('skill', 'level')
+        ordering = ['skill', 'level']
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(level__gte=1) & models.Q(level__lte=5),
+                name='skillleveldesc_level_1_to_5',
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.skill} – Level {self.level}'
+
+
 class SkillAssignment(models.Model):
     class Status(models.TextChoices):
         PENDING = 'pending', 'Pending'

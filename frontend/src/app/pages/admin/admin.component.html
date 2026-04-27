@@ -127,4 +127,57 @@
       </table>
     </div>
   </mat-tab>
+
+  <mat-tab label="Level Definitions">
+    <div class="tab-content">
+      <div class="add-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Skill</mat-label>
+          <mat-select [(ngModel)]="newDescSkill">
+            @for (skill of skills(); track skill.id) {
+              <mat-option [value]="skill.id">{{ skill.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Level</mat-label>
+          <mat-select [(ngModel)]="newDescLevel">
+            @for (lvl of [1, 2, 3, 4, 5]; track lvl) {
+              <mat-option [value]="lvl">{{ lvl }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="desc-field">
+          <mat-label>Description</mat-label>
+          <input matInput [(ngModel)]="newDescText">
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="addLevelDescription()">Add</button>
+      </div>
+
+      <table mat-table [dataSource]="levelDescriptions()">
+        <ng-container matColumnDef="skill">
+          <th mat-header-cell *matHeaderCellDef>Skill</th>
+          <td mat-cell *matCellDef="let row">{{ getSkillName(row.skill) }}</td>
+        </ng-container>
+        <ng-container matColumnDef="level">
+          <th mat-header-cell *matHeaderCellDef>Level</th>
+          <td mat-cell *matCellDef="let row">{{ row.level }}</td>
+        </ng-container>
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Description</th>
+          <td mat-cell *matCellDef="let row">{{ row.description }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-icon-button color="warn" (click)="deleteLevelDescription(row.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['skill', 'level', 'description', 'actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['skill', 'level', 'description', 'actions']"></tr>
+      </table>
+    </div>
+  </mat-tab>
 </mat-tab-group>

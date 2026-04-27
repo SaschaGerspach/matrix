@@ -17,10 +17,18 @@ export interface MySkillAssignment {
   created_at: string;
 }
 
+export interface SkillLevelDescription {
+  id: number;
+  skill: number;
+  level: number;
+  description: string;
+}
+
 export interface Skill {
   id: number;
   name: string;
   category: number;
+  level_descriptions: SkillLevelDescription[];
 }
 
 export interface SkillCategory {
@@ -223,6 +231,20 @@ export class SkillService {
     return this.http.get<TeamComparisonEntry[]>(
       `${environment.apiUrl}/team-comparison/`, { params },
     );
+  }
+
+  listLevelDescriptions(): Observable<SkillLevelDescription[]> {
+    return this.http.get<SkillLevelDescription[]>(`${environment.apiUrl}/skill-level-descriptions/`);
+  }
+
+  createLevelDescription(skill: number, level: number, description: string): Observable<SkillLevelDescription> {
+    return this.http.post<SkillLevelDescription>(`${environment.apiUrl}/skill-level-descriptions/`, {
+      skill, level, description,
+    });
+  }
+
+  deleteLevelDescription(id: number): Observable<unknown> {
+    return this.http.delete(`${environment.apiUrl}/skill-level-descriptions/${id}/`);
   }
 
   recommendations(): Observable<SkillRecommendation[]> {

@@ -65,6 +65,7 @@
             } @else {
               <span (click)="startEdit(row.id, skill.id)"
                     [class.editable]="canEdit()"
+                    [matTooltip]="getLevelTooltip(skill.id, getLevel(row.id, skill.id))"
                     class="level-display">
                 @if (getLevel(row.id, skill.id); as level) {
                   <span class="level-badge level-{{ level }}">{{ level }}</span>

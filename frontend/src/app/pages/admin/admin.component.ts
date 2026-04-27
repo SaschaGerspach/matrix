@@ -8,7 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 
-import { Skill, SkillCategory, SkillRequirement, SkillService } from '../../core/skill.service';
+import { Skill, SkillCategory, SkillLevelDescription, SkillRequirement, SkillService } from '../../core/skill.service';
 import { Team, TeamService } from '../../core/team.service';
 
 @Component({
@@ -35,6 +35,7 @@ export class AdminComponent implements OnInit {
   readonly skills = signal<Skill[]>([]);
   readonly teams = signal<Team[]>([]);
   readonly requirements = signal<SkillRequirement[]>([]);
+  readonly levelDescriptions = signal<SkillLevelDescription[]>([]);
 
   newCategoryName = '';
   newSkillName = '';
@@ -42,6 +43,9 @@ export class AdminComponent implements OnInit {
   newReqTeam: number | undefined;
   newReqSkill: number | undefined;
   newReqLevel: number | undefined;
+  newDescSkill: number | undefined;
+  newDescLevel: number | undefined;
+  newDescText = '';
 
   ngOnInit(): void {
     this.loadAll();
@@ -52,6 +56,7 @@ export class AdminComponent implements OnInit {
     this.skillService.listSkills().subscribe((s) => this.skills.set(s));
     this.teamService.list().subscribe((t) => this.teams.set(t));
     this.skillService.listRequirements().subscribe((r) => this.requirements.set(r));
+    this.skillService.listLevelDescriptions().subscribe((d) => this.levelDescriptions.set(d));
   }
 
   addCategory(): void {
@@ -100,6 +105,26 @@ export class AdminComponent implements OnInit {
   deleteRequirement(id: number): void {
     this.skillService.deleteRequirement(id).subscribe(() => {
       this.skillService.listRequirements().subscribe((r) => this.requirements.set(r));
+    });
+  }
+
+  getSkillName(id: number): string {
+    return this.skills().find((s) => s.id === id)?.name ?? '';
+  }
+
+  addLevelDescription(): void {
+    if (!this.newDescSkill || !this.newDescLevel || !this.newDescText.trim()) return;
+    this.skillService.createLevelDescription(this.newDescSkill, this.newDescLevel, this.newDescText.trim()).subscribe(() => {
+      this.newDescSkill = undefined;
+      this.newDescLevel = undefined;
+      this.newDescText = '';
+      this.skillService.listLevelDescriptions().subscribe((d) => this.levelDescriptions.set(d));
+    });
+  }
+
+  deleteLevelDescription(id: number): void {
+    this.skillService.deleteLevelDescription(id).subscribe(() => {
+      this.skillService.listLevelDescriptions().subscribe((d) => this.levelDescriptions.set(d));
     });
   }
 }

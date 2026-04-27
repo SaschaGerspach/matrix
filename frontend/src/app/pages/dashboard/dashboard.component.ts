@@ -7,11 +7,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { Router } from '@angular/router';
 
 import { environment } from '../../../environments/environment';
-import { MatrixAssignment, MatrixEmployee, MatrixSkill, SkillCategory, SkillService } from '../../core/skill.service';
+import { MatrixAssignment, MatrixEmployee, MatrixSkill, Skill, SkillCategory, SkillService } from '../../core/skill.service';
 import { MeService } from '../../core/me.service';
 import { Team, TeamService } from '../../core/team.service';
 
@@ -26,6 +27,7 @@ import { Team, TeamService } from '../../core/team.service';
     MatProgressSpinnerModule,
     MatSelectModule,
     MatTableModule,
+    MatTooltipModule,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -52,6 +54,7 @@ export class DashboardComponent implements OnInit {
   searchTerm = '';
 
   private assignmentMap = new Map<string, MatrixAssignment>();
+  private descriptionMap = new Map<string, string>();
 
   readonly displayedColumns = computed(() => {
     return ['employee', ...this.skills().map((s) => `skill_${s.id}`)];
@@ -63,6 +66,13 @@ export class DashboardComponent implements OnInit {
     });
     this.teamService.list().subscribe((t) => this.teams.set(t));
     this.skillService.listCategories().subscribe((c) => this.categories.set(c));
+    this.skillService.listSkills().subscribe((skills) => {
+      for (const skill of skills) {
+        for (const desc of skill.level_descriptions ?? []) {
+          this.descriptionMap.set(`${skill.id}_${desc.level}`, desc.description);
+        }
+      }
+    });
     this.loadMatrix();
   }
 
@@ -100,6 +110,11 @@ export class DashboardComponent implements OnInit {
   getLevel(employeeId: number, skillId: number): number | null {
     const a = this.assignmentMap.get(`${employeeId}_${skillId}`);
     return a ? a.level : null;
+  }
+
+  getLevelTooltip(skillId: number, level: number | null): string {
+    if (!level) return '';
+    return this.descriptionMap.get(`${skillId}_${level}`) ?? '';
   }
 
   startEdit(employeeId: number, skillId: number): void {

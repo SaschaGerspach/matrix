@@ -31,6 +31,7 @@ function flushInitRequests(http: HttpTestingController, matrix = matrixResponse,
   http.expectOne(`${environment.apiUrl}/me/`).flush(profile);
   http.expectOne(`${environment.apiUrl}/teams/`).flush([]);
   http.expectOne(`${environment.apiUrl}/skill-categories/`).flush([]);
+  http.expectOne(`${environment.apiUrl}/skills/`).flush([]);
   http.expectOne((r) => r.url === `${environment.apiUrl}/skill-matrix/`).flush(matrix);
 }
 

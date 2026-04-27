@@ -13,7 +13,7 @@ from rest_framework.views import APIView
 from common.permissions import IsAdminOrReadOnly
 from employees.utils import get_employee
 
-from .models import Skill, SkillAssignment, SkillAssignmentHistory, SkillCategory, SkillRequirement
+from .models import Skill, SkillAssignment, SkillAssignmentHistory, SkillCategory, SkillLevelDescription, SkillRequirement
 from .permissions import CanConfirmSkillAssignment, SkillAssignmentPermission
 from teams.utils import get_led_member_ids, is_team_lead
 
@@ -28,6 +28,7 @@ from .serializers import (
     SkillAssignmentHistorySerializer,
     SkillAssignmentSerializer,
     SkillCategorySerializer,
+    SkillLevelDescriptionSerializer,
     SkillRequirementSerializer,
     SkillSerializer,
     TeamAssignmentSerializer,
@@ -72,8 +73,15 @@ class SkillCategoryViewSet(viewsets.ModelViewSet):
 
 
 class SkillViewSet(viewsets.ModelViewSet):
-    queryset = Skill.objects.all()
+    queryset = Skill.objects.prefetch_related('level_descriptions').all()
     serializer_class = SkillSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = None
+
+
+class SkillLevelDescriptionViewSet(viewsets.ModelViewSet):
+    queryset = SkillLevelDescription.objects.select_related('skill')
+    serializer_class = SkillLevelDescriptionSerializer
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = None
 

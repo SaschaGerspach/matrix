@@ -13,6 +13,7 @@ from .views import (
     SkillViewSet,
     TeamAssignmentsViewSet,
     TeamComparisonView,
+    SkillLevelDescriptionViewSet,
     SkillMatrixPdfExportView,
     SkillRecommendationsView,
     SkillTrendsView,
@@ -25,6 +26,7 @@ router.register('skill-categories', SkillCategoryViewSet)
 router.register('skills', SkillViewSet)
 router.register('skill-assignments', SkillAssignmentViewSet)
 router.register('skill-requirements', SkillRequirementViewSet)
+router.register('skill-level-descriptions', SkillLevelDescriptionViewSet)
 router.register('skill-history', SkillHistoryViewSet, basename='skill-history')
 
 urlpatterns = [
