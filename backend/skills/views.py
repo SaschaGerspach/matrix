@@ -13,7 +13,7 @@ from rest_framework.views import APIView
 from common.permissions import IsAdminOrReadOnly
 from employees.utils import get_employee
 
-from .models import Skill, SkillAssignment, SkillAssignmentHistory, SkillCategory, SkillLevelDescription, SkillRequirement
+from .models import Skill, SkillAssignment, SkillAssignmentHistory, SkillCategory, SkillLevelDescription, SkillRequirement, RoleTemplate, RoleTemplateSkill
 from .permissions import CanConfirmSkillAssignment, SkillAssignmentPermission
 from teams.utils import get_led_member_ids, is_team_lead
 
@@ -25,6 +25,9 @@ from .serializers import (
     MatrixEmployeeSerializer,
     MatrixSkillSerializer,
     MySkillAssignmentSerializer,
+    RoleTemplateApplySerializer,
+    RoleTemplateSerializer,
+    RoleTemplateSkillSerializer,
     SkillAssignmentHistorySerializer,
     SkillAssignmentSerializer,
     SkillCategorySerializer,
@@ -435,6 +438,56 @@ class SkillRecommendationsView(APIView):
 
         recommendations.sort(key=lambda r: (-r['gap'], r['skill_name']))
         return Response(recommendations)
+
+
+class RoleTemplateViewSet(viewsets.ModelViewSet):
+    queryset = RoleTemplate.objects.prefetch_related('skills__skill')
+    serializer_class = RoleTemplateSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = None
+
+    @action(detail=True, methods=['post'])
+    def apply(self, request, pk=None):
+        from teams.models import Team
+
+        template = self.get_object()
+        ser = RoleTemplateApplySerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+
+        team = Team.objects.filter(id=ser.validated_data['team']).first()
+        if not team:
+            return Response({'detail': 'Team not found.'}, status=404)
+
+        created = 0
+        updated = 0
+        for ts in template.skills.all():
+            req, is_new = SkillRequirement.objects.update_or_create(
+                team=team,
+                skill=ts.skill,
+                defaults={'required_level': ts.required_level},
+            )
+            if is_new:
+                created += 1
+            else:
+                updated += 1
+
+        return Response({'created': created, 'updated': updated})
+
+    @action(detail=True, methods=['post'], url_path='add-skill')
+    def add_skill(self, request, pk=None):
+        template = self.get_object()
+        ser = RoleTemplateSkillSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        ser.save(template=template)
+        template = self.get_queryset().get(pk=template.pk)
+        return Response(RoleTemplateSerializer(template).data)
+
+    @action(detail=True, methods=['delete'], url_path='remove-skill/(?P<skill_pk>[0-9]+)')
+    def remove_skill(self, request, pk=None, skill_pk=None):
+        template = self.get_object()
+        RoleTemplateSkill.objects.filter(template=template, pk=skill_pk).delete()
+        template = self.get_queryset().get(pk=template.pk)
+        return Response(RoleTemplateSerializer(template).data)
 
 
 class KpiView(APIView):

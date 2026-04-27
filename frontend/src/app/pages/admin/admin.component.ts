@@ -8,7 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 
-import { Skill, SkillCategory, SkillLevelDescription, SkillRequirement, SkillService } from '../../core/skill.service';
+import { RoleTemplate, Skill, SkillCategory, SkillLevelDescription, SkillRequirement, SkillService } from '../../core/skill.service';
 import { Team, TeamService } from '../../core/team.service';
 
 @Component({
@@ -36,6 +36,7 @@ export class AdminComponent implements OnInit {
   readonly teams = signal<Team[]>([]);
   readonly requirements = signal<SkillRequirement[]>([]);
   readonly levelDescriptions = signal<SkillLevelDescription[]>([]);
+  readonly roleTemplates = signal<RoleTemplate[]>([]);
 
   newCategoryName = '';
   newSkillName = '';
@@ -46,6 +47,13 @@ export class AdminComponent implements OnInit {
   newDescSkill: number | undefined;
   newDescLevel: number | undefined;
   newDescText = '';
+  newTemplateName = '';
+  newTemplateDesc = '';
+  selectedTemplateId: number | undefined;
+  newTplSkill: number | undefined;
+  newTplLevel: number | undefined;
+  applyTemplateId: number | undefined;
+  applyTeamId: number | undefined;
 
   ngOnInit(): void {
     this.loadAll();
@@ -57,6 +65,7 @@ export class AdminComponent implements OnInit {
     this.teamService.list().subscribe((t) => this.teams.set(t));
     this.skillService.listRequirements().subscribe((r) => this.requirements.set(r));
     this.skillService.listLevelDescriptions().subscribe((d) => this.levelDescriptions.set(d));
+    this.skillService.listRoleTemplates().subscribe((t) => this.roleTemplates.set(t));
   }
 
   addCategory(): void {
@@ -126,5 +135,48 @@ export class AdminComponent implements OnInit {
     this.skillService.deleteLevelDescription(id).subscribe(() => {
       this.skillService.listLevelDescriptions().subscribe((d) => this.levelDescriptions.set(d));
     });
+  }
+
+  addRoleTemplate(): void {
+    if (!this.newTemplateName.trim()) return;
+    this.skillService.createRoleTemplate(this.newTemplateName.trim(), this.newTemplateDesc.trim()).subscribe(() => {
+      this.newTemplateName = '';
+      this.newTemplateDesc = '';
+      this.skillService.listRoleTemplates().subscribe((t) => this.roleTemplates.set(t));
+    });
+  }
+
+  deleteRoleTemplate(id: number): void {
+    this.skillService.deleteRoleTemplate(id).subscribe(() => {
+      this.skillService.listRoleTemplates().subscribe((t) => this.roleTemplates.set(t));
+    });
+  }
+
+  addTemplateSkill(): void {
+    if (!this.selectedTemplateId || !this.newTplSkill || !this.newTplLevel) return;
+    this.skillService.addRoleTemplateSkill(this.selectedTemplateId, this.newTplSkill, this.newTplLevel).subscribe((tpl) => {
+      this.roleTemplates.update((list) => list.map((t) => (t.id === tpl.id ? tpl : t)));
+      this.newTplSkill = undefined;
+      this.newTplLevel = undefined;
+    });
+  }
+
+  removeTemplateSkill(templateId: number, skillPk: number): void {
+    this.skillService.removeRoleTemplateSkill(templateId, skillPk).subscribe((tpl) => {
+      this.roleTemplates.update((list) => list.map((t) => (t.id === tpl.id ? tpl : t)));
+    });
+  }
+
+  applyTemplate(): void {
+    if (!this.applyTemplateId || !this.applyTeamId) return;
+    this.skillService.applyRoleTemplate(this.applyTemplateId, this.applyTeamId).subscribe(() => {
+      this.applyTemplateId = undefined;
+      this.applyTeamId = undefined;
+      this.skillService.listRequirements().subscribe((r) => this.requirements.set(r));
+    });
+  }
+
+  selectedTemplate(): RoleTemplate | undefined {
+    return this.roleTemplates().find((t) => t.id === this.selectedTemplateId);
   }
 }

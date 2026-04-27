@@ -127,6 +127,40 @@ class SkillRequirement(models.Model):
         return f'{self.team} – {self.skill} (required: {self.required_level})'
 
 
+class RoleTemplate(models.Model):
+    name = models.CharField(max_length=150, unique=True)
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class RoleTemplateSkill(models.Model):
+    template = models.ForeignKey(
+        RoleTemplate,
+        on_delete=models.CASCADE,
+        related_name='skills',
+    )
+    skill = models.ForeignKey(
+        Skill,
+        on_delete=models.CASCADE,
+        related_name='role_template_skills',
+    )
+    required_level = models.PositiveSmallIntegerField()
+
+    class Meta:
+        unique_together = ('template', 'skill')
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(required_level__gte=1) & models.Q(required_level__lte=5),
+                name='roletemplateskill_level_1_to_5',
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.template} – {self.skill} ({self.required_level})'
+
+
 class SkillAssignmentHistory(models.Model):
     class Action(models.TextChoices):
         CREATED = 'created', 'Created'

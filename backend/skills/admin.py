@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Skill, SkillAssignment, SkillAssignmentHistory, SkillCategory, SkillLevelDescription, SkillRequirement
+from .models import Skill, SkillAssignment, SkillAssignmentHistory, SkillCategory, SkillLevelDescription, SkillRequirement, RoleTemplate, RoleTemplateSkill
 
 
 @admin.register(SkillCategory)
@@ -43,3 +43,16 @@ class SkillRequirementAdmin(admin.ModelAdmin):
     list_display = ('team', 'skill', 'required_level')
     list_filter = ('team', 'skill__category')
     autocomplete_fields = ('team', 'skill')
+
+
+class RoleTemplateSkillInline(admin.TabularInline):
+    model = RoleTemplateSkill
+    extra = 1
+    autocomplete_fields = ('skill',)
+
+
+@admin.register(RoleTemplate)
+class RoleTemplateAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+    inlines = (RoleTemplateSkillInline,)

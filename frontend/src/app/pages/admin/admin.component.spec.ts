@@ -19,6 +19,7 @@ function flushInitRequests(http: HttpTestingController): void {
   ]);
   http.expectOne(`${environment.apiUrl}/skill-requirements/`).flush([]);
   http.expectOne(`${environment.apiUrl}/skill-level-descriptions/`).flush([]);
+  http.expectOne(`${environment.apiUrl}/role-templates/`).flush([]);
 }
 
 describe('AdminComponent', () => {

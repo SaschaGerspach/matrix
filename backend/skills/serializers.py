@@ -3,7 +3,7 @@ from rest_framework import serializers
 from employees.utils import get_employee
 from teams.utils import get_led_member_ids
 
-from .models import Skill, SkillAssignment, SkillAssignmentHistory, SkillCategory, SkillLevelDescription, SkillRequirement
+from .models import Skill, SkillAssignment, SkillAssignmentHistory, SkillCategory, SkillLevelDescription, SkillRequirement, RoleTemplate, RoleTemplateSkill
 
 
 class SkillCategorySerializer(serializers.ModelSerializer):
@@ -108,6 +108,26 @@ class SkillAssignmentHistorySerializer(serializers.ModelSerializer):
 
     def get_changed_by_name(self, obj):
         return str(obj.changed_by) if obj.changed_by else None
+
+
+class RoleTemplateSkillSerializer(serializers.ModelSerializer):
+    skill_name = serializers.CharField(source='skill.name', read_only=True)
+
+    class Meta:
+        model = RoleTemplateSkill
+        fields = ('id', 'skill', 'skill_name', 'required_level')
+
+
+class RoleTemplateSerializer(serializers.ModelSerializer):
+    skills = RoleTemplateSkillSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = RoleTemplate
+        fields = ('id', 'name', 'description', 'skills')
+
+
+class RoleTemplateApplySerializer(serializers.Serializer):
+    team = serializers.IntegerField()
 
 
 class SkillAssignmentSerializer(serializers.ModelSerializer):

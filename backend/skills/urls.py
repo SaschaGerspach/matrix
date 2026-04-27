@@ -3,6 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (
     MySkillsViewSet,
+    RoleTemplateViewSet,
     SkillAssignmentViewSet,
     SkillCategoryViewSet,
     SkillGapsView,
@@ -29,6 +30,7 @@ router.register('skill-assignments', SkillAssignmentViewSet)
 router.register('skill-requirements', SkillRequirementViewSet)
 router.register('skill-level-descriptions', SkillLevelDescriptionViewSet)
 router.register('skill-history', SkillHistoryViewSet, basename='skill-history')
+router.register('role-templates', RoleTemplateViewSet)
 
 urlpatterns = [
     path('skill-matrix/', SkillMatrixView.as_view(), name='skill-matrix'),
