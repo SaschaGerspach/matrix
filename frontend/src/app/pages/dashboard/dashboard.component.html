@@ -1,6 +1,9 @@
 <div class="header">
   <h2>Skill Matrix</h2>
-  <button mat-raised-button color="primary" (click)="exportCsv()">Export CSV</button>
+  <div class="export-actions">
+    <button mat-raised-button color="primary" (click)="exportCsv()">Export CSV</button>
+    <button mat-raised-button (click)="exportPdf()">Export PDF</button>
+  </div>
 </div>
 
 <div class="filters">

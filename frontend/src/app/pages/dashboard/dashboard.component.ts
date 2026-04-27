@@ -156,4 +156,17 @@ export class DashboardComponent implements OnInit {
         URL.revokeObjectURL(url);
       });
   }
+
+  exportPdf(): void {
+    this.http
+      .get(`${environment.apiUrl}/skill-matrix/export-pdf/`, { responseType: 'blob' })
+      .subscribe((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'skill-matrix.pdf';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+  }
 }

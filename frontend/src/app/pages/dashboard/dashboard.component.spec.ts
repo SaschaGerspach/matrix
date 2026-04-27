@@ -96,13 +96,14 @@ describe('DashboardComponent', () => {
     expect(el.textContent).toContain('No employees found');
   });
 
-  it('renders export button', () => {
+  it('renders export buttons', () => {
     fixture.detectChanges();
     flushInitRequests(http);
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
     expect(el.textContent).toContain('Export CSV');
+    expect(el.textContent).toContain('Export PDF');
   });
 
   it('calls export endpoint on exportCsv', () => {
@@ -113,6 +114,16 @@ describe('DashboardComponent', () => {
     const req = http.expectOne(`${environment.apiUrl}/skill-matrix/export/`);
     expect(req.request.responseType).toBe('blob');
     req.flush(new Blob(['Employee,Python\r\nAlice A,4\r\n'], { type: 'text/csv' }));
+  });
+
+  it('calls PDF export endpoint on exportPdf', () => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+
+    component.exportPdf();
+    const req = http.expectOne(`${environment.apiUrl}/skill-matrix/export-pdf/`);
+    expect(req.request.responseType).toBe('blob');
+    req.flush(new Blob(['%PDF-1.4'], { type: 'application/pdf' }));
   });
 
   it('reloads with filters when applyFilters is called', () => {

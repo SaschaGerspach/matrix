@@ -155,6 +155,49 @@ class SkillMatrixExportView(APIView):
         return response
 
 
+class SkillMatrixPdfExportView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        from reportlab.lib import colors
+        from reportlab.lib.pagesizes import landscape, A4
+        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+
+        employees = list(Employee.objects.all().order_by('last_name', 'first_name'))
+        skills = list(Skill.objects.select_related('category').order_by('category__name', 'name'))
+        assignments = SkillAssignment.objects.all()
+
+        assignment_map: dict = {}
+        for a in assignments:
+            assignment_map.setdefault(a.employee_id, {})[a.skill_id] = a.level
+
+        header = ['Employee'] + [s.name for s in skills]
+        data = [header]
+        for emp in employees:
+            row = [str(emp)]
+            emp_skills = assignment_map.get(emp.id, {})
+            for s in skills:
+                level = emp_skills.get(s.id)
+                row.append(str(level) if level else '')
+            data.append(row)
+
+        buf = io.BytesIO()
+        doc = SimpleDocTemplate(buf, pagesize=landscape(A4))
+        table = Table(data)
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#3f51b5')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('FONTSIZE', (0, 0), (-1, -1), 8),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f5f5f5')]),
+        ]))
+        doc.build([table])
+
+        response = HttpResponse(buf.getvalue(), content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="skill-matrix.pdf"'
+        return response
+
+
 class SkillRequirementViewSet(viewsets.ModelViewSet):
     queryset = SkillRequirement.objects.select_related('skill__category', 'team')
     serializer_class = SkillRequirementSerializer
