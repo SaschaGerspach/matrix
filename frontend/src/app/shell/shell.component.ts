@@ -7,7 +7,10 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 import { AuthService } from '../core/auth.service';
+import { LanguageService } from '../core/language.service';
 import { MeService } from '../core/me.service';
 import { NotificationItem, NotificationService } from '../core/notification.service';
 import { ThemeService } from '../core/theme.service';
@@ -17,7 +20,7 @@ import { ThemeService } from '../core/theme.service';
   standalone: true,
   imports: [
     DatePipe, MatBadgeModule, MatButtonModule, MatIconModule, MatMenuModule,
-    MatToolbarModule, RouterLink, RouterLinkActive, RouterOutlet,
+    MatToolbarModule, RouterLink, RouterLinkActive, RouterOutlet, TranslateModule,
   ],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
@@ -25,6 +28,7 @@ import { ThemeService } from '../core/theme.service';
 export class ShellComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly meService = inject(MeService);
+  readonly langService = inject(LanguageService);
   readonly notificationService = inject(NotificationService);
   readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
@@ -37,6 +41,7 @@ export class ShellComponent implements OnInit {
   pollTimer: ReturnType<typeof setInterval> | null = null;
 
   ngOnInit(): void {
+    this.langService.init();
     this.meService.getProfile().subscribe({
       next: (profile) => {
         this.isTeamLead.set(profile.is_team_lead);

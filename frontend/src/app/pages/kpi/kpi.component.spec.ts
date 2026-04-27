@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { TranslateTestingModule } from '../../core/testing/translate-testing';
 
 import { environment } from '../../../environments/environment';
 import { KpiComponent, TeamKpi } from './kpi.component';
@@ -34,7 +35,7 @@ describe('KpiComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [KpiComponent],
+      imports: [KpiComponent, TranslateTestingModule],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),

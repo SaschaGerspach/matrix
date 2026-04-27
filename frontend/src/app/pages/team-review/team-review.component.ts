@@ -4,12 +4,14 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 import { SkillService, TeamAssignment } from '../../core/skill.service';
 
 @Component({
   selector: 'app-team-review',
   standalone: true,
-  imports: [MatButtonModule, MatChipsModule, MatProgressSpinnerModule, MatTableModule],
+  imports: [MatButtonModule, MatChipsModule, MatProgressSpinnerModule, MatTableModule, TranslateModule],
   templateUrl: './team-review.component.html',
   styleUrl: './team-review.component.scss',
 })

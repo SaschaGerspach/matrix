@@ -1,34 +1,34 @@
-<h2>Team KPIs</h2>
+<h2>{{ 'KPI.TITLE' | translate }}</h2>
 
 @if (loading()) {
   <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
 } @else if (data().length === 0) {
-  <p>No team data available.</p>
+  <p>{{ 'KPI.EMPTY' | translate }}</p>
 } @else {
   <div class="kpi-grid">
     @for (team of data(); track team.team_id) {
       <mat-card class="kpi-card">
         <mat-card-header>
           <mat-card-title>{{ team.team_name }}</mat-card-title>
-          <mat-card-subtitle>{{ team.member_count }} members</mat-card-subtitle>
+          <mat-card-subtitle>{{ team.member_count }} {{ 'COMMON.MEMBERS' | translate }}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
           <div class="kpi-row">
-            <span class="kpi-label">Avg. Level</span>
+            <span class="kpi-label">{{ 'KPI.AVG_LEVEL' | translate }}</span>
             <span class="kpi-value">{{ team.avg_level }}</span>
           </div>
           <div class="kpi-row">
-            <span class="kpi-label">Skill Coverage</span>
+            <span class="kpi-label">{{ 'KPI.COVERAGE' | translate }}</span>
             <span class="kpi-value">{{ team.coverage }}%</span>
           </div>
           <mat-progress-bar mode="determinate" [value]="team.coverage"></mat-progress-bar>
           <div class="kpi-row">
-            <span class="kpi-label">Confirmed</span>
+            <span class="kpi-label">{{ 'KPI.CONFIRMED' | translate }}</span>
             <span class="kpi-value">{{ team.confirmed_ratio }}%</span>
           </div>
           <mat-progress-bar mode="determinate" [value]="team.confirmed_ratio" color="accent"></mat-progress-bar>
           <div class="kpi-row">
-            <span class="kpi-label">Total Assignments</span>
+            <span class="kpi-label">{{ 'KPI.TOTAL_ASSIGNMENTS' | translate }}</span>
             <span class="kpi-value">{{ team.total_assignments }}</span>
           </div>
         </mat-card-content>

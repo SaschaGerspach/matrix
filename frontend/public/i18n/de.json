@@ -1,0 +1,135 @@
+{
+  "APP_NAME": "Skill-Matrix",
+  "NAV": {
+    "MY_SKILLS": "Meine Skills",
+    "TEAM_REVIEW": "Team-Review",
+    "SKILL_GAPS": "Skill-Lücken",
+    "TEAM_COMPARISON": "Team-Vergleich",
+    "DASHBOARD": "Dashboard",
+    "KPIS": "KPIs",
+    "EMPLOYEES": "Mitarbeiter",
+    "ADMIN": "Admin",
+    "SIGN_OUT": "Abmelden",
+    "TOGGLE_DARK_MODE": "Dunkelmodus umschalten"
+  },
+  "NOTIFICATIONS": {
+    "TITLE": "Benachrichtigungen",
+    "MARK_ALL_READ": "Alle gelesen",
+    "EMPTY": "Keine Benachrichtigungen"
+  },
+  "LOGIN": {
+    "TITLE": "Anmelden",
+    "USERNAME": "Benutzername",
+    "PASSWORD": "Passwort",
+    "SUBMIT": "Anmelden"
+  },
+  "MY_SKILLS": {
+    "TITLE": "Meine Skills",
+    "ADD_SKILL": "Skill hinzufügen",
+    "EMPTY": "Noch keine Skills zugewiesen. Klicke auf \"Skill hinzufügen\", um zu starten.",
+    "RECOMMENDATIONS": "Empfehlungen"
+  },
+  "ADD_SKILL_DIALOG": {
+    "TITLE": "Skill hinzufügen",
+    "SKILL": "Skill",
+    "LEVEL": "Level (1-5)",
+    "CANCEL": "Abbrechen",
+    "ADD": "Hinzufügen"
+  },
+  "TEAM_REVIEW": {
+    "TITLE": "Team-Review",
+    "EMPTY": "Keine offenen Zuweisungen zur Überprüfung.",
+    "CONFIRM": "Bestätigen"
+  },
+  "SKILL_GAPS": {
+    "TITLE": "Skill-Lücken",
+    "EMPTY": "Keine Skill-Lücken gefunden."
+  },
+  "EMPLOYEES": {
+    "TITLE": "Mitarbeiter"
+  },
+  "TEAM_COMPARISON": {
+    "TITLE": "Team-Vergleich",
+    "SELECT_TEAMS": "Teams auswählen",
+    "COMPARE": "Vergleichen"
+  },
+  "EMPLOYEE_PROFILE": {
+    "BACK": "Zurück",
+    "SKILL_OVERVIEW": "Skill-Übersicht",
+    "SKILLS": "Skills",
+    "SKILL_TRENDS": "Skill-Trends",
+    "HISTORY": "Verlauf",
+    "EMPTY_SKILLS": "Noch keine Skills zugewiesen.",
+    "NOT_FOUND": "Mitarbeiter nicht gefunden."
+  },
+  "DASHBOARD": {
+    "TITLE": "Skill-Matrix",
+    "HEATMAP": "Heatmap",
+    "EXPORT_CSV": "CSV exportieren",
+    "EXPORT_PDF": "PDF exportieren",
+    "SEARCH": "Suche",
+    "SEARCH_PLACEHOLDER": "Mitarbeitername...",
+    "TEAM": "Team",
+    "CATEGORY": "Kategorie",
+    "CLEAR": "Zurücksetzen",
+    "EMPTY": "Keine Mitarbeiter gefunden."
+  },
+  "KPI": {
+    "TITLE": "Team-KPIs",
+    "EMPTY": "Keine Teamdaten verfügbar.",
+    "AVG_LEVEL": "Ø Level",
+    "COVERAGE": "Skill-Abdeckung",
+    "CONFIRMED": "Bestätigt",
+    "TOTAL_ASSIGNMENTS": "Zuweisungen gesamt"
+  },
+  "ADMIN": {
+    "TITLE": "Admin",
+    "TAB_CATEGORIES": "Kategorien",
+    "TAB_SKILLS": "Skills",
+    "TAB_REQUIREMENTS": "Anforderungen",
+    "TAB_ROLE_TEMPLATES": "Rollenvorlagen",
+    "TAB_LEVEL_DEFS": "Level-Definitionen",
+    "CATEGORY_NAME": "Kategoriename",
+    "SKILL_NAME": "Skillname",
+    "CATEGORY": "Kategorie",
+    "TEAM": "Team",
+    "SKILL": "Skill",
+    "REQUIRED_LEVEL": "Erforderliches Level",
+    "LEVEL": "Level",
+    "DESCRIPTION": "Beschreibung",
+    "ADD": "Hinzufügen",
+    "TEMPLATE_NAME": "Vorlagenname",
+    "CREATE_TEMPLATE": "Vorlage erstellen",
+    "MANAGE_SKILLS": "Vorlagen-Skills verwalten",
+    "APPLY_TO_TEAM": "Vorlage auf Team anwenden",
+    "TEMPLATE": "Vorlage",
+    "ADD_SKILL": "Skill hinzufügen",
+    "APPLY": "Anwenden",
+    "SKILLS_COUNT": "Skills"
+  },
+  "TABLE": {
+    "NAME": "Name",
+    "EMPLOYEE": "Mitarbeiter",
+    "SKILL": "Skill",
+    "CATEGORY": "Kategorie",
+    "LEVEL": "Level",
+    "STATUS": "Status",
+    "REQUIRED": "Erforderlich",
+    "ACTUAL": "Aktuell",
+    "GAP": "Lücke",
+    "TEAM": "Team",
+    "REQUIRED_LEVEL": "Erforderliches Level",
+    "FIRST_NAME": "Vorname",
+    "LAST_NAME": "Nachname",
+    "EMAIL": "E-Mail",
+    "DATE": "Datum",
+    "ACTION": "Aktion",
+    "FROM": "Von",
+    "TO": "Bis",
+    "CHANGED_BY": "Geändert von",
+    "DESCRIPTION": "Beschreibung"
+  },
+  "COMMON": {
+    "MEMBERS": "Mitglieder"
+  }
+}

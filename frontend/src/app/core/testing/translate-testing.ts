@@ -1,0 +1,79 @@
+import { NgModule } from '@angular/core';
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { of } from 'rxjs';
+
+const EN = {
+  APP_NAME: 'Skill Matrix',
+  NAV: {
+    MY_SKILLS: 'My Skills', TEAM_REVIEW: 'Team Review', SKILL_GAPS: 'Skill Gaps',
+    TEAM_COMPARISON: 'Team Comparison', DASHBOARD: 'Dashboard', KPIS: 'KPIs',
+    EMPLOYEES: 'Employees', ADMIN: 'Admin', SIGN_OUT: 'Sign out',
+    TOGGLE_DARK_MODE: 'Toggle dark mode',
+  },
+  NOTIFICATIONS: { TITLE: 'Notifications', MARK_ALL_READ: 'Mark all read', EMPTY: 'No notifications' },
+  LOGIN: { TITLE: 'Sign in', USERNAME: 'Username', PASSWORD: 'Password', SUBMIT: 'Sign in' },
+  MY_SKILLS: {
+    TITLE: 'My Skills', ADD_SKILL: 'Add Skill',
+    EMPTY: 'No skills assigned yet. Click "Add Skill" to get started.',
+    RECOMMENDATIONS: 'Recommendations',
+  },
+  ADD_SKILL_DIALOG: { TITLE: 'Add Skill', SKILL: 'Skill', LEVEL: 'Level (1-5)', CANCEL: 'Cancel', ADD: 'Add' },
+  TEAM_REVIEW: { TITLE: 'Team Review', EMPTY: 'No pending assignments to review.', CONFIRM: 'Confirm' },
+  SKILL_GAPS: { TITLE: 'Skill Gaps', EMPTY: 'No skill gaps found.' },
+  EMPLOYEES: { TITLE: 'Employees' },
+  TEAM_COMPARISON: { TITLE: 'Team Comparison', SELECT_TEAMS: 'Select teams', COMPARE: 'Compare' },
+  EMPLOYEE_PROFILE: {
+    BACK: 'Back', SKILL_OVERVIEW: 'Skill Overview', SKILLS: 'Skills',
+    SKILL_TRENDS: 'Skill Trends', HISTORY: 'History',
+    EMPTY_SKILLS: 'No skills assigned yet.', NOT_FOUND: 'Employee not found.',
+  },
+  DASHBOARD: {
+    TITLE: 'Skill Matrix', HEATMAP: 'Heatmap', EXPORT_CSV: 'Export CSV', EXPORT_PDF: 'Export PDF',
+    SEARCH: 'Search', SEARCH_PLACEHOLDER: 'Employee name...', TEAM: 'Team', CATEGORY: 'Category',
+    CLEAR: 'Clear', EMPTY: 'No employees found.',
+  },
+  KPI: {
+    TITLE: 'Team KPIs', EMPTY: 'No team data available.',
+    AVG_LEVEL: 'Avg. Level', COVERAGE: 'Skill Coverage', CONFIRMED: 'Confirmed',
+    TOTAL_ASSIGNMENTS: 'Total Assignments',
+  },
+  ADMIN: {
+    TITLE: 'Admin', TAB_CATEGORIES: 'Categories', TAB_SKILLS: 'Skills',
+    TAB_REQUIREMENTS: 'Requirements', TAB_ROLE_TEMPLATES: 'Role Templates',
+    TAB_LEVEL_DEFS: 'Level Definitions', CATEGORY_NAME: 'Category name',
+    SKILL_NAME: 'Skill name', CATEGORY: 'Category', TEAM: 'Team', SKILL: 'Skill',
+    REQUIRED_LEVEL: 'Required level', LEVEL: 'Level', DESCRIPTION: 'Description',
+    ADD: 'Add', TEMPLATE_NAME: 'Template name', CREATE_TEMPLATE: 'Create Template',
+    MANAGE_SKILLS: 'Manage Template Skills', APPLY_TO_TEAM: 'Apply Template to Team',
+    TEMPLATE: 'Template', ADD_SKILL: 'Add Skill', APPLY: 'Apply', SKILLS_COUNT: 'Skills',
+  },
+  TABLE: {
+    NAME: 'Name', EMPLOYEE: 'Employee', SKILL: 'Skill', CATEGORY: 'Category',
+    LEVEL: 'Level', STATUS: 'Status', REQUIRED: 'Required', ACTUAL: 'Actual', GAP: 'Gap',
+    TEAM: 'Team', REQUIRED_LEVEL: 'Required Level', FIRST_NAME: 'First name',
+    LAST_NAME: 'Last name', EMAIL: 'Email', DATE: 'Date', ACTION: 'Action',
+    FROM: 'From', TO: 'To', CHANGED_BY: 'Changed by', DESCRIPTION: 'Description',
+  },
+  COMMON: { MEMBERS: 'members' },
+};
+
+class InlineLoader implements TranslateLoader {
+  getTranslation() {
+    return of(EN);
+  }
+}
+
+@NgModule({
+  imports: [
+    TranslateModule.forRoot({
+      defaultLanguage: 'en',
+      loader: { provide: TranslateLoader, useClass: InlineLoader },
+    }),
+  ],
+  exports: [TranslateModule],
+})
+export class TranslateTestingModule {
+  constructor(translate: TranslateService) {
+    translate.use('en');
+  }
+}

@@ -4,6 +4,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 import { environment } from '../../../environments/environment';
 
 export interface TeamKpi {
@@ -19,7 +21,7 @@ export interface TeamKpi {
 @Component({
   selector: 'app-kpi',
   standalone: true,
-  imports: [MatCardModule, MatProgressBarModule, MatProgressSpinnerModule],
+  imports: [MatCardModule, MatProgressBarModule, MatProgressSpinnerModule, TranslateModule],
   templateUrl: './kpi.component.html',
   styleUrl: './kpi.component.scss',
 })

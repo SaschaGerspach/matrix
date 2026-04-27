@@ -1,8 +1,8 @@
-<h2 mat-dialog-title>Add Skill</h2>
+<h2 mat-dialog-title>{{ 'ADD_SKILL_DIALOG.TITLE' | translate }}</h2>
 <mat-dialog-content>
   <form [formGroup]="form">
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Skill</mat-label>
+      <mat-label>{{ 'ADD_SKILL_DIALOG.SKILL' | translate }}</mat-label>
       <mat-select formControlName="skill">
         @for (skill of skills(); track skill.id) {
           <mat-option [value]="skill.id">{{ skill.name }}</mat-option>
@@ -11,7 +11,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Level (1-5)</mat-label>
+      <mat-label>{{ 'ADD_SKILL_DIALOG.LEVEL' | translate }}</mat-label>
       <mat-select formControlName="level">
         @for (lvl of [1, 2, 3, 4, 5]; track lvl) {
           <mat-option [value]="lvl">{{ lvl }}</mat-option>
@@ -25,6 +25,6 @@
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Cancel</button>
-  <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="submit()">Add</button>
+  <button mat-button mat-dialog-close>{{ 'ADD_SKILL_DIALOG.CANCEL' | translate }}</button>
+  <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="submit()">{{ 'ADD_SKILL_DIALOG.ADD' | translate }}</button>
 </mat-dialog-actions>

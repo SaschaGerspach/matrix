@@ -3,6 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { Router, provideRouter } from '@angular/router';
+import { TranslateTestingModule } from '../core/testing/translate-testing';
 
 import { environment } from '../../environments/environment';
 import { MeProfile } from '../core/me.service';
@@ -27,7 +28,7 @@ describe('ShellComponent', () => {
   beforeEach(async () => {
     localStorage.clear();
     await TestBed.configureTestingModule({
-      imports: [ShellComponent],
+      imports: [ShellComponent, TranslateTestingModule],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),

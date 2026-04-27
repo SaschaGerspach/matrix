@@ -5,6 +5,8 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 import { Skill, SkillService } from '../../core/skill.service';
 import { EmployeeService } from '../../core/employee.service';
 import { HttpClient } from '@angular/common/http';
@@ -19,6 +21,7 @@ import { environment } from '../../../environments/environment';
     MatFormFieldModule,
     MatSelectModule,
     ReactiveFormsModule,
+    TranslateModule,
   ],
   templateUrl: './add-skill-dialog.component.html',
 })

@@ -4,12 +4,14 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 import { Employee, EmployeeService } from '../../core/employee.service';
 
 @Component({
   selector: 'app-employees',
   standalone: true,
-  imports: [MatPaginatorModule, MatProgressSpinnerModule, MatTableModule],
+  imports: [MatPaginatorModule, MatProgressSpinnerModule, MatTableModule, TranslateModule],
   templateUrl: './employees.component.html',
   styleUrl: './employees.component.scss',
 })

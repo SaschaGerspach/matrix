@@ -8,6 +8,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 import { RoleTemplate, Skill, SkillCategory, SkillLevelDescription, SkillRequirement, SkillService } from '../../core/skill.service';
 import { Team, TeamService } from '../../core/team.service';
 
@@ -23,6 +25,7 @@ import { Team, TeamService } from '../../core/team.service';
     MatSelectModule,
     MatTableModule,
     MatTabsModule,
+    TranslateModule,
   ],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss',

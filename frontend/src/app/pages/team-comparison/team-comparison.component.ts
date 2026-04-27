@@ -7,6 +7,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 import { SkillService, TeamComparisonEntry } from '../../core/skill.service';
 import { Team, TeamService } from '../../core/team.service';
 
@@ -29,6 +31,7 @@ const COLORS = [
     MatFormFieldModule,
     MatProgressSpinnerModule,
     MatSelectModule,
+    TranslateModule,
   ],
   templateUrl: './team-comparison.component.html',
   styleUrl: './team-comparison.component.scss',

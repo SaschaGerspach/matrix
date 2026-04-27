@@ -1,31 +1,31 @@
 <div class="header">
-  <h2>My Skills</h2>
-  <button mat-raised-button color="primary" (click)="openAddDialog()">Add Skill</button>
+  <h2>{{ 'MY_SKILLS.TITLE' | translate }}</h2>
+  <button mat-raised-button color="primary" (click)="openAddDialog()">{{ 'MY_SKILLS.ADD_SKILL' | translate }}</button>
 </div>
 
 @if (loading()) {
   <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
 } @else if (data().length === 0) {
-  <p>No skills assigned yet. Click "Add Skill" to get started.</p>
+  <p>{{ 'MY_SKILLS.EMPTY' | translate }}</p>
 } @else {
   <table mat-table [dataSource]="data()" class="full-width">
     <ng-container matColumnDef="skill_name">
-      <th mat-header-cell *matHeaderCellDef>Skill</th>
+      <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.SKILL' | translate }}</th>
       <td mat-cell *matCellDef="let row">{{ row.skill_name }}</td>
     </ng-container>
 
     <ng-container matColumnDef="category_name">
-      <th mat-header-cell *matHeaderCellDef>Category</th>
+      <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.CATEGORY' | translate }}</th>
       <td mat-cell *matCellDef="let row">{{ row.category_name }}</td>
     </ng-container>
 
     <ng-container matColumnDef="level">
-      <th mat-header-cell *matHeaderCellDef>Level</th>
+      <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.LEVEL' | translate }}</th>
       <td mat-cell *matCellDef="let row">{{ row.level }} / 5</td>
     </ng-container>
 
     <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.STATUS' | translate }}</th>
       <td mat-cell *matCellDef="let row">
         <mat-chip-set>
           <mat-chip [highlighted]="row.status === 'confirmed'">
@@ -41,7 +41,7 @@
 }
 
 @if (recommendations().length > 0) {
-  <h3 class="recommendations-title">Recommendations</h3>
+  <h3 class="recommendations-title">{{ 'MY_SKILLS.RECOMMENDATIONS' | translate }}</h3>
   <div class="recommendations-grid">
     @for (rec of recommendations(); track rec.skill_id) {
       <mat-card class="recommendation-card" [class]="'priority-' + rec.priority">

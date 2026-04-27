@@ -1,20 +1,20 @@
 <div class="header">
-  <h2>Skill Matrix</h2>
+  <h2>{{ 'DASHBOARD.TITLE' | translate }}</h2>
   <div class="header-actions">
-    <mat-slide-toggle [(ngModel)]="heatmapMode">Heatmap</mat-slide-toggle>
-    <button mat-raised-button color="primary" (click)="exportCsv()">Export CSV</button>
-    <button mat-raised-button (click)="exportPdf()">Export PDF</button>
+    <mat-slide-toggle [(ngModel)]="heatmapMode">{{ 'DASHBOARD.HEATMAP' | translate }}</mat-slide-toggle>
+    <button mat-raised-button color="primary" (click)="exportCsv()">{{ 'DASHBOARD.EXPORT_CSV' | translate }}</button>
+    <button mat-raised-button (click)="exportPdf()">{{ 'DASHBOARD.EXPORT_PDF' | translate }}</button>
   </div>
 </div>
 
 <div class="filters">
   <mat-form-field appearance="outline">
-    <mat-label>Search</mat-label>
-    <input matInput [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" placeholder="Employee name...">
+    <mat-label>{{ 'DASHBOARD.SEARCH' | translate }}</mat-label>
+    <input matInput [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" [placeholder]="'DASHBOARD.SEARCH_PLACEHOLDER' | translate">
   </mat-form-field>
 
   <mat-form-field appearance="outline">
-    <mat-label>Team</mat-label>
+    <mat-label>{{ 'DASHBOARD.TEAM' | translate }}</mat-label>
     <mat-select [(ngModel)]="selectedTeam" (selectionChange)="applyFilters()">
       <mat-option [value]="undefined">All teams</mat-option>
       @for (team of teams(); track team.id) {
@@ -24,7 +24,7 @@
   </mat-form-field>
 
   <mat-form-field appearance="outline">
-    <mat-label>Category</mat-label>
+    <mat-label>{{ 'DASHBOARD.CATEGORY' | translate }}</mat-label>
     <mat-select [(ngModel)]="selectedCategory" (selectionChange)="applyFilters()">
       <mat-option [value]="undefined">All categories</mat-option>
       @for (cat of categories(); track cat.id) {
@@ -33,18 +33,18 @@
     </mat-select>
   </mat-form-field>
 
-  <button mat-button (click)="clearFilters()">Clear</button>
+  <button mat-button (click)="clearFilters()">{{ 'DASHBOARD.CLEAR' | translate }}</button>
 </div>
 
 @if (loading()) {
   <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
 } @else if (employees().length === 0) {
-  <p>No employees found.</p>
+  <p>{{ 'DASHBOARD.EMPTY' | translate }}</p>
 } @else {
   <div class="matrix-wrapper">
     <table mat-table [dataSource]="employees()">
       <ng-container matColumnDef="employee">
-        <th mat-header-cell *matHeaderCellDef>Employee</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.EMPLOYEE' | translate }}</th>
         <td mat-cell *matCellDef="let row">
           <a class="employee-link" (click)="openProfile(row.id)">{{ row.full_name }}</a>
         </td>

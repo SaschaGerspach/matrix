@@ -1,8 +1,8 @@
-<h2>Team Comparison</h2>
+<h2>{{ 'TEAM_COMPARISON.TITLE' | translate }}</h2>
 
 <div class="controls">
   <mat-form-field appearance="outline">
-    <mat-label>Select teams</mat-label>
+    <mat-label>{{ 'TEAM_COMPARISON.SELECT_TEAMS' | translate }}</mat-label>
     <mat-select [(ngModel)]="selectedTeamIds" multiple>
       @for (team of teams(); track team.id) {
         <mat-option [value]="team.id">{{ team.name }}</mat-option>
@@ -13,7 +13,7 @@
   <button mat-raised-button color="primary"
           [disabled]="selectedTeamIds.length < 2"
           (click)="compare()">
-    Compare
+    {{ 'TEAM_COMPARISON.COMPARE' | translate }}
   </button>
 </div>
 

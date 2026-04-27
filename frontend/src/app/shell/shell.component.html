@@ -1,21 +1,24 @@
 <mat-toolbar color="primary">
-  <span>Skill Matrix</span>
+  <span>{{ 'APP_NAME' | translate }}</span>
   <nav class="nav-links">
-    <a mat-button routerLink="/my-skills" routerLinkActive="active">My Skills</a>
+    <a mat-button routerLink="/my-skills" routerLinkActive="active">{{ 'NAV.MY_SKILLS' | translate }}</a>
     @if (isTeamLead()) {
-      <a mat-button routerLink="/team-review" routerLinkActive="active">Team Review</a>
-      <a mat-button routerLink="/skill-gaps" routerLinkActive="active">Skill Gaps</a>
-      <a mat-button routerLink="/team-comparison" routerLinkActive="active">Team Comparison</a>
+      <a mat-button routerLink="/team-review" routerLinkActive="active">{{ 'NAV.TEAM_REVIEW' | translate }}</a>
+      <a mat-button routerLink="/skill-gaps" routerLinkActive="active">{{ 'NAV.SKILL_GAPS' | translate }}</a>
+      <a mat-button routerLink="/team-comparison" routerLinkActive="active">{{ 'NAV.TEAM_COMPARISON' | translate }}</a>
     }
-    <a mat-button routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
-    <a mat-button routerLink="/kpi" routerLinkActive="active">KPIs</a>
-    <a mat-button routerLink="/employees" routerLinkActive="active">Employees</a>
+    <a mat-button routerLink="/dashboard" routerLinkActive="active">{{ 'NAV.DASHBOARD' | translate }}</a>
+    <a mat-button routerLink="/kpi" routerLinkActive="active">{{ 'NAV.KPIS' | translate }}</a>
+    <a mat-button routerLink="/employees" routerLinkActive="active">{{ 'NAV.EMPLOYEES' | translate }}</a>
     @if (isAdmin()) {
-      <a mat-button routerLink="/admin" routerLinkActive="active">Admin</a>
+      <a mat-button routerLink="/admin" routerLinkActive="active">{{ 'NAV.ADMIN' | translate }}</a>
     }
   </nav>
   <span class="spacer"></span>
-  <button mat-icon-button (click)="themeService.toggle()" title="Toggle dark mode">
+  <button mat-icon-button (click)="langService.toggle()" [title]="langService.currentLang() === 'en' ? 'Deutsch' : 'English'">
+    <mat-icon>translate</mat-icon>
+  </button>
+  <button mat-icon-button (click)="themeService.toggle()" [title]="'NAV.TOGGLE_DARK_MODE' | translate">
     <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
   </button>
   <button mat-icon-button [matMenuTriggerFor]="notifMenu" (menuOpened)="loadNotifications()">
@@ -23,9 +26,9 @@
   </button>
   <mat-menu #notifMenu="matMenu" class="notification-menu">
     <div class="notif-header" (click)="$event.stopPropagation()">
-      <strong>Notifications</strong>
+      <strong>{{ 'NOTIFICATIONS.TITLE' | translate }}</strong>
       @if (unreadCount() > 0) {
-        <button mat-button (click)="markAllAsRead()">Mark all read</button>
+        <button mat-button (click)="markAllAsRead()">{{ 'NOTIFICATIONS.MARK_ALL_READ' | translate }}</button>
       }
     </div>
     @for (n of notifications(); track n.id) {
@@ -34,10 +37,10 @@
         <span class="notif-time">{{ n.created_at | date:'short' }}</span>
       </button>
     } @empty {
-      <div class="notif-empty" (click)="$event.stopPropagation()">No notifications</div>
+      <div class="notif-empty" (click)="$event.stopPropagation()">{{ 'NOTIFICATIONS.EMPTY' | translate }}</div>
     }
   </mat-menu>
-  <button mat-button type="button" (click)="logout()">Sign out</button>
+  <button mat-button type="button" (click)="logout()">{{ 'NAV.SIGN_OUT' | translate }}</button>
 </mat-toolbar>
 
 <div class="content">

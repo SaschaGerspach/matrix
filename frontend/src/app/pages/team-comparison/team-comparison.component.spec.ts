@@ -3,6 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
+import { TranslateTestingModule } from '../../core/testing/translate-testing';
 import { Chart, BarController, BarElement, CategoryScale, LinearScale, Legend } from 'chart.js';
 
 import { environment } from '../../../environments/environment';
@@ -22,7 +23,7 @@ describe('TeamComparisonComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TeamComparisonComponent],
+      imports: [TeamComparisonComponent, TranslateTestingModule],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),

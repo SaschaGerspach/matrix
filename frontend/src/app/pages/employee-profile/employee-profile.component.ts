@@ -9,6 +9,8 @@ import { MatTableModule } from '@angular/material/table';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 import { EmployeeProfile, EmployeeService } from '../../core/employee.service';
 import { SkillHistoryEntry, SkillService, SkillTrendData } from '../../core/skill.service';
 
@@ -29,6 +31,7 @@ const TREND_COLORS = [
     MatProgressSpinnerModule,
     MatTableModule,
     RouterLink,
+    TranslateModule,
   ],
   templateUrl: './employee-profile.component.html',
   styleUrl: './employee-profile.component.scss',

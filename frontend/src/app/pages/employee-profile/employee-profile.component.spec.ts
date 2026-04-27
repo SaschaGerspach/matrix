@@ -3,6 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, provideRouter } from '@angular/router';
+import { TranslateTestingModule } from '../../core/testing/translate-testing';
 import {
   Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler,
   LineController, CategoryScale, LinearScale,
@@ -67,7 +68,7 @@ describe('EmployeeProfileComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EmployeeProfileComponent],
+      imports: [EmployeeProfileComponent, TranslateTestingModule],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),

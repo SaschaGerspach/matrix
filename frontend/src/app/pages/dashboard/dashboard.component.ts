@@ -12,6 +12,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { Router } from '@angular/router';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 import { environment } from '../../../environments/environment';
 import { MatrixAssignment, MatrixEmployee, MatrixSkill, Skill, SkillCategory, SkillService } from '../../core/skill.service';
 import { MeService } from '../../core/me.service';
@@ -30,6 +32,7 @@ import { Team, TeamService } from '../../core/team.service';
     MatSlideToggleModule,
     MatTableModule,
     MatTooltipModule,
+    TranslateModule,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',

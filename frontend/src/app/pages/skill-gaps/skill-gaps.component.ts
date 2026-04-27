@@ -2,12 +2,14 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 import { SkillGap, SkillService } from '../../core/skill.service';
 
 @Component({
   selector: 'app-skill-gaps',
   standalone: true,
-  imports: [MatProgressSpinnerModule, MatTableModule],
+  imports: [MatProgressSpinnerModule, MatTableModule, TranslateModule],
   templateUrl: './skill-gaps.component.html',
   styleUrl: './skill-gaps.component.scss',
 })

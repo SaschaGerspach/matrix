@@ -7,7 +7,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 import { AuthService } from '../../core/auth.service';
+import { LanguageService } from '../../core/language.service';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +22,7 @@ import { AuthService } from '../../core/auth.service';
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,
+    TranslateModule,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
@@ -26,7 +30,12 @@ import { AuthService } from '../../core/auth.service';
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
+  private readonly langService = inject(LanguageService);
   private readonly router = inject(Router);
+
+  constructor() {
+    this.langService.init();
+  }
 
   readonly form = this.fb.nonNullable.group({
     username: ['', Validators.required],
