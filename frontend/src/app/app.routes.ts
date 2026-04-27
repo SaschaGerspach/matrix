@@ -50,6 +50,11 @@ export const routes: Routes = [
           import('./pages/team-comparison/team-comparison.component').then((m) => m.TeamComparisonComponent),
       },
       {
+        path: 'kpi',
+        loadComponent: () =>
+          import('./pages/kpi/kpi.component').then((m) => m.KpiComponent),
+      },
+      {
         path: 'admin',
         loadComponent: () =>
           import('./pages/admin/admin.component').then((m) => m.AdminComponent),

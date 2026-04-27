@@ -64,6 +64,8 @@ async function mockApi(page: Page) {
   await page.route('**/api/skill-requirements/', (route) => route.fulfill({ json: [] }));
   await page.route('**/api/skills/**', (route) => route.fulfill({ json: [] }));
   await page.route('**/api/skills/', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/kpi/**', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/kpi/', (route) => route.fulfill({ json: [] }));
 }
 
 export const test = base.extend<{ authedPage: Page }>({

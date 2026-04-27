@@ -437,6 +437,50 @@ class SkillRecommendationsView(APIView):
         return Response(recommendations)
 
 
+class KpiView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        from teams.models import Team
+
+        teams = Team.objects.all()
+        skills = Skill.objects.all()
+        total_skills = skills.count()
+
+        result = []
+        for team in teams:
+            member_ids = list(team.members.values_list('id', flat=True))
+            member_count = len(member_ids)
+            if member_count == 0:
+                result.append({
+                    'team_id': team.id, 'team_name': team.name,
+                    'member_count': 0, 'avg_level': 0, 'coverage': 0,
+                    'total_assignments': 0, 'confirmed_ratio': 0,
+                })
+                continue
+
+            assignments = SkillAssignment.objects.filter(employee_id__in=member_ids)
+            total_assignments = assignments.count()
+            confirmed_count = assignments.filter(status=SkillAssignment.Status.CONFIRMED).count()
+            levels = [a.level for a in assignments]
+            avg_level = round(sum(levels) / len(levels), 2) if levels else 0
+
+            unique_skills = assignments.values('skill_id').distinct().count()
+            coverage = round(unique_skills / total_skills * 100, 1) if total_skills else 0
+
+            result.append({
+                'team_id': team.id,
+                'team_name': team.name,
+                'member_count': member_count,
+                'avg_level': avg_level,
+                'coverage': coverage,
+                'total_assignments': total_assignments,
+                'confirmed_ratio': round(confirmed_count / total_assignments * 100, 1) if total_assignments else 0,
+            })
+
+        return Response(result)
+
+
 class SkillHistoryViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SkillAssignmentHistorySerializer
     permission_classes = (IsAuthenticated,)
