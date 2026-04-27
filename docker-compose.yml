@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:17-alpine
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: matrix
+      POSTGRES_USER: matrix
+      POSTGRES_PASSWORD: matrix
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./backend
+    depends_on:
+      - db
+    env_file:
+      - ./backend/.env.docker
+    ports:
+      - "8000:8000"
+    volumes:
+      - backend_static:/app/staticfiles
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  pgdata:
+  backend_static:
