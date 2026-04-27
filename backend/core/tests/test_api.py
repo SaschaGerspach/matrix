@@ -114,11 +114,11 @@ def test_team_with_members_and_leads(admin_client):
 
 
 @pytest.mark.parametrize('bad_level', [0, 6, -1, 99])
-def test_skill_assignment_rejects_level_out_of_range(auth_client, bad_level):
+def test_skill_assignment_rejects_level_out_of_range(admin_client, bad_level):
     cat = SkillCategory.objects.create(name='Programming')
     skill = Skill.objects.create(name='Python', category=cat)
     emp = Employee.objects.create(first_name='A', last_name='B', email='a@b.com')
-    response = auth_client.post(
+    response = admin_client.post(
         '/api/skill-assignments/',
         {'employee': emp.id, 'skill': skill.id, 'level': bad_level},
         format='json',
@@ -127,11 +127,11 @@ def test_skill_assignment_rejects_level_out_of_range(auth_client, bad_level):
     assert 'level' in response.data
 
 
-def test_skill_assignment_ignores_read_only_fields_on_create(auth_client):
+def test_skill_assignment_ignores_read_only_fields_on_create(admin_client):
     cat = SkillCategory.objects.create(name='Programming')
     skill = Skill.objects.create(name='Python', category=cat)
     emp = Employee.objects.create(first_name='A', last_name='B', email='a@b.com')
-    response = auth_client.post(
+    response = admin_client.post(
         '/api/skill-assignments/',
         {
             'employee': emp.id,

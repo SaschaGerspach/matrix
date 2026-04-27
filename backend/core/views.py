@@ -9,7 +9,7 @@ from .models import (
     SkillCategory,
     Team,
 )
-from .permissions import IsAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly, SkillAssignmentPermission
 from .serializers import (
     DepartmentSerializer,
     EmployeeSerializer,
@@ -53,4 +53,4 @@ class SkillViewSet(viewsets.ModelViewSet):
 class SkillAssignmentViewSet(viewsets.ModelViewSet):
     queryset = SkillAssignment.objects.all()
     serializer_class = SkillAssignmentSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (SkillAssignmentPermission,)
