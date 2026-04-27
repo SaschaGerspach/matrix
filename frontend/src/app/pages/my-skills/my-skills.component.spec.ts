@@ -7,6 +7,11 @@ import { provideRouter } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { MySkillsComponent } from './my-skills.component';
 
+function flushInit(http: HttpTestingController, skills: unknown[] = [], recommendations: unknown[] = []): void {
+  http.expectOne(`${environment.apiUrl}/my-skills/`).flush(skills);
+  http.expectOne(`${environment.apiUrl}/skill-recommendations/`).flush(recommendations);
+}
+
 describe('MySkillsComponent', () => {
   let fixture: ComponentFixture<MySkillsComponent>;
   let component: MySkillsComponent;
@@ -32,9 +37,7 @@ describe('MySkillsComponent', () => {
 
   it('loads my skills on init', () => {
     fixture.detectChanges();
-
-    const req = http.expectOne(`${environment.apiUrl}/my-skills/`);
-    req.flush([
+    flushInit(http, [
       { id: 1, skill: 1, skill_name: 'Python', category_name: 'Programming', level: 3, status: 'pending', confirmed_at: null, created_at: '2026-01-01' },
     ]);
 
@@ -44,10 +47,36 @@ describe('MySkillsComponent', () => {
 
   it('shows empty state when no skills', () => {
     fixture.detectChanges();
-    http.expectOne(`${environment.apiUrl}/my-skills/`).flush([]);
-
+    flushInit(http);
     fixture.detectChanges();
+
     const el = fixture.nativeElement as HTMLElement;
     expect(el.textContent).toContain('No skills assigned yet');
+  });
+
+  it('shows recommendations when available', () => {
+    fixture.detectChanges();
+    flushInit(http, [], [
+      {
+        skill_id: 1, skill_name: 'Docker', category_name: 'Ops',
+        team_name: 'Alpha', current_level: 0, required_level: 3,
+        gap: 3, priority: 'high',
+      },
+    ]);
+    fixture.detectChanges();
+
+    expect(component.recommendations().length).toBe(1);
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('Recommendations');
+    expect(el.textContent).toContain('Docker');
+  });
+
+  it('hides recommendations when empty', () => {
+    fixture.detectChanges();
+    flushInit(http);
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).not.toContain('Recommendations');
   });
 });

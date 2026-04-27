@@ -100,6 +100,17 @@ export interface TeamComparisonEntry {
   teams: Record<string, number | null>;
 }
 
+export interface SkillRecommendation {
+  skill_id: number;
+  skill_name: string;
+  category_name: string;
+  team_name: string;
+  current_level: number;
+  required_level: number;
+  gap: number;
+  priority: 'high' | 'medium' | 'low';
+}
+
 export interface SkillHistoryEntry {
   id: number;
   employee: number;
@@ -212,6 +223,10 @@ export class SkillService {
     return this.http.get<TeamComparisonEntry[]>(
       `${environment.apiUrl}/team-comparison/`, { params },
     );
+  }
+
+  recommendations(): Observable<SkillRecommendation[]> {
+    return this.http.get<SkillRecommendation[]>(`${environment.apiUrl}/skill-recommendations/`);
   }
 
   skillHistory(employeeId?: number): Observable<PaginatedResponse<SkillHistoryEntry>> {

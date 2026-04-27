@@ -389,6 +389,46 @@ class SkillTrendsView(APIView):
         return Response(result)
 
 
+class SkillRecommendationsView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        employee = get_employee(request.user)
+        if employee is None:
+            return Response([])
+
+        team_ids = list(employee.teams.values_list('id', flat=True))
+        requirements = SkillRequirement.objects.filter(
+            team_id__in=team_ids,
+        ).select_related('skill__category', 'team')
+
+        assignments = SkillAssignment.objects.filter(employee=employee)
+        assignment_map = {a.skill_id: a.level for a in assignments}
+
+        recommendations = []
+        seen_skills = set()
+        for req in requirements:
+            if req.skill_id in seen_skills:
+                continue
+            actual = assignment_map.get(req.skill_id, 0)
+            if actual < req.required_level:
+                seen_skills.add(req.skill_id)
+                recommendations.append({
+                    'skill_id': req.skill_id,
+                    'skill_name': req.skill.name,
+                    'category_name': req.skill.category.name,
+                    'team_name': req.team.name,
+                    'current_level': actual,
+                    'required_level': req.required_level,
+                    'gap': req.required_level - actual,
+                    'priority': 'high' if req.required_level - actual >= 3 else
+                                'medium' if req.required_level - actual >= 2 else 'low',
+                })
+
+        recommendations.sort(key=lambda r: (-r['gap'], r['skill_name']))
+        return Response(recommendations)
+
+
 class SkillHistoryViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SkillAssignmentHistorySerializer
     permission_classes = (IsAuthenticated,)

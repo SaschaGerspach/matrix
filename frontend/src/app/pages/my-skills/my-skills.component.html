@@ -39,3 +39,21 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
 }
+
+@if (recommendations().length > 0) {
+  <h3 class="recommendations-title">Recommendations</h3>
+  <div class="recommendations-grid">
+    @for (rec of recommendations(); track rec.skill_id) {
+      <mat-card class="recommendation-card" [class]="'priority-' + rec.priority">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>{{ rec.priority === 'high' ? 'priority_high' : rec.priority === 'medium' ? 'trending_up' : 'info' }}</mat-icon>
+          <mat-card-title>{{ rec.skill_name }}</mat-card-title>
+          <mat-card-subtitle>{{ rec.category_name }} &middot; {{ rec.team_name }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p>Level {{ rec.current_level }} &rarr; {{ rec.required_level }} required (gap: {{ rec.gap }})</p>
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>
+}

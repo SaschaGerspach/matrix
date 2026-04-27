@@ -14,6 +14,7 @@ from .views import (
     TeamAssignmentsViewSet,
     TeamComparisonView,
     SkillMatrixPdfExportView,
+    SkillRecommendationsView,
     SkillTrendsView,
 )
 
@@ -33,4 +34,5 @@ urlpatterns = [
     path('skill-gaps/', SkillGapsView.as_view(), name='skill-gaps'),
     path('team-comparison/', TeamComparisonView.as_view(), name='team-comparison'),
     path('skill-trends/', SkillTrendsView.as_view(), name='skill-trends'),
+    path('skill-recommendations/', SkillRecommendationsView.as_view(), name='skill-recommendations'),
 ] + router.urls
