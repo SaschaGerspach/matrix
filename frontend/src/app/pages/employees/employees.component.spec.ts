@@ -35,12 +35,18 @@ describe('EmployeesComponent', () => {
   it('loads employees on init and stores them in the signal', () => {
     fixture.detectChanges();
 
-    const req = http.expectOne(`${environment.apiUrl}/employees/`);
-    req.flush([
-      { id: 1, first_name: 'Ada', last_name: 'Lovelace', full_name: 'Ada Lovelace', email: 'a@x.com', user: null },
-    ]);
+    const req = http.expectOne((r) => r.url === `${environment.apiUrl}/employees/`);
+    req.flush({
+      count: 1,
+      next: null,
+      previous: null,
+      results: [
+        { id: 1, first_name: 'Ada', last_name: 'Lovelace', full_name: 'Ada Lovelace', email: 'a@x.com', user: null },
+      ],
+    });
 
     expect(component.data().length).toBe(1);
+    expect(component.totalCount()).toBe(1);
     expect(component.loading()).toBeFalse();
     expect(component.error()).toBeNull();
   });
@@ -48,7 +54,7 @@ describe('EmployeesComponent', () => {
   it('sets an error message when loading fails', () => {
     fixture.detectChanges();
 
-    const req = http.expectOne(`${environment.apiUrl}/employees/`);
+    const req = http.expectOne((r) => r.url === `${environment.apiUrl}/employees/`);
     req.flush(null, { status: 500, statusText: 'Server Error' });
 
     expect(component.error()).toBe('Failed to load employees.');

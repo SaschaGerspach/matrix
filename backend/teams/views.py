@@ -10,9 +10,11 @@ class DepartmentViewSet(viewsets.ModelViewSet):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = None
 
 
 class TeamViewSet(viewsets.ModelViewSet):
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = None

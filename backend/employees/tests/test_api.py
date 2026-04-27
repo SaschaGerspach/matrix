@@ -46,7 +46,8 @@ def test_regular_user_can_list_employees(regular_client):
     Employee.objects.create(first_name='A', last_name='B', email='a@b.com')
     r = regular_client.get(URL)
     assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 1
+    assert r.data['count'] == 1
+    assert len(r.data['results']) == 1
 
 
 def test_regular_user_cannot_create_employee(regular_client):

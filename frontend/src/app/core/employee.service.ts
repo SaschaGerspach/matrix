@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment';
+import { PaginatedResponse } from './pagination';
 
 export interface Employee {
   id: number;
@@ -17,7 +18,8 @@ export interface Employee {
 export class EmployeeService {
   private readonly http = inject(HttpClient);
 
-  list(): Observable<Employee[]> {
-    return this.http.get<Employee[]>(`${environment.apiUrl}/employees/`);
+  list(page = 1): Observable<PaginatedResponse<Employee>> {
+    const params = new HttpParams().set('page', page);
+    return this.http.get<PaginatedResponse<Employee>>(`${environment.apiUrl}/employees/`, { params });
   }
 }

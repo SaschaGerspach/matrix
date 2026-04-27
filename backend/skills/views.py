@@ -34,6 +34,7 @@ from .serializers import (
 class MySkillsViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = MySkillAssignmentSerializer
     permission_classes = (IsAuthenticated,)
+    pagination_class = None
 
     def get_queryset(self):
         employee = get_employee(self.request.user)
@@ -45,6 +46,7 @@ class MySkillsViewSet(viewsets.ReadOnlyModelViewSet):
 class TeamAssignmentsViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TeamAssignmentSerializer
     permission_classes = (IsAuthenticated,)
+    pagination_class = None
 
     def get_queryset(self):
         employee = get_employee(self.request.user)
@@ -63,12 +65,14 @@ class SkillCategoryViewSet(viewsets.ModelViewSet):
     queryset = SkillCategory.objects.all()
     serializer_class = SkillCategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = None
 
 
 class SkillViewSet(viewsets.ModelViewSet):
     queryset = Skill.objects.all()
     serializer_class = SkillSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = None
 
 
 class SkillMatrixView(APIView):
@@ -128,6 +132,7 @@ class SkillRequirementViewSet(viewsets.ModelViewSet):
     queryset = SkillRequirement.objects.select_related('skill__category', 'team')
     serializer_class = SkillRequirementSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = None
 
 
 class SkillGapsView(APIView):

@@ -12,7 +12,7 @@ from .utils import get_employee
 
 
 class EmployeeViewSet(viewsets.ModelViewSet):
-    queryset = Employee.objects.all()
+    queryset = Employee.objects.all().order_by('last_name', 'first_name')
     serializer_class = EmployeeSerializer
     permission_classes = (IsAdminOrReadOnly,)
 

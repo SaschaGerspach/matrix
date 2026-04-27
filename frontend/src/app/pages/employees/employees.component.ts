@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 
@@ -7,23 +8,30 @@ import { Employee, EmployeeService } from '../../core/employee.service';
 @Component({
   selector: 'app-employees',
   standalone: true,
-  imports: [MatProgressSpinnerModule, MatTableModule],
+  imports: [MatPaginatorModule, MatProgressSpinnerModule, MatTableModule],
   templateUrl: './employees.component.html',
   styleUrl: './employees.component.scss',
 })
 export class EmployeesComponent implements OnInit {
-  private readonly employees = inject(EmployeeService);
+  private readonly employeeService = inject(EmployeeService);
 
   readonly data = signal<Employee[]>([]);
+  readonly totalCount = signal(0);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly displayedColumns = ['first_name', 'last_name', 'email'];
+  readonly pageSize = 25;
 
   ngOnInit(): void {
+    this.loadPage(1);
+  }
+
+  loadPage(page: number): void {
     this.loading.set(true);
-    this.employees.list().subscribe({
-      next: (list) => {
-        this.data.set(list);
+    this.employeeService.list(page).subscribe({
+      next: (res) => {
+        this.data.set(res.results);
+        this.totalCount.set(res.count);
         this.loading.set(false);
       },
       error: () => {
@@ -31,5 +39,9 @@ export class EmployeesComponent implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  onPage(event: PageEvent): void {
+    this.loadPage(event.pageIndex + 1);
   }
 }
