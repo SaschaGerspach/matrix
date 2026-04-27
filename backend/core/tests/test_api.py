@@ -22,9 +22,21 @@ def user(db):
 
 
 @pytest.fixture
+def admin_user(db):
+    return get_user_model().objects.create_user(username='admin', password='pw12345!', is_staff=True)
+
+
+@pytest.fixture
 def auth_client(user):
     client = APIClient()
     client.force_authenticate(user=user)
+    return client
+
+
+@pytest.fixture
+def admin_client(admin_user):
+    client = APIClient()
+    client.force_authenticate(user=admin_user)
     return client
 
 
@@ -49,30 +61,30 @@ def test_unauthenticated_access_is_rejected(anon_client, url):
     assert response.status_code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN)
 
 
-def test_department_crud_roundtrip(auth_client):
-    create = auth_client.post('/api/departments/', {'name': 'Engineering'}, format='json')
+def test_department_crud_roundtrip(admin_client):
+    create = admin_client.post('/api/departments/', {'name': 'Engineering'}, format='json')
     assert create.status_code == status.HTTP_201_CREATED
     dept_id = create.data['id']
 
-    lst = auth_client.get('/api/departments/')
+    lst = admin_client.get('/api/departments/')
     assert lst.status_code == status.HTTP_200_OK
     assert any(d['id'] == dept_id for d in lst.data)
 
-    detail = auth_client.get(f'/api/departments/{dept_id}/')
+    detail = admin_client.get(f'/api/departments/{dept_id}/')
     assert detail.status_code == status.HTTP_200_OK
     assert detail.data['name'] == 'Engineering'
 
-    patch = auth_client.patch(f'/api/departments/{dept_id}/', {'name': 'Eng'}, format='json')
+    patch = admin_client.patch(f'/api/departments/{dept_id}/', {'name': 'Eng'}, format='json')
     assert patch.status_code == status.HTTP_200_OK
     assert patch.data['name'] == 'Eng'
 
-    delete = auth_client.delete(f'/api/departments/{dept_id}/')
+    delete = admin_client.delete(f'/api/departments/{dept_id}/')
     assert delete.status_code == status.HTTP_204_NO_CONTENT
     assert Department.objects.filter(pk=dept_id).count() == 0
 
 
-def test_employee_create_returns_full_name(auth_client):
-    response = auth_client.post(
+def test_employee_create_returns_full_name(admin_client):
+    response = admin_client.post(
         '/api/employees/',
         {'first_name': 'Ada', 'last_name': 'Lovelace', 'email': 'ada@example.com'},
         format='json',
@@ -81,11 +93,11 @@ def test_employee_create_returns_full_name(auth_client):
     assert response.data['full_name'] == 'Ada Lovelace'
 
 
-def test_team_with_members_and_leads(auth_client):
+def test_team_with_members_and_leads(admin_client):
     dept = Department.objects.create(name='Eng')
     alice = Employee.objects.create(first_name='Alice', last_name='A', email='a@x.com')
     bob = Employee.objects.create(first_name='Bob', last_name='B', email='b@x.com')
-    response = auth_client.post(
+    response = admin_client.post(
         '/api/teams/',
         {
             'name': 'Core',
