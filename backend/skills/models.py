@@ -102,3 +102,45 @@ class SkillRequirement(models.Model):
 
     def __str__(self):
         return f'{self.team} – {self.skill} (required: {self.required_level})'
+
+
+class SkillAssignmentHistory(models.Model):
+    class Action(models.TextChoices):
+        CREATED = 'created', 'Created'
+        UPDATED = 'updated', 'Updated'
+        CONFIRMED = 'confirmed', 'Confirmed'
+        DELETED = 'deleted', 'Deleted'
+
+    assignment = models.ForeignKey(
+        SkillAssignment,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='history',
+    )
+    employee = models.ForeignKey(
+        'employees.Employee',
+        on_delete=models.CASCADE,
+        related_name='skill_history',
+    )
+    skill = models.ForeignKey(
+        Skill,
+        on_delete=models.CASCADE,
+        related_name='history',
+    )
+    old_level = models.PositiveSmallIntegerField(null=True, blank=True)
+    new_level = models.PositiveSmallIntegerField(null=True, blank=True)
+    action = models.CharField(max_length=16, choices=Action.choices)
+    changed_by = models.ForeignKey(
+        'employees.Employee',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-timestamp']
+
+    def __str__(self):
+        return f'{self.employee} – {self.skill} ({self.action})'

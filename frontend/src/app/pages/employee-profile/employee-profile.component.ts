@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -9,12 +10,14 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 
 import { EmployeeProfile, EmployeeService } from '../../core/employee.service';
+import { SkillHistoryEntry, SkillService } from '../../core/skill.service';
 
 @Component({
   selector: 'app-employee-profile',
   standalone: true,
   imports: [
     BaseChartDirective,
+    DatePipe,
     MatButtonModule,
     MatCardModule,
     MatChipsModule,
@@ -28,10 +31,13 @@ import { EmployeeProfile, EmployeeService } from '../../core/employee.service';
 export class EmployeeProfileComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly employeeService = inject(EmployeeService);
+  private readonly skillService = inject(SkillService);
 
   readonly profile = signal<EmployeeProfile | null>(null);
+  readonly history = signal<SkillHistoryEntry[]>([]);
   readonly loading = signal(true);
   readonly displayedColumns = ['skill_name', 'category_name', 'level', 'status'];
+  readonly historyColumns = ['timestamp', 'skill_name', 'action', 'old_level', 'new_level', 'changed_by_name'];
 
   radarData: ChartConfiguration<'radar'>['data'] = { labels: [], datasets: [] };
   radarOptions: ChartConfiguration<'radar'>['options'] = {
@@ -56,6 +62,9 @@ export class EmployeeProfileComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => this.loading.set(false),
+    });
+    this.skillService.skillHistory(id).subscribe({
+      next: (res) => this.history.set(res.results),
     });
   }
 

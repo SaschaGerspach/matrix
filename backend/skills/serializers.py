@@ -3,7 +3,7 @@ from rest_framework import serializers
 from employees.utils import get_employee
 from teams.utils import get_led_member_ids
 
-from .models import Skill, SkillAssignment, SkillCategory, SkillRequirement
+from .models import Skill, SkillAssignment, SkillAssignmentHistory, SkillCategory, SkillRequirement
 
 
 class SkillCategorySerializer(serializers.ModelSerializer):
@@ -83,6 +83,23 @@ class SkillRequirementSerializer(serializers.ModelSerializer):
     class Meta:
         model = SkillRequirement
         fields = ('id', 'team', 'team_name', 'skill', 'skill_name', 'category_name', 'required_level')
+
+
+class SkillAssignmentHistorySerializer(serializers.ModelSerializer):
+    employee_name = serializers.CharField(source='employee.__str__', read_only=True)
+    skill_name = serializers.CharField(source='skill.name', read_only=True)
+    changed_by_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = SkillAssignmentHistory
+        fields = (
+            'id', 'employee', 'employee_name', 'skill', 'skill_name',
+            'old_level', 'new_level', 'action', 'changed_by', 'changed_by_name',
+            'timestamp',
+        )
+
+    def get_changed_by_name(self, obj):
+        return str(obj.changed_by) if obj.changed_by else None
 
 
 class SkillAssignmentSerializer(serializers.ModelSerializer):

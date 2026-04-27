@@ -6,6 +6,7 @@ from .views import (
     SkillAssignmentViewSet,
     SkillCategoryViewSet,
     SkillGapsView,
+    SkillHistoryViewSet,
     SkillMatrixExportView,
     SkillMatrixView,
     SkillRequirementViewSet,
@@ -20,6 +21,7 @@ router.register('skill-categories', SkillCategoryViewSet)
 router.register('skills', SkillViewSet)
 router.register('skill-assignments', SkillAssignmentViewSet)
 router.register('skill-requirements', SkillRequirementViewSet)
+router.register('skill-history', SkillHistoryViewSet, basename='skill-history')
 
 urlpatterns = [
     path('skill-matrix/', SkillMatrixView.as_view(), name='skill-matrix'),

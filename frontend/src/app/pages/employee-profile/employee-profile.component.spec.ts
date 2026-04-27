@@ -23,6 +23,24 @@ const profileResponse = {
   ],
 };
 
+const historyResponse = {
+  count: 1,
+  next: null,
+  previous: null,
+  results: [
+    {
+      id: 1, employee: 1, employee_name: 'Alice A', skill: 1, skill_name: 'Python',
+      old_level: null, new_level: 4, action: 'created',
+      changed_by: 1, changed_by_name: 'Alice A', timestamp: '2026-04-27T10:00:00Z',
+    },
+  ],
+};
+
+function flushInitRequests(http: HttpTestingController, profile = profileResponse, history = historyResponse): void {
+  http.expectOne(`${environment.apiUrl}/employees/1/profile/`).flush(profile);
+  http.expectOne((r) => r.url === `${environment.apiUrl}/skill-history/`).flush(history);
+}
+
 describe('EmployeeProfileComponent', () => {
   let fixture: ComponentFixture<EmployeeProfileComponent>;
   let component: EmployeeProfileComponent;
@@ -52,7 +70,7 @@ describe('EmployeeProfileComponent', () => {
 
   it('loads and displays employee profile', () => {
     fixture.detectChanges();
-    http.expectOne(`${environment.apiUrl}/employees/1/profile/`).flush(profileResponse);
+    flushInitRequests(http);
     fixture.detectChanges();
 
     expect(component.profile()?.full_name).toBe('Alice A');
@@ -66,7 +84,7 @@ describe('EmployeeProfileComponent', () => {
 
   it('builds radar data from skills', () => {
     fixture.detectChanges();
-    http.expectOne(`${environment.apiUrl}/employees/1/profile/`).flush(profileResponse);
+    flushInitRequests(http);
 
     expect(component.radarData.labels).toEqual(['Python', 'Docker']);
     expect(component.radarData.datasets[0].data).toEqual([4, 2]);
@@ -74,7 +92,7 @@ describe('EmployeeProfileComponent', () => {
 
   it('shows skills table', () => {
     fixture.detectChanges();
-    http.expectOne(`${environment.apiUrl}/employees/1/profile/`).flush(profileResponse);
+    flushInitRequests(http);
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
@@ -85,13 +103,31 @@ describe('EmployeeProfileComponent', () => {
 
   it('shows empty state when no skills', () => {
     fixture.detectChanges();
-    http.expectOne(`${environment.apiUrl}/employees/1/profile/`).flush({
-      ...profileResponse, skills: [],
-    });
+    flushInitRequests(http, { ...profileResponse, skills: [] });
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
     expect(el.textContent).toContain('No skills assigned');
+  });
+
+  it('displays history entries', () => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+    fixture.detectChanges();
+
+    expect(component.history().length).toBe(1);
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('History');
+    expect(el.textContent).toContain('created');
+  });
+
+  it('hides history when empty', () => {
+    fixture.detectChanges();
+    flushInitRequests(http, profileResponse, { count: 0, next: null, previous: null, results: [] });
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).not.toContain('History');
   });
 
   it('handles error gracefully', () => {
@@ -99,6 +135,9 @@ describe('EmployeeProfileComponent', () => {
     http.expectOne(`${environment.apiUrl}/employees/1/profile/`).flush(null, {
       status: 404, statusText: 'Not Found',
     });
+    http.expectOne((r) => r.url === `${environment.apiUrl}/skill-history/`).flush(
+      { count: 0, next: null, previous: null, results: [] },
+    );
     fixture.detectChanges();
 
     expect(component.loading()).toBeFalse();

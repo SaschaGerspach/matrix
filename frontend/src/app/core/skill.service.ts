@@ -2,6 +2,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
+import { PaginatedResponse } from './pagination';
+
 import { environment } from '../../environments/environment';
 
 export interface MySkillAssignment {
@@ -86,6 +88,20 @@ export interface TeamAssignment {
   created_at: string;
 }
 
+export interface SkillHistoryEntry {
+  id: number;
+  employee: number;
+  employee_name: string;
+  skill: number;
+  skill_name: string;
+  old_level: number | null;
+  new_level: number | null;
+  action: string;
+  changed_by: number | null;
+  changed_by_name: string | null;
+  timestamp: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class SkillService {
   private readonly http = inject(HttpClient);
@@ -167,5 +183,13 @@ export class SkillService {
 
   deleteRequirement(id: number): Observable<unknown> {
     return this.http.delete(`${environment.apiUrl}/skill-requirements/${id}/`);
+  }
+
+  skillHistory(employeeId?: number): Observable<PaginatedResponse<SkillHistoryEntry>> {
+    let params = new HttpParams();
+    if (employeeId) params = params.set('employee', employeeId);
+    return this.http.get<PaginatedResponse<SkillHistoryEntry>>(
+      `${environment.apiUrl}/skill-history/`, { params },
+    );
   }
 }

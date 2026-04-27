@@ -13,7 +13,7 @@ from rest_framework.views import APIView
 from common.permissions import IsAdminOrReadOnly
 from employees.utils import get_employee
 
-from .models import Skill, SkillAssignment, SkillCategory, SkillRequirement
+from .models import Skill, SkillAssignment, SkillAssignmentHistory, SkillCategory, SkillRequirement
 from .permissions import CanConfirmSkillAssignment, SkillAssignmentPermission
 from teams.utils import get_led_member_ids, is_team_lead
 
@@ -24,6 +24,7 @@ from .serializers import (
     MatrixEmployeeSerializer,
     MatrixSkillSerializer,
     MySkillAssignmentSerializer,
+    SkillAssignmentHistorySerializer,
     SkillAssignmentSerializer,
     SkillCategorySerializer,
     SkillRequirementSerializer,
@@ -218,6 +219,44 @@ class SkillAssignmentViewSet(viewsets.ModelViewSet):
     serializer_class = SkillAssignmentSerializer
     permission_classes = (SkillAssignmentPermission,)
 
+    def perform_create(self, serializer):
+        assignment = serializer.save()
+        SkillAssignmentHistory.objects.create(
+            assignment=assignment,
+            employee=assignment.employee,
+            skill=assignment.skill,
+            old_level=None,
+            new_level=assignment.level,
+            action=SkillAssignmentHistory.Action.CREATED,
+            changed_by=get_employee(self.request.user),
+        )
+
+    def perform_update(self, serializer):
+        old_level = serializer.instance.level
+        assignment = serializer.save()
+        if old_level != assignment.level:
+            SkillAssignmentHistory.objects.create(
+                assignment=assignment,
+                employee=assignment.employee,
+                skill=assignment.skill,
+                old_level=old_level,
+                new_level=assignment.level,
+                action=SkillAssignmentHistory.Action.UPDATED,
+                changed_by=get_employee(self.request.user),
+            )
+
+    def perform_destroy(self, instance):
+        SkillAssignmentHistory.objects.create(
+            assignment=None,
+            employee=instance.employee,
+            skill=instance.skill,
+            old_level=instance.level,
+            new_level=None,
+            action=SkillAssignmentHistory.Action.DELETED,
+            changed_by=get_employee(self.request.user),
+        )
+        instance.delete()
+
     @action(detail=True, methods=['post'], permission_classes=(CanConfirmSkillAssignment,))
     def confirm(self, request, pk=None):
         assignment = self.get_object()
@@ -228,5 +267,28 @@ class SkillAssignmentViewSet(viewsets.ModelViewSet):
         assignment.confirmed_by = employee
         assignment.confirmed_at = timezone.now()
         assignment.save()
+        SkillAssignmentHistory.objects.create(
+            assignment=assignment,
+            employee=assignment.employee,
+            skill=assignment.skill,
+            old_level=assignment.level,
+            new_level=assignment.level,
+            action=SkillAssignmentHistory.Action.CONFIRMED,
+            changed_by=employee,
+        )
         serializer = self.get_serializer(assignment)
         return Response(serializer.data)
+
+
+class SkillHistoryViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = SkillAssignmentHistorySerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        qs = SkillAssignmentHistory.objects.select_related(
+            'employee', 'skill__category', 'changed_by',
+        )
+        employee_id = self.request.query_params.get('employee')
+        if employee_id:
+            qs = qs.filter(employee_id=employee_id)
+        return qs
