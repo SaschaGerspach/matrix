@@ -2,6 +2,9 @@
   <span>Skill Matrix</span>
   <nav class="nav-links">
     <a mat-button routerLink="/my-skills" routerLinkActive="active">My Skills</a>
+    @if (isTeamLead()) {
+      <a mat-button routerLink="/team-review" routerLinkActive="active">Team Review</a>
+    }
     <a mat-button routerLink="/employees" routerLinkActive="active">Employees</a>
   </nav>
   <span class="spacer"></span>

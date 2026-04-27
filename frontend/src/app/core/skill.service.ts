@@ -27,6 +27,18 @@ export interface SkillCategory {
   parent: number | null;
 }
 
+export interface TeamAssignment {
+  id: number;
+  employee: number;
+  employee_name: string;
+  skill: number;
+  skill_name: string;
+  category_name: string;
+  level: number;
+  status: string;
+  created_at: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class SkillService {
   private readonly http = inject(HttpClient);
@@ -49,5 +61,14 @@ export class SkillService {
       level,
       employee: employeeId,
     });
+  }
+
+  teamAssignments(status?: string): Observable<TeamAssignment[]> {
+    const params = status ? `?status=${status}` : '';
+    return this.http.get<TeamAssignment[]>(`${environment.apiUrl}/team-assignments/${params}`);
+  }
+
+  confirmAssignment(id: number): Observable<unknown> {
+    return this.http.post(`${environment.apiUrl}/skill-assignments/${id}/confirm/`, {});
   }
 }

@@ -20,6 +20,11 @@ export const routes: Routes = [
           import('./pages/my-skills/my-skills.component').then((m) => m.MySkillsComponent),
       },
       {
+        path: 'team-review',
+        loadComponent: () =>
+          import('./pages/team-review/team-review.component').then((m) => m.TeamReviewComponent),
+      },
+      {
         path: 'employees',
         loadComponent: () =>
           import('./pages/employees/employees.component').then((m) => m.EmployeesComponent),

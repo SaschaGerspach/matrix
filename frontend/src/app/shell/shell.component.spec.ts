@@ -5,7 +5,13 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { Router, provideRouter } from '@angular/router';
 
 import { environment } from '../../environments/environment';
+import { MeProfile } from '../core/me.service';
 import { ShellComponent } from './shell.component';
+
+const meProfile: MeProfile = {
+  id: 1, first_name: 'A', last_name: 'B', full_name: 'A B',
+  email: 'a@b.com', user: 1, is_team_lead: false, is_admin: false,
+};
 
 describe('ShellComponent', () => {
   let fixture: ComponentFixture<ShellComponent>;
@@ -30,6 +36,7 @@ describe('ShellComponent', () => {
     http = TestBed.inject(HttpTestingController);
     router = TestBed.inject(Router);
     fixture.detectChanges();
+    http.expectOne(`${environment.apiUrl}/me/`).flush(meProfile);
   });
 
   afterEach(() => {
@@ -38,9 +45,23 @@ describe('ShellComponent', () => {
   });
 
   it('renders navigation links', () => {
+    fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
     expect(el.textContent).toContain('My Skills');
     expect(el.textContent).toContain('Employees');
+  });
+
+  it('does not show Team Review for non-leads', () => {
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).not.toContain('Team Review');
+  });
+
+  it('shows Team Review for team leads', () => {
+    component.isTeamLead.set(true);
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('Team Review');
   });
 
   it('logs out and navigates to login', () => {
