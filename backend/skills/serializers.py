@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from core.permissions import get_employee, get_led_member_ids
+from employees.utils import get_employee
+from teams.utils import get_led_member_ids
 
 from .models import Skill, SkillAssignment, SkillCategory
 

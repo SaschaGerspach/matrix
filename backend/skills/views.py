@@ -3,7 +3,8 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from core.permissions import IsAdminOrReadOnly, get_employee
+from common.permissions import IsAdminOrReadOnly
+from employees.utils import get_employee
 
 from .models import Skill, SkillAssignment, SkillCategory
 from .permissions import CanConfirmSkillAssignment, SkillAssignmentPermission

@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 
-from core.permissions import IsAdminOrReadOnly
+from common.permissions import IsAdminOrReadOnly
 
 from .models import Employee
 from .serializers import EmployeeSerializer

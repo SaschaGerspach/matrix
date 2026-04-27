@@ -1,6 +1,7 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
-from core.permissions import get_employee, get_led_member_ids, is_team_lead
+from employees.utils import get_employee
+from teams.utils import get_led_member_ids, is_team_lead
 
 
 class SkillAssignmentPermission(BasePermission):
