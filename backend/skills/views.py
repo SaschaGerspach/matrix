@@ -1,9 +1,9 @@
 from django.utils import timezone
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.response import Response
-
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from common.permissions import IsAdminOrReadOnly
 from employees.utils import get_employee
@@ -12,7 +12,12 @@ from .models import Skill, SkillAssignment, SkillCategory
 from .permissions import CanConfirmSkillAssignment, SkillAssignmentPermission
 from teams.utils import get_led_member_ids, is_team_lead
 
+from employees.models import Employee
+
 from .serializers import (
+    MatrixAssignmentSerializer,
+    MatrixEmployeeSerializer,
+    MatrixSkillSerializer,
     MySkillAssignmentSerializer,
     SkillAssignmentSerializer,
     SkillCategorySerializer,
@@ -59,6 +64,28 @@ class SkillViewSet(viewsets.ModelViewSet):
     queryset = Skill.objects.all()
     serializer_class = SkillSerializer
     permission_classes = (IsAdminOrReadOnly,)
+
+
+class SkillMatrixView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        employees = Employee.objects.all().order_by('last_name', 'first_name')
+        skills = Skill.objects.select_related('category').order_by('category__name', 'name')
+        assignments = SkillAssignment.objects.all()
+
+        employee_data = [
+            {'id': e.id, 'full_name': str(e)} for e in employees
+        ]
+        skill_data = [
+            {'id': s.id, 'name': s.name, 'category_name': s.category.name} for s in skills
+        ]
+
+        return Response({
+            'employees': MatrixEmployeeSerializer(employee_data, many=True).data,
+            'skills': MatrixSkillSerializer(skill_data, many=True).data,
+            'assignments': MatrixAssignmentSerializer(assignments, many=True).data,
+        })
 
 
 class SkillAssignmentViewSet(viewsets.ModelViewSet):

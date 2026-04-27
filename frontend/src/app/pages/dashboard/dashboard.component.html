@@ -1,0 +1,32 @@
+<h2>Skill Matrix</h2>
+
+@if (loading()) {
+  <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+} @else if (employees().length === 0) {
+  <p>No employees found.</p>
+} @else {
+  <div class="matrix-wrapper">
+    <table mat-table [dataSource]="employees()">
+      <ng-container matColumnDef="employee">
+        <th mat-header-cell *matHeaderCellDef>Employee</th>
+        <td mat-cell *matCellDef="let row">{{ row.full_name }}</td>
+      </ng-container>
+
+      @for (skill of skills(); track skill.id) {
+        <ng-container [matColumnDef]="'skill_' + skill.id">
+          <th mat-header-cell *matHeaderCellDef>{{ skill.name }}</th>
+          <td mat-cell *matCellDef="let row" class="level-cell">
+            @if (getLevel(row.id, skill.id); as level) {
+              <span class="level-badge level-{{ level }}">{{ level }}</span>
+            } @else {
+              <span class="level-empty">–</span>
+            }
+          </td>
+        </ng-container>
+      }
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns()"></tr>
+    </table>
+  </div>
+}

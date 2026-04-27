@@ -58,6 +58,23 @@ class TeamAssignmentSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class MatrixEmployeeSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    full_name = serializers.CharField()
+
+
+class MatrixSkillSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    category_name = serializers.CharField()
+
+
+class MatrixAssignmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SkillAssignment
+        fields = ('employee', 'skill', 'level', 'status')
+
+
 class SkillAssignmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = SkillAssignment

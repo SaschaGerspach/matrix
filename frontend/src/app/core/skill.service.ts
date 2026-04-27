@@ -27,6 +27,30 @@ export interface SkillCategory {
   parent: number | null;
 }
 
+export interface MatrixEmployee {
+  id: number;
+  full_name: string;
+}
+
+export interface MatrixSkill {
+  id: number;
+  name: string;
+  category_name: string;
+}
+
+export interface MatrixAssignment {
+  employee: number;
+  skill: number;
+  level: number;
+  status: string;
+}
+
+export interface SkillMatrixData {
+  employees: MatrixEmployee[];
+  skills: MatrixSkill[];
+  assignments: MatrixAssignment[];
+}
+
 export interface TeamAssignment {
   id: number;
   employee: number;
@@ -70,5 +94,9 @@ export class SkillService {
 
   confirmAssignment(id: number): Observable<unknown> {
     return this.http.post(`${environment.apiUrl}/skill-assignments/${id}/confirm/`, {});
+  }
+
+  skillMatrix(): Observable<SkillMatrixData> {
+    return this.http.get<SkillMatrixData>(`${environment.apiUrl}/skill-matrix/`);
   }
 }
