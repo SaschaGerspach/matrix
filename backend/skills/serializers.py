@@ -3,7 +3,7 @@ from rest_framework import serializers
 from employees.utils import get_employee
 from teams.utils import get_led_member_ids
 
-from .models import Skill, SkillAssignment, SkillCategory
+from .models import Skill, SkillAssignment, SkillCategory, SkillRequirement
 
 
 class SkillCategorySerializer(serializers.ModelSerializer):
@@ -73,6 +73,16 @@ class MatrixAssignmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = SkillAssignment
         fields = ('employee', 'skill', 'level', 'status')
+
+
+class SkillRequirementSerializer(serializers.ModelSerializer):
+    skill_name = serializers.CharField(source='skill.name', read_only=True)
+    category_name = serializers.CharField(source='skill.category.name', read_only=True)
+    team_name = serializers.CharField(source='team.name', read_only=True)
+
+    class Meta:
+        model = SkillRequirement
+        fields = ('id', 'team', 'team_name', 'skill', 'skill_name', 'category_name', 'required_level')
 
 
 class SkillAssignmentSerializer(serializers.ModelSerializer):

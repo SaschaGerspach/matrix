@@ -51,6 +51,18 @@ export interface SkillMatrixData {
   assignments: MatrixAssignment[];
 }
 
+export interface SkillGap {
+  employee_id: number;
+  employee_name: string;
+  team_name: string;
+  skill_id: number;
+  skill_name: string;
+  category_name: string;
+  required_level: number;
+  actual_level: number;
+  gap: number;
+}
+
 export interface TeamAssignment {
   id: number;
   employee: number;
@@ -98,5 +110,9 @@ export class SkillService {
 
   skillMatrix(): Observable<SkillMatrixData> {
     return this.http.get<SkillMatrixData>(`${environment.apiUrl}/skill-matrix/`);
+  }
+
+  skillGaps(): Observable<SkillGap[]> {
+    return this.http.get<SkillGap[]>(`${environment.apiUrl}/skill-gaps/`);
   }
 }

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Skill, SkillAssignment, SkillCategory
+from .models import Skill, SkillAssignment, SkillCategory, SkillRequirement
 
 
 @admin.register(SkillCategory)
@@ -22,3 +22,10 @@ class SkillAssignmentAdmin(admin.ModelAdmin):
     list_filter = ('status', 'level', 'skill__category')
     search_fields = ('employee__last_name', 'employee__first_name', 'skill__name')
     autocomplete_fields = ('employee', 'skill', 'confirmed_by')
+
+
+@admin.register(SkillRequirement)
+class SkillRequirementAdmin(admin.ModelAdmin):
+    list_display = ('team', 'skill', 'required_level')
+    list_filter = ('team', 'skill__category')
+    autocomplete_fields = ('team', 'skill')

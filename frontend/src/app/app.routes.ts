@@ -30,6 +30,11 @@ export const routes: Routes = [
           import('./pages/dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
       {
+        path: 'skill-gaps',
+        loadComponent: () =>
+          import('./pages/skill-gaps/skill-gaps.component').then((m) => m.SkillGapsComponent),
+      },
+      {
         path: 'employees',
         loadComponent: () =>
           import('./pages/employees/employees.component').then((m) => m.EmployeesComponent),

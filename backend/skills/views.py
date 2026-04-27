@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from common.permissions import IsAdminOrReadOnly
 from employees.utils import get_employee
 
-from .models import Skill, SkillAssignment, SkillCategory
+from .models import Skill, SkillAssignment, SkillCategory, SkillRequirement
 from .permissions import CanConfirmSkillAssignment, SkillAssignmentPermission
 from teams.utils import get_led_member_ids, is_team_lead
 
@@ -21,6 +21,7 @@ from .serializers import (
     MySkillAssignmentSerializer,
     SkillAssignmentSerializer,
     SkillCategorySerializer,
+    SkillRequirementSerializer,
     SkillSerializer,
     TeamAssignmentSerializer,
 )
@@ -86,6 +87,64 @@ class SkillMatrixView(APIView):
             'skills': MatrixSkillSerializer(skill_data, many=True).data,
             'assignments': MatrixAssignmentSerializer(assignments, many=True).data,
         })
+
+
+class SkillRequirementViewSet(viewsets.ModelViewSet):
+    queryset = SkillRequirement.objects.select_related('skill__category', 'team')
+    serializer_class = SkillRequirementSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+
+
+class SkillGapsView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        employee = get_employee(request.user)
+        if employee is None or not is_team_lead(request.user):
+            return Response([])
+
+        member_ids = get_led_member_ids(employee)
+        led_teams = employee.led_teams.all()
+
+        requirements = SkillRequirement.objects.filter(
+            team__in=led_teams,
+        ).select_related('skill__category', 'team')
+
+        assignments = SkillAssignment.objects.filter(
+            employee_id__in=member_ids,
+        ).select_related('skill', 'employee')
+        assignment_map = {}
+        for a in assignments:
+            assignment_map.setdefault(a.employee_id, {})[a.skill_id] = a.level
+
+        members = Employee.objects.filter(id__in=member_ids)
+        member_teams = {}
+        for team in led_teams:
+            for mid in team.members.values_list('id', flat=True):
+                member_teams.setdefault(mid, set()).add(team.id)
+
+        gaps = []
+        for member in members:
+            team_ids = member_teams.get(member.id, set())
+            for req in requirements:
+                if req.team_id not in team_ids:
+                    continue
+                actual = assignment_map.get(member.id, {}).get(req.skill_id, 0)
+                if actual < req.required_level:
+                    gaps.append({
+                        'employee_id': member.id,
+                        'employee_name': str(member),
+                        'team_name': req.team.name,
+                        'skill_id': req.skill_id,
+                        'skill_name': req.skill.name,
+                        'category_name': req.skill.category.name,
+                        'required_level': req.required_level,
+                        'actual_level': actual,
+                        'gap': req.required_level - actual,
+                    })
+
+        gaps.sort(key=lambda g: (-g['gap'], g['employee_name']))
+        return Response(gaps)
 
 
 class SkillAssignmentViewSet(viewsets.ModelViewSet):

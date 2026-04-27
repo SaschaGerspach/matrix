@@ -76,3 +76,29 @@ class SkillAssignment(models.Model):
 
     def __str__(self):
         return f'{self.employee} – {self.skill} ({self.level})'
+
+
+class SkillRequirement(models.Model):
+    team = models.ForeignKey(
+        'teams.Team',
+        on_delete=models.CASCADE,
+        related_name='skill_requirements',
+    )
+    skill = models.ForeignKey(
+        Skill,
+        on_delete=models.CASCADE,
+        related_name='requirements',
+    )
+    required_level = models.PositiveSmallIntegerField()
+
+    class Meta:
+        unique_together = ('team', 'skill')
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(required_level__gte=1) & models.Q(required_level__lte=5),
+                name='skillrequirement_level_1_to_5',
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.team} – {self.skill} (required: {self.required_level})'
