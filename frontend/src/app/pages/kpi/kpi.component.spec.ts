@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { TranslateTestingModule } from '../../core/testing/translate-testing';
 
 import { environment } from '../../../environments/environment';
@@ -40,6 +41,7 @@ describe('KpiComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideNoopAnimations(),
+        provideCharts(withDefaultRegisterables()),
       ],
     }).compileComponents();
 
@@ -98,5 +100,16 @@ describe('KpiComponent', () => {
 
     expect(component.loading()).toBeFalse();
     expect(component.data().length).toBe(0);
+  });
+
+  it('builds bar chart config from data', () => {
+    fixture.detectChanges();
+    http.expectOne(`${environment.apiUrl}/kpi/`).flush(kpiData);
+
+    const config = component.barChartConfig();
+    expect(config.data.labels).toEqual(['Alpha', 'Beta']);
+    expect(config.data.datasets.length).toBe(2);
+    expect(config.data.datasets[0].data).toEqual([3.5, 2.0]);
+    expect(config.data.datasets[1].data).toEqual([80, 50]);
   });
 });

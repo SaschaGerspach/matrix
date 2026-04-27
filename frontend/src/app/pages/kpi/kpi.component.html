@@ -35,4 +35,12 @@
       </mat-card>
     }
   </div>
+
+  <div class="chart-container">
+    <canvas baseChart
+      [type]="barChartConfig().type"
+      [data]="barChartConfig().data"
+      [options]="barChartConfig().options">
+    </canvas>
+  </div>
 }
