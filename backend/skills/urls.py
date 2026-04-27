@@ -6,6 +6,7 @@ from .views import (
     SkillAssignmentViewSet,
     SkillCategoryViewSet,
     SkillGapsView,
+    SkillMatrixExportView,
     SkillMatrixView,
     SkillRequirementViewSet,
     SkillViewSet,
@@ -22,5 +23,6 @@ router.register('skill-requirements', SkillRequirementViewSet)
 
 urlpatterns = [
     path('skill-matrix/', SkillMatrixView.as_view(), name='skill-matrix'),
+    path('skill-matrix/export/', SkillMatrixExportView.as_view(), name='skill-matrix-export'),
     path('skill-gaps/', SkillGapsView.as_view(), name='skill-gaps'),
 ] + router.urls

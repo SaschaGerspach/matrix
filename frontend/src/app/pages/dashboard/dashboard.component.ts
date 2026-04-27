@@ -1,17 +1,21 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 
+import { environment } from '../../../environments/environment';
 import { MatrixAssignment, MatrixEmployee, MatrixSkill, SkillService } from '../../core/skill.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [MatProgressSpinnerModule, MatTableModule],
+  imports: [MatButtonModule, MatProgressSpinnerModule, MatTableModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit {
+  private readonly http = inject(HttpClient);
   private readonly skillService = inject(SkillService);
 
   readonly employees = signal<MatrixEmployee[]>([]);
@@ -47,5 +51,18 @@ export class DashboardComponent implements OnInit {
   getLevel(employeeId: number, skillId: number): number | null {
     const a = this.assignmentMap.get(`${employeeId}_${skillId}`);
     return a ? a.level : null;
+  }
+
+  exportCsv(): void {
+    this.http
+      .get(`${environment.apiUrl}/skill-matrix/export/`, { responseType: 'blob' })
+      .subscribe((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'skill-matrix.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
   }
 }

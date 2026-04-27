@@ -1,3 +1,7 @@
+import csv
+import io
+
+from django.http import HttpResponse
 from django.utils import timezone
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -87,6 +91,37 @@ class SkillMatrixView(APIView):
             'skills': MatrixSkillSerializer(skill_data, many=True).data,
             'assignments': MatrixAssignmentSerializer(assignments, many=True).data,
         })
+
+
+class SkillMatrixExportView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        employees = list(Employee.objects.all().order_by('last_name', 'first_name'))
+        skills = list(Skill.objects.select_related('category').order_by('category__name', 'name'))
+        assignments = SkillAssignment.objects.all()
+
+        assignment_map = {}
+        for a in assignments:
+            assignment_map.setdefault(a.employee_id, {})[a.skill_id] = a.level
+
+        buf = io.StringIO()
+        writer = csv.writer(buf)
+
+        header = ['Employee'] + [s.name for s in skills]
+        writer.writerow(header)
+
+        for emp in employees:
+            row = [str(emp)]
+            emp_skills = assignment_map.get(emp.id, {})
+            for s in skills:
+                level = emp_skills.get(s.id)
+                row.append(str(level) if level else '')
+            writer.writerow(row)
+
+        response = HttpResponse(buf.getvalue(), content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="skill-matrix.csv"'
+        return response
 
 
 class SkillRequirementViewSet(viewsets.ModelViewSet):

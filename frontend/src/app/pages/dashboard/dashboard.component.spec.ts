@@ -83,4 +83,23 @@ describe('DashboardComponent', () => {
     const el = fixture.nativeElement as HTMLElement;
     expect(el.textContent).toContain('No employees found');
   });
+
+  it('renders export button', () => {
+    fixture.detectChanges();
+    http.expectOne(`${environment.apiUrl}/skill-matrix/`).flush(matrixResponse);
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('Export CSV');
+  });
+
+  it('calls export endpoint on exportCsv', () => {
+    fixture.detectChanges();
+    http.expectOne(`${environment.apiUrl}/skill-matrix/`).flush(matrixResponse);
+
+    component.exportCsv();
+    const req = http.expectOne(`${environment.apiUrl}/skill-matrix/export/`);
+    expect(req.request.responseType).toBe('blob');
+    req.flush(new Blob(['Employee,Python\r\nAlice A,4\r\n'], { type: 'text/csv' }));
+  });
 });
