@@ -59,3 +59,20 @@ class SkillAssignmentPermission(BasePermission):
         if obj.employee_id in get_led_member_ids(employee):
             return True
         return False
+
+
+class CanConfirmSkillAssignment(BasePermission):
+    def has_permission(self, request, view):
+        if not (request.user and request.user.is_authenticated):
+            return False
+        if request.user.is_staff:
+            return True
+        return is_team_lead(request.user)
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_staff:
+            return True
+        employee = get_employee(request.user)
+        if employee is None:
+            return False
+        return obj.employee_id in get_led_member_ids(employee)
