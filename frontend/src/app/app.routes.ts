@@ -9,10 +9,22 @@ export const routes: Routes = [
       import('./pages/login/login.component').then((m) => m.LoginComponent),
   },
   {
-    path: 'employees',
+    path: '',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./pages/employees/employees.component').then((m) => m.EmployeesComponent),
+      import('./shell/shell.component').then((m) => m.ShellComponent),
+    children: [
+      {
+        path: 'my-skills',
+        loadComponent: () =>
+          import('./pages/my-skills/my-skills.component').then((m) => m.MySkillsComponent),
+      },
+      {
+        path: 'employees',
+        loadComponent: () =>
+          import('./pages/employees/employees.component').then((m) => m.EmployeesComponent),
+      },
+      { path: '', pathMatch: 'full', redirectTo: 'my-skills' },
+    ],
   },
-  { path: '', pathMatch: 'full', redirectTo: 'employees' },
 ];

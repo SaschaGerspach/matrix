@@ -1,33 +1,27 @@
-<mat-toolbar color="primary">
-  <span>Employees</span>
-  <span class="spacer"></span>
-  <button mat-button type="button" (click)="logout()">Sign out</button>
-</mat-toolbar>
+<h2>Employees</h2>
 
-<div class="content">
-  @if (loading()) {
-    <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
-  } @else if (error()) {
-    <p class="error" data-testid="employees-error">{{ error() }}</p>
-  } @else {
-    <table mat-table [dataSource]="data()" class="full-width">
-      <ng-container matColumnDef="first_name">
-        <th mat-header-cell *matHeaderCellDef>First name</th>
-        <td mat-cell *matCellDef="let row">{{ row.first_name }}</td>
-      </ng-container>
+@if (loading()) {
+  <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+} @else if (error()) {
+  <p class="error" data-testid="employees-error">{{ error() }}</p>
+} @else {
+  <table mat-table [dataSource]="data()" class="full-width">
+    <ng-container matColumnDef="first_name">
+      <th mat-header-cell *matHeaderCellDef>First name</th>
+      <td mat-cell *matCellDef="let row">{{ row.first_name }}</td>
+    </ng-container>
 
-      <ng-container matColumnDef="last_name">
-        <th mat-header-cell *matHeaderCellDef>Last name</th>
-        <td mat-cell *matCellDef="let row">{{ row.last_name }}</td>
-      </ng-container>
+    <ng-container matColumnDef="last_name">
+      <th mat-header-cell *matHeaderCellDef>Last name</th>
+      <td mat-cell *matCellDef="let row">{{ row.last_name }}</td>
+    </ng-container>
 
-      <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef>Email</th>
-        <td mat-cell *matCellDef="let row">{{ row.email }}</td>
-      </ng-container>
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef>Email</th>
+      <td mat-cell *matCellDef="let row">{{ row.email }}</td>
+    </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
-  }
-</div>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+}

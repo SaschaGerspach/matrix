@@ -5,16 +5,16 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 
 import { environment } from '../../../environments/environment';
-import { EmployeesComponent } from './employees.component';
+import { MySkillsComponent } from './my-skills.component';
 
-describe('EmployeesComponent', () => {
-  let fixture: ComponentFixture<EmployeesComponent>;
-  let component: EmployeesComponent;
+describe('MySkillsComponent', () => {
+  let fixture: ComponentFixture<MySkillsComponent>;
+  let component: MySkillsComponent;
   let http: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EmployeesComponent],
+      imports: [MySkillsComponent],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -23,35 +23,31 @@ describe('EmployeesComponent', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(EmployeesComponent);
+    fixture = TestBed.createComponent(MySkillsComponent);
     component = fixture.componentInstance;
     http = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => {
-    http.verify();
-  });
+  afterEach(() => http.verify());
 
-  it('loads employees on init and stores them in the signal', () => {
+  it('loads my skills on init', () => {
     fixture.detectChanges();
 
-    const req = http.expectOne(`${environment.apiUrl}/employees/`);
+    const req = http.expectOne(`${environment.apiUrl}/my-skills/`);
     req.flush([
-      { id: 1, first_name: 'Ada', last_name: 'Lovelace', full_name: 'Ada Lovelace', email: 'a@x.com', user: null },
+      { id: 1, skill: 1, skill_name: 'Python', category_name: 'Programming', level: 3, status: 'pending', confirmed_at: null, created_at: '2026-01-01' },
     ]);
 
     expect(component.data().length).toBe(1);
     expect(component.loading()).toBeFalse();
-    expect(component.error()).toBeNull();
   });
 
-  it('sets an error message when loading fails', () => {
+  it('shows empty state when no skills', () => {
     fixture.detectChanges();
+    http.expectOne(`${environment.apiUrl}/my-skills/`).flush([]);
 
-    const req = http.expectOne(`${environment.apiUrl}/employees/`);
-    req.flush(null, { status: 500, statusText: 'Server Error' });
-
-    expect(component.error()).toBe('Failed to load employees.');
-    expect(component.loading()).toBeFalse();
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('No skills assigned yet');
   });
 });

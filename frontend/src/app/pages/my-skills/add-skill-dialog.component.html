@@ -1,0 +1,30 @@
+<h2 mat-dialog-title>Add Skill</h2>
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Skill</mat-label>
+      <mat-select formControlName="skill">
+        @for (skill of skills(); track skill.id) {
+          <mat-option [value]="skill.id">{{ skill.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Level (1-5)</mat-label>
+      <mat-select formControlName="level">
+        @for (lvl of [1, 2, 3, 4, 5]; track lvl) {
+          <mat-option [value]="lvl">{{ lvl }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    @if (error()) {
+      <p class="error">{{ error() }}</p>
+    }
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="submit()">Add</button>
+</mat-dialog-actions>

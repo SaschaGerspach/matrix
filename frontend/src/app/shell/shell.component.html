@@ -1,0 +1,13 @@
+<mat-toolbar color="primary">
+  <span>Skill Matrix</span>
+  <nav class="nav-links">
+    <a mat-button routerLink="/my-skills" routerLinkActive="active">My Skills</a>
+    <a mat-button routerLink="/employees" routerLinkActive="active">Employees</a>
+  </nav>
+  <span class="spacer"></span>
+  <button mat-button type="button" (click)="logout()">Sign out</button>
+</mat-toolbar>
+
+<div class="content">
+  <router-outlet />
+</div>
