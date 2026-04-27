@@ -347,4 +347,37 @@
       }
     </div>
   </mat-tab>
+
+  <mat-tab [label]="'ADMIN.TAB_AUDIT_LOG' | translate">
+    <div class="tab-content">
+      @if (auditLog().length === 0) {
+        <p>{{ 'ADMIN.AUDIT_EMPTY' | translate }}</p>
+      } @else {
+        <table mat-table [dataSource]="auditLog()">
+          <ng-container matColumnDef="timestamp">
+            <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.DATE' | translate }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.timestamp | date:'short' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="username">
+            <th mat-header-cell *matHeaderCellDef>{{ 'ADMIN.AUDIT_USER' | translate }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.username }}</td>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.ACTION' | translate }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.action }}</td>
+          </ng-container>
+          <ng-container matColumnDef="entity_type">
+            <th mat-header-cell *matHeaderCellDef>{{ 'ADMIN.AUDIT_ENTITY' | translate }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.entity_type }}</td>
+          </ng-container>
+          <ng-container matColumnDef="detail">
+            <th mat-header-cell *matHeaderCellDef>{{ 'ADMIN.AUDIT_DETAIL' | translate }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.detail }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="['timestamp', 'username', 'action', 'entity_type', 'detail']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['timestamp', 'username', 'action', 'entity_type', 'detail']"></tr>
+        </table>
+      }
+    </div>
+  </mat-tab>
 </mat-tab-group>

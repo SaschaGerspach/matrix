@@ -51,6 +51,8 @@ const EN = {
     IMPORT_SKILLS_HINT: 'CSV with columns: name, category',
     CHOOSE_FILE: 'Choose CSV file', IMPORT_CREATED: 'Created',
     IMPORT_SKIPPED: 'Skipped', IMPORT_ERRORS: 'Errors',
+    TAB_AUDIT_LOG: 'Audit Log', AUDIT_EMPTY: 'No audit entries yet.',
+    AUDIT_USER: 'User', AUDIT_ENTITY: 'Entity', AUDIT_DETAIL: 'Detail',
   },
   TABLE: {
     NAME: 'Name', EMPLOYEE: 'Employee', SKILL: 'Skill', CATEGORY: 'Category',

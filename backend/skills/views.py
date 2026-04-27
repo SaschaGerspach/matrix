@@ -11,6 +11,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from common.audit import log_action
+from common.mixins import AuditMixin
+from common.models import AuditLog
 from common.permissions import IsAdminOrReadOnly
 from employees.utils import get_employee
 
@@ -69,18 +72,20 @@ class TeamAssignmentsViewSet(viewsets.ReadOnlyModelViewSet):
         return qs
 
 
-class SkillCategoryViewSet(viewsets.ModelViewSet):
+class SkillCategoryViewSet(AuditMixin, viewsets.ModelViewSet):
     queryset = SkillCategory.objects.all()
     serializer_class = SkillCategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = None
+    audit_entity_type = 'SkillCategory'
 
 
-class SkillViewSet(viewsets.ModelViewSet):
+class SkillViewSet(AuditMixin, viewsets.ModelViewSet):
     queryset = Skill.objects.prefetch_related('level_descriptions').all()
     serializer_class = SkillSerializer
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = None
+    audit_entity_type = 'Skill'
 
     @action(detail=False, methods=['post'], parser_classes=(MultiPartParser,), url_path='import-csv')
     def import_csv(self, request):
@@ -127,6 +132,14 @@ class SkillViewSet(viewsets.ModelViewSet):
             existing.add((name, category_name))
             created.append({'row': i, 'name': name, 'category': category_name})
 
+        if created:
+            log_action(
+                user=request.user,
+                action=AuditLog.Action.IMPORT,
+                entity_type='Skill',
+                detail=f'Imported {len(created)} skills',
+            )
+
         return Response({
             'created': len(created),
             'skipped': len(skipped),
@@ -135,11 +148,12 @@ class SkillViewSet(viewsets.ModelViewSet):
         })
 
 
-class SkillLevelDescriptionViewSet(viewsets.ModelViewSet):
+class SkillLevelDescriptionViewSet(AuditMixin, viewsets.ModelViewSet):
     queryset = SkillLevelDescription.objects.select_related('skill')
     serializer_class = SkillLevelDescriptionSerializer
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = None
+    audit_entity_type = 'SkillLevelDescription'
 
 
 class SkillMatrixView(APIView):
@@ -263,11 +277,12 @@ class SkillMatrixPdfExportView(APIView):
         return response
 
 
-class SkillRequirementViewSet(viewsets.ModelViewSet):
+class SkillRequirementViewSet(AuditMixin, viewsets.ModelViewSet):
     queryset = SkillRequirement.objects.select_related('skill__category', 'team')
     serializer_class = SkillRequirementSerializer
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = None
+    audit_entity_type = 'SkillRequirement'
 
 
 class SkillGapsView(APIView):
@@ -493,11 +508,12 @@ class SkillRecommendationsView(APIView):
         return Response(recommendations)
 
 
-class RoleTemplateViewSet(viewsets.ModelViewSet):
+class RoleTemplateViewSet(AuditMixin, viewsets.ModelViewSet):
     queryset = RoleTemplate.objects.prefetch_related('skills__skill')
     serializer_class = RoleTemplateSerializer
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = None
+    audit_entity_type = 'RoleTemplate'
 
     @action(detail=True, methods=['post'])
     def apply(self, request, pk=None):
@@ -524,6 +540,14 @@ class RoleTemplateViewSet(viewsets.ModelViewSet):
             else:
                 updated += 1
 
+        log_action(
+            user=request.user,
+            action=AuditLog.Action.APPLY,
+            entity_type='RoleTemplate',
+            entity_id=template.pk,
+            detail=f'Applied "{template.name}" to team "{team.name}": {created} created, {updated} updated',
+        )
+
         return Response({'created': created, 'updated': updated})
 
     @action(detail=True, methods=['post'], url_path='add-skill')
@@ -531,14 +555,31 @@ class RoleTemplateViewSet(viewsets.ModelViewSet):
         template = self.get_object()
         ser = RoleTemplateSkillSerializer(data=request.data)
         ser.is_valid(raise_exception=True)
-        ser.save(template=template)
+        instance = ser.save(template=template)
+        log_action(
+            user=request.user,
+            action=AuditLog.Action.UPDATE,
+            entity_type='RoleTemplate',
+            entity_id=template.pk,
+            detail=f'Added skill {instance.skill.name} (level {instance.required_level}) to "{template.name}"',
+        )
         template = self.get_queryset().get(pk=template.pk)
         return Response(RoleTemplateSerializer(template).data)
 
     @action(detail=True, methods=['delete'], url_path='remove-skill/(?P<skill_pk>[0-9]+)')
     def remove_skill(self, request, pk=None, skill_pk=None):
         template = self.get_object()
-        RoleTemplateSkill.objects.filter(template=template, pk=skill_pk).delete()
+        skill_entry = RoleTemplateSkill.objects.filter(template=template, pk=skill_pk).first()
+        if skill_entry:
+            detail = f'Removed skill {skill_entry.skill.name} from "{template.name}"'
+            skill_entry.delete()
+            log_action(
+                user=request.user,
+                action=AuditLog.Action.UPDATE,
+                entity_type='RoleTemplate',
+                entity_id=template.pk,
+                detail=detail,
+            )
         template = self.get_queryset().get(pk=template.pk)
         return Response(RoleTemplateSerializer(template).data)
 

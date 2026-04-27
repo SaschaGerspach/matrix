@@ -117,7 +117,12 @@
     "CHOOSE_FILE": "CSV-Datei auswählen",
     "IMPORT_CREATED": "Erstellt",
     "IMPORT_SKIPPED": "Übersprungen",
-    "IMPORT_ERRORS": "Fehler"
+    "IMPORT_ERRORS": "Fehler",
+    "TAB_AUDIT_LOG": "Audit-Log",
+    "AUDIT_EMPTY": "Noch keine Einträge.",
+    "AUDIT_USER": "Benutzer",
+    "AUDIT_ENTITY": "Entität",
+    "AUDIT_DETAIL": "Detail"
   },
   "TABLE": {
     "NAME": "Name",

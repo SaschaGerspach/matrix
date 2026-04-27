@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,6 +11,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 
 import { TranslateModule } from '@ngx-translate/core';
 
+import { AuditLogEntry, AuditService } from '../../core/audit.service';
 import { CsvImportResult, EmployeeService } from '../../core/employee.service';
 import { RoleTemplate, Skill, SkillCategory, SkillLevelDescription, SkillRequirement, SkillService } from '../../core/skill.service';
 import { Team, TeamService } from '../../core/team.service';
@@ -18,6 +20,7 @@ import { Team, TeamService } from '../../core/team.service';
   selector: 'app-admin',
   standalone: true,
   imports: [
+    DatePipe,
     FormsModule,
     MatButtonModule,
     MatFormFieldModule,
@@ -34,6 +37,7 @@ import { Team, TeamService } from '../../core/team.service';
 export class AdminComponent implements OnInit {
   private readonly skillService = inject(SkillService);
   private readonly teamService = inject(TeamService);
+  private readonly auditService = inject(AuditService);
   private readonly employeeService = inject(EmployeeService);
 
   readonly categories = signal<SkillCategory[]>([]);
@@ -42,6 +46,7 @@ export class AdminComponent implements OnInit {
   readonly requirements = signal<SkillRequirement[]>([]);
   readonly levelDescriptions = signal<SkillLevelDescription[]>([]);
   readonly roleTemplates = signal<RoleTemplate[]>([]);
+  readonly auditLog = signal<AuditLogEntry[]>([]);
 
   newCategoryName = '';
   newSkillName = '';
@@ -71,6 +76,7 @@ export class AdminComponent implements OnInit {
     this.skillService.listRequirements().subscribe((r) => this.requirements.set(r));
     this.skillService.listLevelDescriptions().subscribe((d) => this.levelDescriptions.set(d));
     this.skillService.listRoleTemplates().subscribe((t) => this.roleTemplates.set(t));
+    this.auditService.list().subscribe((res) => this.auditLog.set(res.results));
   }
 
   addCategory(): void {

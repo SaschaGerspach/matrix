@@ -8,6 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from common.audit import log_action
+from common.models import AuditLog
 from common.permissions import IsAdminOrReadOnly
 from skills.models import SkillAssignment
 from teams.utils import is_team_lead
@@ -81,6 +83,14 @@ class EmployeeViewSet(viewsets.ModelViewSet):
             Employee.objects.create(first_name=first_name, last_name=last_name, email=email)
             existing_emails.add(email)
             created.append({'row': i, 'email': email})
+
+        if created:
+            log_action(
+                user=request.user,
+                action=AuditLog.Action.IMPORT,
+                entity_type='Employee',
+                detail=f'Imported {len(created)} employees',
+            )
 
         return Response({
             'created': len(created),
