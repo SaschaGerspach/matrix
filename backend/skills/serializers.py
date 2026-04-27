@@ -18,6 +18,25 @@ class SkillSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'category')
 
 
+class MySkillAssignmentSerializer(serializers.ModelSerializer):
+    skill_name = serializers.CharField(source='skill.name', read_only=True)
+    category_name = serializers.CharField(source='skill.category.name', read_only=True)
+
+    class Meta:
+        model = SkillAssignment
+        fields = (
+            'id',
+            'skill',
+            'skill_name',
+            'category_name',
+            'level',
+            'status',
+            'confirmed_at',
+            'created_at',
+        )
+        read_only_fields = ('status', 'confirmed_at', 'created_at')
+
+
 class SkillAssignmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = SkillAssignment

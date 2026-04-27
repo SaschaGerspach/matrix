@@ -3,12 +3,30 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from rest_framework.permissions import IsAuthenticated
+
 from common.permissions import IsAdminOrReadOnly
 from employees.utils import get_employee
 
 from .models import Skill, SkillAssignment, SkillCategory
 from .permissions import CanConfirmSkillAssignment, SkillAssignmentPermission
-from .serializers import SkillAssignmentSerializer, SkillCategorySerializer, SkillSerializer
+from .serializers import (
+    MySkillAssignmentSerializer,
+    SkillAssignmentSerializer,
+    SkillCategorySerializer,
+    SkillSerializer,
+)
+
+
+class MySkillsViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = MySkillAssignmentSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        employee = get_employee(self.request.user)
+        if employee is None:
+            return SkillAssignment.objects.none()
+        return SkillAssignment.objects.filter(employee=employee).select_related('skill__category')
 
 
 class SkillCategoryViewSet(viewsets.ModelViewSet):
