@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
@@ -26,6 +27,7 @@ import { Team, TeamService } from '../../core/team.service';
     MatInputModule,
     MatProgressSpinnerModule,
     MatSelectModule,
+    MatSlideToggleModule,
     MatTableModule,
     MatTooltipModule,
   ],
@@ -45,6 +47,7 @@ export class DashboardComponent implements OnInit {
   readonly categories = signal<SkillCategory[]>([]);
   readonly loading = signal(false);
   readonly canEdit = signal(false);
+  heatmapMode = false;
 
   readonly levels = [1, 2, 3, 4, 5];
   editingCell: { employeeId: number; skillId: number } | null = null;

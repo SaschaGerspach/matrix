@@ -5,9 +5,10 @@
   margin-bottom: 1rem;
 }
 
-.export-actions {
+.header-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  align-items: center;
 }
 
 .filters {
@@ -89,3 +90,20 @@ table {
   background: #fff;
   cursor: pointer;
 }
+
+.heatmap-cell {
+  padding: 0 !important;
+}
+
+.heatmap-display {
+  display: block;
+  width: 100%;
+  min-height: 36px;
+  cursor: default;
+}
+
+.heatmap-1 { background-color: #ffcdd2; }
+.heatmap-2 { background-color: #ffe0b2; }
+.heatmap-3 { background-color: #fff9c4; }
+.heatmap-4 { background-color: #c8e6c9; }
+.heatmap-5 { background-color: #1b5e20; color: #fff; }
