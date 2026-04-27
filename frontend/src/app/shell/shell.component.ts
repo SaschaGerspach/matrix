@@ -10,6 +10,7 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { AuthService } from '../core/auth.service';
 import { MeService } from '../core/me.service';
 import { NotificationItem, NotificationService } from '../core/notification.service';
+import { ThemeService } from '../core/theme.service';
 
 @Component({
   selector: 'app-shell',
@@ -25,6 +26,7 @@ export class ShellComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly meService = inject(MeService);
   readonly notificationService = inject(NotificationService);
+  readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
 
   readonly isTeamLead = signal(false);
