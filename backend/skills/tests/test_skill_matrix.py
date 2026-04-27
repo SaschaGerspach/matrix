@@ -5,6 +5,7 @@ from rest_framework.test import APIClient
 
 from employees.models import Employee
 from skills.models import Skill, SkillAssignment, SkillCategory
+from teams.models import Department, Team
 
 
 pytestmark = pytest.mark.django_db
@@ -50,6 +51,40 @@ def test_returns_empty_when_no_data(auth_client):
     assert r.status_code == status.HTTP_200_OK
     assert r.data['skills'] == []
     assert r.data['assignments'] == []
+
+
+def test_filter_by_team(auth_client, skill):
+    client, employee = auth_client
+    dept = Department.objects.create(name='Eng')
+    team = Team.objects.create(name='Core', department=dept)
+    team.members.add(employee)
+    outsider = Employee.objects.create(first_name='X', last_name='Y', email='xy@x.com')
+    SkillAssignment.objects.create(employee=employee, skill=skill, level=3)
+    SkillAssignment.objects.create(employee=outsider, skill=skill, level=2)
+
+    r = client.get(f'{URL}?team={team.id}')
+    assert len(r.data['employees']) == 1
+    assert r.data['employees'][0]['full_name'] == 'A B'
+    assert len(r.data['assignments']) == 1
+
+
+def test_filter_by_category(auth_client, skill):
+    client, employee = auth_client
+    cat2 = SkillCategory.objects.create(name='Ops')
+    Skill.objects.create(name='Docker', category=cat2)
+
+    r = client.get(f'{URL}?category={skill.category_id}')
+    assert len(r.data['skills']) == 1
+    assert r.data['skills'][0]['name'] == 'Python'
+
+
+def test_search_by_name(auth_client, skill):
+    client, employee = auth_client
+    Employee.objects.create(first_name='Zara', last_name='Z', email='z@x.com')
+
+    r = client.get(f'{URL}?search=zar')
+    assert len(r.data['employees']) == 1
+    assert r.data['employees'][0]['full_name'] == 'Zara Z'
 
 
 def test_unauthenticated_rejected():

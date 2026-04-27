@@ -22,6 +22,12 @@ const matrixResponse = {
   ],
 };
 
+function flushInitRequests(http: HttpTestingController, matrix = matrixResponse): void {
+  http.expectOne(`${environment.apiUrl}/teams/`).flush([]);
+  http.expectOne(`${environment.apiUrl}/skill-categories/`).flush([]);
+  http.expectOne((r) => r.url === `${environment.apiUrl}/skill-matrix/`).flush(matrix);
+}
+
 describe('DashboardComponent', () => {
   let fixture: ComponentFixture<DashboardComponent>;
   let component: DashboardComponent;
@@ -47,7 +53,7 @@ describe('DashboardComponent', () => {
 
   it('loads matrix data on init', () => {
     fixture.detectChanges();
-    http.expectOne(`${environment.apiUrl}/skill-matrix/`).flush(matrixResponse);
+    flushInitRequests(http);
 
     expect(component.employees().length).toBe(2);
     expect(component.skills().length).toBe(2);
@@ -56,28 +62,28 @@ describe('DashboardComponent', () => {
 
   it('builds correct column list', () => {
     fixture.detectChanges();
-    http.expectOne(`${environment.apiUrl}/skill-matrix/`).flush(matrixResponse);
+    flushInitRequests(http);
 
     expect(component.displayedColumns()).toEqual(['employee', 'skill_10', 'skill_11']);
   });
 
   it('returns level for existing assignment', () => {
     fixture.detectChanges();
-    http.expectOne(`${environment.apiUrl}/skill-matrix/`).flush(matrixResponse);
+    flushInitRequests(http);
 
     expect(component.getLevel(1, 10)).toBe(4);
   });
 
   it('returns null for missing assignment', () => {
     fixture.detectChanges();
-    http.expectOne(`${environment.apiUrl}/skill-matrix/`).flush(matrixResponse);
+    flushInitRequests(http);
 
     expect(component.getLevel(1, 11)).toBeNull();
   });
 
   it('shows empty state when no employees', () => {
     fixture.detectChanges();
-    http.expectOne(`${environment.apiUrl}/skill-matrix/`).flush({ employees: [], skills: [], assignments: [] });
+    flushInitRequests(http, { employees: [], skills: [], assignments: [] });
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
@@ -86,7 +92,7 @@ describe('DashboardComponent', () => {
 
   it('renders export button', () => {
     fixture.detectChanges();
-    http.expectOne(`${environment.apiUrl}/skill-matrix/`).flush(matrixResponse);
+    flushInitRequests(http);
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
@@ -95,11 +101,37 @@ describe('DashboardComponent', () => {
 
   it('calls export endpoint on exportCsv', () => {
     fixture.detectChanges();
-    http.expectOne(`${environment.apiUrl}/skill-matrix/`).flush(matrixResponse);
+    flushInitRequests(http);
 
     component.exportCsv();
     const req = http.expectOne(`${environment.apiUrl}/skill-matrix/export/`);
     expect(req.request.responseType).toBe('blob');
     req.flush(new Blob(['Employee,Python\r\nAlice A,4\r\n'], { type: 'text/csv' }));
+  });
+
+  it('reloads with filters when applyFilters is called', () => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+
+    component.selectedTeam = 5;
+    component.applyFilters();
+
+    const req = http.expectOne((r) => r.url === `${environment.apiUrl}/skill-matrix/`);
+    expect(req.request.params.get('team')).toBe('5');
+    req.flush(matrixResponse);
+  });
+
+  it('clears filters and reloads', () => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+
+    component.selectedTeam = 5;
+    component.searchTerm = 'test';
+    component.clearFilters();
+
+    expect(component.selectedTeam).toBeUndefined();
+    expect(component.searchTerm).toBe('');
+
+    http.expectOne((r) => r.url === `${environment.apiUrl}/skill-matrix/`).flush(matrixResponse);
   });
 });

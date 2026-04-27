@@ -5,6 +5,14 @@
   margin-bottom: 1rem;
 }
 
+.filters {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
 .matrix-wrapper {
   overflow-x: auto;
 }

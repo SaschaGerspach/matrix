@@ -3,6 +3,35 @@
   <button mat-raised-button color="primary" (click)="exportCsv()">Export CSV</button>
 </div>
 
+<div class="filters">
+  <mat-form-field appearance="outline">
+    <mat-label>Search</mat-label>
+    <input matInput [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" placeholder="Employee name...">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Team</mat-label>
+    <mat-select [(ngModel)]="selectedTeam" (selectionChange)="applyFilters()">
+      <mat-option [value]="undefined">All teams</mat-option>
+      @for (team of teams(); track team.id) {
+        <mat-option [value]="team.id">{{ team.name }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Category</mat-label>
+    <mat-select [(ngModel)]="selectedCategory" (selectionChange)="applyFilters()">
+      <mat-option [value]="undefined">All categories</mat-option>
+      @for (cat of categories(); track cat.id) {
+        <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-button (click)="clearFilters()">Clear</button>
+</div>
+
 @if (loading()) {
   <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
 } @else if (employees().length === 0) {

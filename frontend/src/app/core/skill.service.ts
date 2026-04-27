@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -108,8 +108,12 @@ export class SkillService {
     return this.http.post(`${environment.apiUrl}/skill-assignments/${id}/confirm/`, {});
   }
 
-  skillMatrix(): Observable<SkillMatrixData> {
-    return this.http.get<SkillMatrixData>(`${environment.apiUrl}/skill-matrix/`);
+  skillMatrix(filters?: { team?: number; category?: number; search?: string }): Observable<SkillMatrixData> {
+    let params = new HttpParams();
+    if (filters?.team) params = params.set('team', filters.team);
+    if (filters?.category) params = params.set('category', filters.category);
+    if (filters?.search) params = params.set('search', filters.search);
+    return this.http.get<SkillMatrixData>(`${environment.apiUrl}/skill-matrix/`, { params });
   }
 
   skillGaps(): Observable<SkillGap[]> {

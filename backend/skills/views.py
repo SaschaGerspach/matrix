@@ -1,6 +1,7 @@
 import csv
 import io
 
+from django.db import models
 from django.http import HttpResponse
 from django.utils import timezone
 from rest_framework import viewsets
@@ -79,9 +80,34 @@ class SkillMatrixView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
+        from teams.models import Team
+
         employees = Employee.objects.all().order_by('last_name', 'first_name')
         skills = Skill.objects.select_related('category').order_by('category__name', 'name')
-        assignments = SkillAssignment.objects.all()
+
+        team_id = request.query_params.get('team')
+        if team_id:
+            team = Team.objects.filter(id=team_id).first()
+            if team:
+                employees = employees.filter(teams=team)
+
+        category_id = request.query_params.get('category')
+        if category_id:
+            skills = skills.filter(category_id=category_id)
+
+        search = request.query_params.get('search', '').strip()
+        if search:
+            employees = employees.filter(
+                models.Q(first_name__icontains=search) | models.Q(last_name__icontains=search)
+            )
+
+        employee_ids = list(employees.values_list('id', flat=True))
+        skill_ids = list(skills.values_list('id', flat=True))
+
+        assignments = SkillAssignment.objects.filter(
+            employee_id__in=employee_ids,
+            skill_id__in=skill_ids,
+        )
 
         employee_data = [
             {'id': e.id, 'full_name': str(e)} for e in employees
