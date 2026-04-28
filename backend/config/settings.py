@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'notifications',
     'certificates',
     'development_plans',
+    'skill_proposals',
     'common',
 ]
 
