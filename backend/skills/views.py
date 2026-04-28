@@ -417,22 +417,32 @@ class TeamComparisonView(APIView):
         if not team_ids:
             return Response([])
 
-        teams = Team.objects.filter(id__in=team_ids)
+        teams = list(Team.objects.filter(id__in=team_ids).prefetch_related('members'))
         skills = Skill.objects.select_related('category').order_by('category__name', 'name')
+
+        team_member_ids = {}
+        all_member_ids = set()
+        for team in teams:
+            ids = set(team.members.values_list('id', flat=True))
+            team_member_ids[team.id] = ids
+            all_member_ids |= ids
+
+        assignments = SkillAssignment.objects.filter(employee_id__in=all_member_ids)
+        assignment_map: dict = {}
+        for a in assignments:
+            assignment_map.setdefault(a.skill_id, {})[a.employee_id] = a.level
 
         result = []
         for skill in skills:
             entry = {'skill_id': skill.id, 'skill_name': skill.name, 'category_name': skill.category.name, 'teams': {}}
+            skill_assignments = assignment_map.get(skill.id, {})
             for team in teams:
-                member_ids = list(team.members.values_list('id', flat=True))
-                if not member_ids:
+                members = team_member_ids[team.id]
+                if not members:
                     entry['teams'][team.name] = None
                     continue
-                assignments = SkillAssignment.objects.filter(
-                    employee_id__in=member_ids, skill=skill,
-                )
-                levels = [a.level for a in assignments]
-                entry['teams'][team.name] = round(sum(levels) / len(member_ids), 2) if levels else 0
+                levels = [skill_assignments[mid] for mid in members if mid in skill_assignments]
+                entry['teams'][team.name] = round(sum(levels) / len(members), 2) if levels else 0
             result.append(entry)
 
         return Response(result)
@@ -612,14 +622,25 @@ class KpiView(APIView):
     def get(self, request):
         from teams.models import Team
 
-        teams = Team.objects.all()
-        skills = Skill.objects.all()
-        total_skills = skills.count()
+        teams = list(Team.objects.prefetch_related('members').all())
+        total_skills = Skill.objects.count()
+
+        all_member_ids = set()
+        team_member_ids = {}
+        for team in teams:
+            ids = set(team.members.values_list('id', flat=True))
+            team_member_ids[team.id] = ids
+            all_member_ids |= ids
+
+        assignments = SkillAssignment.objects.filter(employee_id__in=all_member_ids)
+        emp_assignments: dict = {}
+        for a in assignments:
+            emp_assignments.setdefault(a.employee_id, []).append(a)
 
         result = []
         for team in teams:
-            member_ids = list(team.members.values_list('id', flat=True))
-            member_count = len(member_ids)
+            members = team_member_ids[team.id]
+            member_count = len(members)
             if member_count == 0:
                 result.append({
                     'team_id': team.id, 'team_name': team.name,
@@ -628,13 +649,19 @@ class KpiView(APIView):
                 })
                 continue
 
-            assignments = SkillAssignment.objects.filter(employee_id__in=member_ids)
-            total_assignments = assignments.count()
-            confirmed_count = assignments.filter(status=SkillAssignment.Status.CONFIRMED).count()
-            levels = [a.level for a in assignments]
-            avg_level = round(sum(levels) / len(levels), 2) if levels else 0
+            team_assignments = [a for mid in members for a in emp_assignments.get(mid, [])]
+            total_assignments = len(team_assignments)
+            if total_assignments == 0:
+                result.append({
+                    'team_id': team.id, 'team_name': team.name,
+                    'member_count': member_count, 'avg_level': 0, 'coverage': 0,
+                    'total_assignments': 0, 'confirmed_ratio': 0,
+                })
+                continue
 
-            unique_skills = assignments.values('skill_id').distinct().count()
+            confirmed_count = sum(1 for a in team_assignments if a.status == SkillAssignment.Status.CONFIRMED)
+            avg_level = round(sum(a.level for a in team_assignments) / total_assignments, 2)
+            unique_skills = len({a.skill_id for a in team_assignments})
             coverage = round(unique_skills / total_skills * 100, 1) if total_skills else 0
 
             result.append({
@@ -644,7 +671,7 @@ class KpiView(APIView):
                 'avg_level': avg_level,
                 'coverage': coverage,
                 'total_assignments': total_assignments,
-                'confirmed_ratio': round(confirmed_count / total_assignments * 100, 1) if total_assignments else 0,
+                'confirmed_ratio': round(confirmed_count / total_assignments * 100, 1),
             })
 
         return Response(result)

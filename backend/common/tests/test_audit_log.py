@@ -76,3 +76,14 @@ def test_csv_import_creates_audit_entry(admin_client):
     admin_client.post('/api/skills/import-csv/', {'file': csv}, format='multipart')
 
     assert AuditLog.objects.filter(action='import', entity_type='Skill').count() == 1
+
+
+def test_updating_category_creates_audit_entry(admin_client):
+    cat = SkillCategory.objects.create(name='Ops')
+    AuditLog.objects.all().delete()
+
+    admin_client.patch(f'{CATEGORIES_URL}{cat.pk}/', {'name': 'Operations'}, format='json')
+
+    assert AuditLog.objects.filter(action='update', entity_type='SkillCategory').count() == 1
+    entry = AuditLog.objects.first()
+    assert 'Operations' in entry.detail

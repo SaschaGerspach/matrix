@@ -27,6 +27,10 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
+INSECURE_KEYS = {'change-me', 'change-me-in-production'}
+if not DEBUG and SECRET_KEY in INSECURE_KEYS:
+    raise ValueError('SECRET_KEY must be changed for production (DEBUG=False).')
+
 
 # Application definition
 
