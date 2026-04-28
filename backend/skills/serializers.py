@@ -152,6 +152,8 @@ class SkillAssignmentSerializer(serializers.ModelSerializer):
         return value
 
     def validate_employee(self, value):
+        if self.instance is not None and self.instance.employee_id != value.id:
+            raise serializers.ValidationError('Employee cannot be changed after creation.')
         request = self.context['request']
         if request.user.is_staff:
             return value
@@ -163,3 +165,8 @@ class SkillAssignmentSerializer(serializers.ModelSerializer):
         if value.id in get_led_member_ids(employee):
             return value
         raise serializers.ValidationError('You can only assign skills to yourself or your team members.')
+
+    def validate_skill(self, value):
+        if self.instance is not None and self.instance.skill_id != value.id:
+            raise serializers.ValidationError('Skill cannot be changed after creation.')
+        return value

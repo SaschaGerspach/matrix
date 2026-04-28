@@ -438,6 +438,17 @@ class TeamComparisonView(APIView):
         return Response(result)
 
 
+def can_view_employee_data(user, target_employee_id):
+    if user.is_staff:
+        return True
+    employee = get_employee(user)
+    if employee is None:
+        return False
+    if employee.id == target_employee_id:
+        return True
+    return target_employee_id in get_led_member_ids(employee)
+
+
 class SkillTrendsView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -445,6 +456,17 @@ class SkillTrendsView(APIView):
         employee_id = request.query_params.get('employee')
         if not employee_id:
             return Response([])
+
+        try:
+            employee_id = int(employee_id)
+        except (ValueError, TypeError):
+            return Response([])
+
+        if not can_view_employee_data(request.user, employee_id):
+            return Response(
+                {'detail': 'Not authorized to view this employee data.'},
+                status=http_status.HTTP_403_FORBIDDEN,
+            )
 
         entries = SkillAssignmentHistory.objects.filter(
             employee_id=employee_id,
@@ -638,5 +660,18 @@ class SkillHistoryViewSet(viewsets.ReadOnlyModelViewSet):
         )
         employee_id = self.request.query_params.get('employee')
         if employee_id:
-            qs = qs.filter(employee_id=employee_id)
-        return qs
+            try:
+                employee_id = int(employee_id)
+            except (ValueError, TypeError):
+                return qs.none()
+            if not can_view_employee_data(self.request.user, employee_id):
+                return qs.none()
+            return qs.filter(employee_id=employee_id)
+
+        if self.request.user.is_staff:
+            return qs
+        employee = get_employee(self.request.user)
+        if employee is None:
+            return qs.none()
+        visible_ids = get_led_member_ids(employee) | {employee.id}
+        return qs.filter(employee_id__in=visible_ids)

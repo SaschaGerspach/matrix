@@ -1,7 +1,29 @@
 from rest_framework import serializers, status
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.throttling import AnonRateThrottle, SimpleRateThrottle
 from rest_framework.views import APIView
+
+
+class AuthAnonThrottle(AnonRateThrottle):
+    scope = 'auth'
+
+
+class AuthUserThrottle(SimpleRateThrottle):
+    scope = 'auth'
+
+    def get_cache_key(self, request, view):
+        if request.user and request.user.is_authenticated:
+            return self.cache_format % {
+                'scope': self.scope,
+                'ident': request.user.pk,
+            }
+        return self.get_ident(request)
+
+
+class ThrottledObtainAuthToken(ObtainAuthToken):
+    throttle_classes = (AuthAnonThrottle,)
 
 
 class LogoutView(APIView):
@@ -21,6 +43,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 class ChangePasswordView(APIView):
     permission_classes = (IsAuthenticated,)
+    throttle_classes = (AuthUserThrottle,)
 
     def post(self, request):
         serializer = ChangePasswordSerializer(data=request.data)
