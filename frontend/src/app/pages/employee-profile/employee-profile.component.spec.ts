@@ -56,6 +56,7 @@ const meResponse = {
 };
 
 const certsResponse = { count: 0, next: null, previous: null, results: [] };
+const plansResponse = { count: 0, next: null, previous: null, results: [] };
 const skillsResponse: unknown[] = [];
 
 function flushInitRequests(
@@ -68,6 +69,7 @@ function flushInitRequests(
   http.expectOne((r) => r.url === `${environment.apiUrl}/skill-history/`).flush(history);
   http.expectOne((r) => r.url === `${environment.apiUrl}/skill-trends/`).flush(trends);
   http.expectOne((r) => r.url === `${environment.apiUrl}/certificates/`).flush(certsResponse);
+  http.expectOne((r) => r.url === `${environment.apiUrl}/development-plans/`).flush(plansResponse);
   http.expectOne(`${environment.apiUrl}/skills/`).flush(skillsResponse);
   http.expectOne(`${environment.apiUrl}/me/`).flush(meResponse);
 }
@@ -187,6 +189,7 @@ describe('EmployeeProfileComponent', () => {
     );
     http.expectOne((r) => r.url === `${environment.apiUrl}/skill-trends/`).flush([]);
     http.expectOne((r) => r.url === `${environment.apiUrl}/certificates/`).flush(certsResponse);
+    http.expectOne((r) => r.url === `${environment.apiUrl}/development-plans/`).flush(plansResponse);
     http.expectOne(`${environment.apiUrl}/skills/`).flush(skillsResponse);
     http.expectOne(`${environment.apiUrl}/me/`).flush(meResponse);
     fixture.detectChanges();

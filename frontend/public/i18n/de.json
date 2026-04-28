@@ -157,6 +157,20 @@
     "PASSWORDS_MISMATCH": "Passwörter stimmen nicht überein.",
     "LANGUAGE": "Sprache"
   },
+  "DEV_PLANS": {
+    "TITLE": "Entwicklungspläne",
+    "CREATE": "Neuer Plan",
+    "PLAN_TITLE": "Plantitel",
+    "NOTES": "Notizen",
+    "EMPTY": "Noch keine Entwicklungspläne.",
+    "CURRENT": "Aktuell",
+    "TARGET": "Ziel",
+    "TARGET_DATE": "Zieldatum",
+    "ADD_GOAL": "Ziel hinzufügen",
+    "STATUS_OPEN": "Offen",
+    "STATUS_IN_PROGRESS": "In Arbeit",
+    "STATUS_COMPLETED": "Abgeschlossen"
+  },
   "CERTIFICATES": {
     "TITLE": "Zertifikate",
     "ADD": "Zertifikat hinzufügen",

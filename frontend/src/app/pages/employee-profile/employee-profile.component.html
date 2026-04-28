@@ -175,6 +175,136 @@
     </mat-card-content>
   </mat-card>
 
+  <mat-card class="dev-plan-card">
+    <mat-card-header>
+      <mat-card-title>{{ 'DEV_PLANS.TITLE' | translate }}</mat-card-title>
+      @if (canEdit()) {
+        <button mat-button color="primary" (click)="togglePlanForm()">
+          <mat-icon>add</mat-icon>
+          {{ 'DEV_PLANS.CREATE' | translate }}
+        </button>
+      }
+    </mat-card-header>
+    <mat-card-content>
+      @if (showPlanForm()) {
+        <div class="plan-form">
+          <mat-form-field>
+            <mat-label>{{ 'DEV_PLANS.PLAN_TITLE' | translate }}</mat-label>
+            <input matInput [(ngModel)]="newPlanTitle">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>{{ 'DEV_PLANS.NOTES' | translate }}</mat-label>
+            <textarea matInput [(ngModel)]="newPlanNotes" rows="2"></textarea>
+          </mat-form-field>
+          <div class="plan-form-actions">
+            <button mat-button (click)="togglePlanForm()">{{ 'CERTIFICATES.CANCEL' | translate }}</button>
+            <button mat-flat-button color="primary" (click)="createPlan()">{{ 'CERTIFICATES.SAVE' | translate }}</button>
+          </div>
+        </div>
+      }
+
+      @for (plan of devPlans(); track plan.id) {
+        <div class="plan-block">
+          <div class="plan-header">
+            <h3>{{ plan.title }}</h3>
+            @if (canEdit()) {
+              <button mat-icon-button color="warn" (click)="deletePlan(plan.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
+          </div>
+          @if (plan.notes) {
+            <p class="plan-notes">{{ plan.notes }}</p>
+          }
+
+          @if (plan.goals.length) {
+            <table mat-table [dataSource]="plan.goals">
+              <ng-container matColumnDef="skill_name">
+                <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.SKILL' | translate }}</th>
+                <td mat-cell *matCellDef="let g">{{ g.skill_name }}</td>
+              </ng-container>
+              <ng-container matColumnDef="current_level">
+                <th mat-header-cell *matHeaderCellDef>{{ 'DEV_PLANS.CURRENT' | translate }}</th>
+                <td mat-cell *matCellDef="let g">
+                  <span class="level-badge level-{{ g.current_level }}">{{ g.current_level }}</span>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="target_level">
+                <th mat-header-cell *matHeaderCellDef>{{ 'DEV_PLANS.TARGET' | translate }}</th>
+                <td mat-cell *matCellDef="let g">
+                  <span class="level-badge level-{{ g.target_level }}">{{ g.target_level }}</span>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="target_date">
+                <th mat-header-cell *matHeaderCellDef>{{ 'DEV_PLANS.TARGET_DATE' | translate }}</th>
+                <td mat-cell *matCellDef="let g">{{ g.target_date ? (g.target_date | date:'mediumDate') : '–' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.STATUS' | translate }}</th>
+                <td mat-cell *matCellDef="let g">
+                  @if (canEdit()) {
+                    <mat-select [value]="g.status" (selectionChange)="updateGoalStatus(g.id, $event.value)">
+                      <mat-option value="open">{{ 'DEV_PLANS.STATUS_OPEN' | translate }}</mat-option>
+                      <mat-option value="in_progress">{{ 'DEV_PLANS.STATUS_IN_PROGRESS' | translate }}</mat-option>
+                      <mat-option value="completed">{{ 'DEV_PLANS.STATUS_COMPLETED' | translate }}</mat-option>
+                    </mat-select>
+                  } @else {
+                    {{ g.status }}
+                  }
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let g">
+                  @if (canEdit()) {
+                    <button mat-icon-button color="warn" (click)="deleteGoal(g.id)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  }
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="['skill_name', 'current_level', 'target_level', 'target_date', 'status', 'actions']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['skill_name', 'current_level', 'target_level', 'target_date', 'status', 'actions']"></tr>
+            </table>
+          }
+
+          @if (canEdit()) {
+            <div class="add-goal-form">
+              <mat-form-field>
+                <mat-label>{{ 'TABLE.SKILL' | translate }}</mat-label>
+                <mat-select [(ngModel)]="newGoalSkill">
+                  @for (s of skills(); track s.id) {
+                    <mat-option [value]="s.id">{{ s.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>{{ 'DEV_PLANS.CURRENT' | translate }}</mat-label>
+                <input matInput type="number" min="1" max="5" [(ngModel)]="newGoalCurrentLevel">
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>{{ 'DEV_PLANS.TARGET' | translate }}</mat-label>
+                <input matInput type="number" min="1" max="5" [(ngModel)]="newGoalTargetLevel">
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>{{ 'DEV_PLANS.TARGET_DATE' | translate }}</mat-label>
+                <input matInput type="date" [(ngModel)]="newGoalTargetDate">
+              </mat-form-field>
+              <button mat-stroked-button color="primary"
+                      (click)="newGoalPlan = plan.id; addGoal()">
+                {{ 'DEV_PLANS.ADD_GOAL' | translate }}
+              </button>
+            </div>
+          }
+        </div>
+      } @empty {
+        @if (!showPlanForm()) {
+          <p>{{ 'DEV_PLANS.EMPTY' | translate }}</p>
+        }
+      }
+    </mat-card-content>
+  </mat-card>
+
   @if (hasTrends()) {
     <mat-card class="trend-card">
       <mat-card-header>

@@ -17,6 +17,7 @@ import { ChartConfiguration } from 'chart.js';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { Certificate, CertificateService } from '../../core/certificate.service';
+import { DevelopmentPlan, DevelopmentPlanService } from '../../core/development-plan.service';
 import { EmployeeProfile, EmployeeService } from '../../core/employee.service';
 import { MeService } from '../../core/me.service';
 import { Skill, SkillHistoryEntry, SkillService, SkillTrendData } from '../../core/skill.service';
@@ -53,16 +54,19 @@ export class EmployeeProfileComponent implements OnInit {
   private readonly employeeService = inject(EmployeeService);
   private readonly skillService = inject(SkillService);
   private readonly certificateService = inject(CertificateService);
+  private readonly devPlanService = inject(DevelopmentPlanService);
   private readonly meService = inject(MeService);
 
   readonly profile = signal<EmployeeProfile | null>(null);
   readonly history = signal<SkillHistoryEntry[]>([]);
   readonly certificates = signal<Certificate[]>([]);
+  readonly devPlans = signal<DevelopmentPlan[]>([]);
   readonly skills = signal<Skill[]>([]);
   readonly hasTrends = signal(false);
   readonly loading = signal(true);
   readonly canEdit = signal(false);
   readonly showCertForm = signal(false);
+  readonly showPlanForm = signal(false);
   readonly displayedColumns = ['skill_name', 'category_name', 'level', 'status'];
   readonly historyColumns = ['timestamp', 'skill_name', 'action', 'old_level', 'new_level', 'changed_by_name'];
   readonly certColumns = ['name', 'skill_name', 'issuer', 'expiry_date', 'file', 'actions'];
@@ -74,6 +78,14 @@ export class EmployeeProfileComponent implements OnInit {
   certExpiryDate = '';
   certSkill: number | undefined;
   certFile: File | null = null;
+
+  newPlanTitle = '';
+  newPlanNotes = '';
+  newGoalPlan: number | undefined;
+  newGoalSkill: number | undefined;
+  newGoalCurrentLevel: number | undefined;
+  newGoalTargetLevel: number | undefined;
+  newGoalTargetDate = '';
 
   radarData: ChartConfiguration<'radar'>['data'] = { labels: [], datasets: [] };
   radarOptions: ChartConfiguration<'radar'>['options'] = {
@@ -117,6 +129,7 @@ export class EmployeeProfileComponent implements OnInit {
       next: (data) => this.buildTrendData(data),
     });
     this.loadCertificates();
+    this.loadDevPlans();
     this.skillService.listSkills().subscribe((s) => this.skills.set(s));
     this.meService.getProfile().subscribe((me) => {
       this.canEdit.set(me.is_admin || me.is_team_lead || me.id === this.employeeId);
@@ -175,6 +188,75 @@ export class EmployeeProfileComponent implements OnInit {
     const inThreeMonths = new Date();
     inThreeMonths.setMonth(inThreeMonths.getMonth() + 3);
     return expiry >= now && expiry <= inThreeMonths;
+  }
+
+  loadDevPlans(): void {
+    this.devPlanService.listPlans(this.employeeId).subscribe({
+      next: (res) => this.devPlans.set(res.results),
+    });
+  }
+
+  togglePlanForm(): void {
+    this.showPlanForm.update((v) => !v);
+  }
+
+  createPlan(): void {
+    if (!this.newPlanTitle.trim()) return;
+    this.devPlanService.createPlan(this.employeeId, this.newPlanTitle.trim(), this.newPlanNotes.trim()).subscribe({
+      next: () => {
+        this.newPlanTitle = '';
+        this.newPlanNotes = '';
+        this.showPlanForm.set(false);
+        this.loadDevPlans();
+      },
+      error: () => this.loadDevPlans(),
+    });
+  }
+
+  deletePlan(id: number): void {
+    this.devPlanService.deletePlan(id).subscribe({
+      next: () => this.loadDevPlans(),
+      error: () => this.loadDevPlans(),
+    });
+  }
+
+  addGoal(): void {
+    if (!this.newGoalPlan || !this.newGoalSkill || !this.newGoalCurrentLevel || !this.newGoalTargetLevel) return;
+    this.devPlanService.createGoal({
+      plan: this.newGoalPlan,
+      skill: this.newGoalSkill,
+      current_level: this.newGoalCurrentLevel,
+      target_level: this.newGoalTargetLevel,
+      target_date: this.newGoalTargetDate || undefined,
+    }).subscribe({
+      next: () => {
+        this.newGoalSkill = undefined;
+        this.newGoalCurrentLevel = undefined;
+        this.newGoalTargetLevel = undefined;
+        this.newGoalTargetDate = '';
+        this.loadDevPlans();
+      },
+      error: () => this.loadDevPlans(),
+    });
+  }
+
+  updateGoalStatus(goalId: number, status: string): void {
+    this.devPlanService.updateGoal(goalId, { status: status as 'open' | 'in_progress' | 'completed' }).subscribe({
+      next: () => this.loadDevPlans(),
+      error: () => this.loadDevPlans(),
+    });
+  }
+
+  deleteGoal(goalId: number): void {
+    this.devPlanService.deleteGoal(goalId).subscribe({
+      next: () => this.loadDevPlans(),
+      error: () => this.loadDevPlans(),
+    });
+  }
+
+  goalProgress(goal: { current_level: number; target_level: number }): number {
+    const range = goal.target_level - goal.current_level;
+    return range > 0 ? 0 : 100;
   }
 
   private resetCertForm(): void {

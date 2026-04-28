@@ -110,6 +110,76 @@
   justify-content: flex-end;
 }
 
+.dev-plan-card {
+  margin-top: 1.5rem;
+
+  mat-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  table {
+    width: 100%;
+  }
+}
+
+.plan-block {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.plan-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.plan-notes {
+  color: #666;
+  margin: 0.25rem 0 0.75rem;
+}
+
+.plan-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1rem;
+  margin-bottom: 1rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.plan-form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.add-goal-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+
+  mat-form-field {
+    flex: 1;
+    min-width: 120px;
+  }
+}
+
 .expired {
   color: #d32f2f;
   font-weight: 500;

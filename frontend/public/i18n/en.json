@@ -157,6 +157,20 @@
     "PASSWORDS_MISMATCH": "Passwords do not match.",
     "LANGUAGE": "Language"
   },
+  "DEV_PLANS": {
+    "TITLE": "Development Plans",
+    "CREATE": "New Plan",
+    "PLAN_TITLE": "Plan title",
+    "NOTES": "Notes",
+    "EMPTY": "No development plans yet.",
+    "CURRENT": "Current",
+    "TARGET": "Target",
+    "TARGET_DATE": "Target date",
+    "ADD_GOAL": "Add Goal",
+    "STATUS_OPEN": "Open",
+    "STATUS_IN_PROGRESS": "In Progress",
+    "STATUS_COMPLETED": "Completed"
+  },
   "CERTIFICATES": {
     "TITLE": "Certificates",
     "ADD": "Add Certificate",
