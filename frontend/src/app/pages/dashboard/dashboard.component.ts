@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,7 +13,6 @@ import { Router } from '@angular/router';
 
 import { TranslateModule } from '@ngx-translate/core';
 
-import { environment } from '../../../environments/environment';
 import { MatrixAssignment, MatrixEmployee, MatrixSkill, Skill, SkillCategory, SkillService } from '../../core/skill.service';
 import { MeService } from '../../core/me.service';
 import { Team, TeamService } from '../../core/team.service';
@@ -38,7 +36,6 @@ import { Team, TeamService } from '../../core/team.service';
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit {
-  private readonly http = inject(HttpClient);
   private readonly skillService = inject(SkillService);
   private readonly meService = inject(MeService);
   private readonly router = inject(Router);
@@ -166,28 +163,23 @@ export class DashboardComponent implements OnInit {
   }
 
   exportCsv(): void {
-    this.http
-      .get(`${environment.apiUrl}/skill-matrix/export/`, { responseType: 'blob' })
-      .subscribe((blob) => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'skill-matrix.csv';
-        a.click();
-        URL.revokeObjectURL(url);
-      });
+    this.skillService.exportMatrixCsv().subscribe((blob) => {
+      this.downloadBlob(blob, 'skill-matrix.csv');
+    });
   }
 
   exportPdf(): void {
-    this.http
-      .get(`${environment.apiUrl}/skill-matrix/export-pdf/`, { responseType: 'blob' })
-      .subscribe((blob) => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'skill-matrix.pdf';
-        a.click();
-        URL.revokeObjectURL(url);
-      });
+    this.skillService.exportMatrixPdf().subscribe((blob) => {
+      this.downloadBlob(blob, 'skill-matrix.pdf');
+    });
+  }
+
+  private downloadBlob(blob: Blob, filename: string): void {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 }

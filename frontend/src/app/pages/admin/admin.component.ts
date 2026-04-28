@@ -81,30 +81,38 @@ export class AdminComponent implements OnInit {
 
   addCategory(): void {
     if (!this.newCategoryName.trim()) return;
-    this.skillService.createCategory(this.newCategoryName.trim()).subscribe(() => {
-      this.newCategoryName = '';
-      this.skillService.listCategories().subscribe((c) => this.categories.set(c));
+    this.skillService.createCategory(this.newCategoryName.trim()).subscribe({
+      next: () => {
+        this.newCategoryName = '';
+        this.reloadCategories();
+      },
+      error: () => this.reloadCategories(),
     });
   }
 
   deleteCategory(id: number): void {
-    this.skillService.deleteCategory(id).subscribe(() => {
-      this.skillService.listCategories().subscribe((c) => this.categories.set(c));
+    this.skillService.deleteCategory(id).subscribe({
+      next: () => this.reloadCategories(),
+      error: () => this.reloadCategories(),
     });
   }
 
   addSkill(): void {
     if (!this.newSkillName.trim() || !this.newSkillCategory) return;
-    this.skillService.createSkill(this.newSkillName.trim(), this.newSkillCategory).subscribe(() => {
-      this.newSkillName = '';
-      this.newSkillCategory = undefined;
-      this.skillService.listSkills().subscribe((s) => this.skills.set(s));
+    this.skillService.createSkill(this.newSkillName.trim(), this.newSkillCategory).subscribe({
+      next: () => {
+        this.newSkillName = '';
+        this.newSkillCategory = undefined;
+        this.reloadSkills();
+      },
+      error: () => this.reloadSkills(),
     });
   }
 
   deleteSkill(id: number): void {
-    this.skillService.deleteSkill(id).subscribe(() => {
-      this.skillService.listSkills().subscribe((s) => this.skills.set(s));
+    this.skillService.deleteSkill(id).subscribe({
+      next: () => this.reloadSkills(),
+      error: () => this.reloadSkills(),
     });
   }
 
@@ -114,17 +122,21 @@ export class AdminComponent implements OnInit {
 
   addRequirement(): void {
     if (!this.newReqTeam || !this.newReqSkill || !this.newReqLevel) return;
-    this.skillService.createRequirement(this.newReqTeam, this.newReqSkill, this.newReqLevel).subscribe(() => {
-      this.newReqTeam = undefined;
-      this.newReqSkill = undefined;
-      this.newReqLevel = undefined;
-      this.skillService.listRequirements().subscribe((r) => this.requirements.set(r));
+    this.skillService.createRequirement(this.newReqTeam, this.newReqSkill, this.newReqLevel).subscribe({
+      next: () => {
+        this.newReqTeam = undefined;
+        this.newReqSkill = undefined;
+        this.newReqLevel = undefined;
+        this.reloadRequirements();
+      },
+      error: () => this.reloadRequirements(),
     });
   }
 
   deleteRequirement(id: number): void {
-    this.skillService.deleteRequirement(id).subscribe(() => {
-      this.skillService.listRequirements().subscribe((r) => this.requirements.set(r));
+    this.skillService.deleteRequirement(id).subscribe({
+      next: () => this.reloadRequirements(),
+      error: () => this.reloadRequirements(),
     });
   }
 
@@ -134,61 +146,96 @@ export class AdminComponent implements OnInit {
 
   addLevelDescription(): void {
     if (!this.newDescSkill || !this.newDescLevel || !this.newDescText.trim()) return;
-    this.skillService.createLevelDescription(this.newDescSkill, this.newDescLevel, this.newDescText.trim()).subscribe(() => {
-      this.newDescSkill = undefined;
-      this.newDescLevel = undefined;
-      this.newDescText = '';
-      this.skillService.listLevelDescriptions().subscribe((d) => this.levelDescriptions.set(d));
+    this.skillService.createLevelDescription(this.newDescSkill, this.newDescLevel, this.newDescText.trim()).subscribe({
+      next: () => {
+        this.newDescSkill = undefined;
+        this.newDescLevel = undefined;
+        this.newDescText = '';
+        this.reloadLevelDescriptions();
+      },
+      error: () => this.reloadLevelDescriptions(),
     });
   }
 
   deleteLevelDescription(id: number): void {
-    this.skillService.deleteLevelDescription(id).subscribe(() => {
-      this.skillService.listLevelDescriptions().subscribe((d) => this.levelDescriptions.set(d));
+    this.skillService.deleteLevelDescription(id).subscribe({
+      next: () => this.reloadLevelDescriptions(),
+      error: () => this.reloadLevelDescriptions(),
     });
   }
 
   addRoleTemplate(): void {
     if (!this.newTemplateName.trim()) return;
-    this.skillService.createRoleTemplate(this.newTemplateName.trim(), this.newTemplateDesc.trim()).subscribe(() => {
-      this.newTemplateName = '';
-      this.newTemplateDesc = '';
-      this.skillService.listRoleTemplates().subscribe((t) => this.roleTemplates.set(t));
+    this.skillService.createRoleTemplate(this.newTemplateName.trim(), this.newTemplateDesc.trim()).subscribe({
+      next: () => {
+        this.newTemplateName = '';
+        this.newTemplateDesc = '';
+        this.reloadRoleTemplates();
+      },
+      error: () => this.reloadRoleTemplates(),
     });
   }
 
   deleteRoleTemplate(id: number): void {
-    this.skillService.deleteRoleTemplate(id).subscribe(() => {
-      this.skillService.listRoleTemplates().subscribe((t) => this.roleTemplates.set(t));
+    this.skillService.deleteRoleTemplate(id).subscribe({
+      next: () => this.reloadRoleTemplates(),
+      error: () => this.reloadRoleTemplates(),
     });
   }
 
   addTemplateSkill(): void {
     if (!this.selectedTemplateId || !this.newTplSkill || !this.newTplLevel) return;
-    this.skillService.addRoleTemplateSkill(this.selectedTemplateId, this.newTplSkill, this.newTplLevel).subscribe((tpl) => {
-      this.roleTemplates.update((list) => list.map((t) => (t.id === tpl.id ? tpl : t)));
-      this.newTplSkill = undefined;
-      this.newTplLevel = undefined;
+    this.skillService.addRoleTemplateSkill(this.selectedTemplateId, this.newTplSkill, this.newTplLevel).subscribe({
+      next: (tpl) => {
+        this.roleTemplates.update((list) => list.map((t) => (t.id === tpl.id ? tpl : t)));
+        this.newTplSkill = undefined;
+        this.newTplLevel = undefined;
+      },
+      error: () => this.reloadRoleTemplates(),
     });
   }
 
   removeTemplateSkill(templateId: number, skillPk: number): void {
-    this.skillService.removeRoleTemplateSkill(templateId, skillPk).subscribe((tpl) => {
-      this.roleTemplates.update((list) => list.map((t) => (t.id === tpl.id ? tpl : t)));
+    this.skillService.removeRoleTemplateSkill(templateId, skillPk).subscribe({
+      next: (tpl) => this.roleTemplates.update((list) => list.map((t) => (t.id === tpl.id ? tpl : t))),
+      error: () => this.reloadRoleTemplates(),
     });
   }
 
   applyTemplate(): void {
     if (!this.applyTemplateId || !this.applyTeamId) return;
-    this.skillService.applyRoleTemplate(this.applyTemplateId, this.applyTeamId).subscribe(() => {
-      this.applyTemplateId = undefined;
-      this.applyTeamId = undefined;
-      this.skillService.listRequirements().subscribe((r) => this.requirements.set(r));
+    this.skillService.applyRoleTemplate(this.applyTemplateId, this.applyTeamId).subscribe({
+      next: () => {
+        this.applyTemplateId = undefined;
+        this.applyTeamId = undefined;
+        this.reloadRequirements();
+      },
+      error: () => this.reloadRequirements(),
     });
   }
 
   selectedTemplate(): RoleTemplate | undefined {
     return this.roleTemplates().find((t) => t.id === this.selectedTemplateId);
+  }
+
+  private reloadCategories(): void {
+    this.skillService.listCategories().subscribe((c) => this.categories.set(c));
+  }
+
+  private reloadSkills(): void {
+    this.skillService.listSkills().subscribe((s) => this.skills.set(s));
+  }
+
+  private reloadRequirements(): void {
+    this.skillService.listRequirements().subscribe((r) => this.requirements.set(r));
+  }
+
+  private reloadLevelDescriptions(): void {
+    this.skillService.listLevelDescriptions().subscribe((d) => this.levelDescriptions.set(d));
+  }
+
+  private reloadRoleTemplates(): void {
+    this.skillService.listRoleTemplates().subscribe((t) => this.roleTemplates.set(t));
   }
 
   readonly employeeImportResult = signal<CsvImportResult | null>(null);
@@ -198,8 +245,9 @@ export class AdminComponent implements OnInit {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
     this.employeeImportResult.set(null);
-    this.employeeService.importCsv(file).subscribe((result) => {
-      this.employeeImportResult.set(result);
+    this.employeeService.importCsv(file).subscribe({
+      next: (result) => this.employeeImportResult.set(result),
+      error: () => this.employeeImportResult.set({ created: 0, skipped: 0, errors: [{ row: 0, detail: 'Import failed' }] }),
     });
   }
 
@@ -207,10 +255,13 @@ export class AdminComponent implements OnInit {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
     this.skillImportResult.set(null);
-    this.skillService.importSkillsCsv(file).subscribe((result) => {
-      this.skillImportResult.set(result);
-      this.skillService.listSkills().subscribe((s) => this.skills.set(s));
-      this.skillService.listCategories().subscribe((c) => this.categories.set(c));
+    this.skillService.importSkillsCsv(file).subscribe({
+      next: (result) => {
+        this.skillImportResult.set(result);
+        this.reloadSkills();
+        this.reloadCategories();
+      },
+      error: () => this.skillImportResult.set({ created: 0, skipped: 0, errors: [{ row: 0, detail: 'Import failed' }] }),
     });
   }
 }

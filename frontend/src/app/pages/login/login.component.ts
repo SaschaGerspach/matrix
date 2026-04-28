@@ -55,7 +55,7 @@ export class LoginComponent {
     this.auth.login(username, password).subscribe({
       next: () => {
         this.loading.set(false);
-        this.router.navigate(['/employees']);
+        this.router.navigate(['/my-skills']);
       },
       error: () => {
         this.loading.set(false);

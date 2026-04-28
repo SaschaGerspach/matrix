@@ -307,4 +307,12 @@ export class SkillService {
       `${environment.apiUrl}/skill-history/`, { params },
     );
   }
+
+  exportMatrixCsv(): Observable<Blob> {
+    return this.http.get(`${environment.apiUrl}/skill-matrix/export/`, { responseType: 'blob' });
+  }
+
+  exportMatrixPdf(): Observable<Blob> {
+    return this.http.get(`${environment.apiUrl}/skill-matrix/export-pdf/`, { responseType: 'blob' });
+  }
 }

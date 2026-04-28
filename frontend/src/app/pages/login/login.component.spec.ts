@@ -44,7 +44,7 @@ describe('LoginComponent', () => {
     http.expectNone(`${environment.apiUrl}/auth/login/`);
   });
 
-  it('navigates to /employees on successful login', () => {
+  it('navigates to /my-skills on successful login', () => {
     const navigateSpy = spyOn(router, 'navigate');
     component.form.setValue({ username: 'user', password: 'pw' });
     component.submit();
@@ -52,7 +52,7 @@ describe('LoginComponent', () => {
     const req = http.expectOne(`${environment.apiUrl}/auth/login/`);
     req.flush({ token: 'abc123' });
 
-    expect(navigateSpy).toHaveBeenCalledWith(['/employees']);
+    expect(navigateSpy).toHaveBeenCalledWith(['/my-skills']);
     expect(component.loading()).toBeFalse();
     expect(component.errorMessage()).toBeNull();
   });
