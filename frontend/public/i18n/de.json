@@ -157,6 +157,24 @@
     "PASSWORDS_MISMATCH": "Passwörter stimmen nicht überein.",
     "LANGUAGE": "Sprache"
   },
+  "CERTIFICATES": {
+    "TITLE": "Zertifikate",
+    "ADD": "Zertifikat hinzufügen",
+    "EMPTY": "Noch keine Zertifikate.",
+    "NAME": "Zertifikatsname",
+    "ISSUER": "Aussteller",
+    "ISSUED_DATE": "Ausstellungsdatum",
+    "EXPIRY_DATE": "Ablaufdatum",
+    "SKILL": "Verknüpfter Skill",
+    "SKILL_NONE": "Keiner",
+    "FILE": "Datei",
+    "UPLOAD": "Datei hochladen",
+    "SAVE": "Speichern",
+    "CANCEL": "Abbrechen",
+    "DELETE_CONFIRM": "Dieses Zertifikat löschen?",
+    "EXPIRED": "Abgelaufen",
+    "EXPIRES_SOON": "Läuft bald ab"
+  },
   "COMMON": {
     "MEMBERS": "Mitglieder"
   }

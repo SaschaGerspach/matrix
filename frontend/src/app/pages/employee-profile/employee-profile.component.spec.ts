@@ -50,6 +50,14 @@ const trendsResponse = [
   },
 ];
 
+const meResponse = {
+  id: 1, first_name: 'Alice', last_name: 'A', full_name: 'Alice A',
+  email: 'alice@x.com', user: 1, is_team_lead: false, is_admin: true,
+};
+
+const certsResponse = { count: 0, next: null, previous: null, results: [] };
+const skillsResponse: unknown[] = [];
+
 function flushInitRequests(
   http: HttpTestingController,
   profile = profileResponse,
@@ -59,6 +67,9 @@ function flushInitRequests(
   http.expectOne(`${environment.apiUrl}/employees/1/profile/`).flush(profile);
   http.expectOne((r) => r.url === `${environment.apiUrl}/skill-history/`).flush(history);
   http.expectOne((r) => r.url === `${environment.apiUrl}/skill-trends/`).flush(trends);
+  http.expectOne((r) => r.url === `${environment.apiUrl}/certificates/`).flush(certsResponse);
+  http.expectOne(`${environment.apiUrl}/skills/`).flush(skillsResponse);
+  http.expectOne(`${environment.apiUrl}/me/`).flush(meResponse);
 }
 
 describe('EmployeeProfileComponent', () => {
@@ -175,6 +186,9 @@ describe('EmployeeProfileComponent', () => {
       { count: 0, next: null, previous: null, results: [] },
     );
     http.expectOne((r) => r.url === `${environment.apiUrl}/skill-trends/`).flush([]);
+    http.expectOne((r) => r.url === `${environment.apiUrl}/certificates/`).flush(certsResponse);
+    http.expectOne(`${environment.apiUrl}/skills/`).flush(skillsResponse);
+    http.expectOne(`${environment.apiUrl}/me/`).flush(meResponse);
     fixture.detectChanges();
 
     expect(component.loading()).toBeFalse();

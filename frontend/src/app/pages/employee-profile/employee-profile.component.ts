@@ -1,18 +1,25 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 
 import { TranslateModule } from '@ngx-translate/core';
 
+import { Certificate, CertificateService } from '../../core/certificate.service';
 import { EmployeeProfile, EmployeeService } from '../../core/employee.service';
-import { SkillHistoryEntry, SkillService, SkillTrendData } from '../../core/skill.service';
+import { MeService } from '../../core/me.service';
+import { Skill, SkillHistoryEntry, SkillService, SkillTrendData } from '../../core/skill.service';
 
 const TREND_COLORS = [
   '#3f51b5', '#e91e63', '#4caf50', '#ff9800', '#9c27b0',
@@ -25,10 +32,15 @@ const TREND_COLORS = [
   imports: [
     BaseChartDirective,
     DatePipe,
+    FormsModule,
     MatButtonModule,
     MatCardModule,
     MatChipsModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
     MatProgressSpinnerModule,
+    MatSelectModule,
     MatTableModule,
     RouterLink,
     TranslateModule,
@@ -40,13 +52,28 @@ export class EmployeeProfileComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly employeeService = inject(EmployeeService);
   private readonly skillService = inject(SkillService);
+  private readonly certificateService = inject(CertificateService);
+  private readonly meService = inject(MeService);
 
   readonly profile = signal<EmployeeProfile | null>(null);
   readonly history = signal<SkillHistoryEntry[]>([]);
+  readonly certificates = signal<Certificate[]>([]);
+  readonly skills = signal<Skill[]>([]);
   readonly hasTrends = signal(false);
   readonly loading = signal(true);
+  readonly canEdit = signal(false);
+  readonly showCertForm = signal(false);
   readonly displayedColumns = ['skill_name', 'category_name', 'level', 'status'];
   readonly historyColumns = ['timestamp', 'skill_name', 'action', 'old_level', 'new_level', 'changed_by_name'];
+  readonly certColumns = ['name', 'skill_name', 'issuer', 'expiry_date', 'file', 'actions'];
+
+  private employeeId = 0;
+  certName = '';
+  certIssuer = '';
+  certIssuedDate = '';
+  certExpiryDate = '';
+  certSkill: number | undefined;
+  certFile: File | null = null;
 
   radarData: ChartConfiguration<'radar'>['data'] = { labels: [], datasets: [] };
   radarOptions: ChartConfiguration<'radar'>['options'] = {
@@ -74,8 +101,8 @@ export class EmployeeProfileComponent implements OnInit {
   };
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.employeeService.getProfile(id).subscribe({
+    this.employeeId = Number(this.route.snapshot.paramMap.get('id'));
+    this.employeeService.getProfile(this.employeeId).subscribe({
       next: (p) => {
         this.profile.set(p);
         this.buildRadarData(p);
@@ -83,12 +110,81 @@ export class EmployeeProfileComponent implements OnInit {
       },
       error: () => this.loading.set(false),
     });
-    this.skillService.skillHistory(id).subscribe({
+    this.skillService.skillHistory(this.employeeId).subscribe({
       next: (res) => this.history.set(res.results),
     });
-    this.skillService.skillTrends(id).subscribe({
+    this.skillService.skillTrends(this.employeeId).subscribe({
       next: (data) => this.buildTrendData(data),
     });
+    this.loadCertificates();
+    this.skillService.listSkills().subscribe((s) => this.skills.set(s));
+    this.meService.getProfile().subscribe((me) => {
+      this.canEdit.set(me.is_admin || me.is_team_lead || me.id === this.employeeId);
+    });
+  }
+
+  loadCertificates(): void {
+    this.certificateService.list(this.employeeId).subscribe({
+      next: (res) => this.certificates.set(res.results),
+    });
+  }
+
+  toggleCertForm(): void {
+    this.showCertForm.update((v) => !v);
+  }
+
+  onCertFileSelected(event: Event): void {
+    this.certFile = (event.target as HTMLInputElement).files?.[0] ?? null;
+  }
+
+  saveCertificate(): void {
+    if (!this.certName.trim()) return;
+    const formData = new FormData();
+    formData.append('employee', String(this.employeeId));
+    formData.append('name', this.certName.trim());
+    if (this.certIssuer.trim()) formData.append('issuer', this.certIssuer.trim());
+    if (this.certIssuedDate) formData.append('issued_date', this.certIssuedDate);
+    if (this.certExpiryDate) formData.append('expiry_date', this.certExpiryDate);
+    if (this.certSkill) formData.append('skill', String(this.certSkill));
+    if (this.certFile) formData.append('file', this.certFile);
+    this.certificateService.create(formData).subscribe({
+      next: () => {
+        this.resetCertForm();
+        this.loadCertificates();
+      },
+      error: () => this.loadCertificates(),
+    });
+  }
+
+  deleteCertificate(id: number): void {
+    this.certificateService.delete(id).subscribe({
+      next: () => this.loadCertificates(),
+      error: () => this.loadCertificates(),
+    });
+  }
+
+  isExpired(date: string | null): boolean {
+    if (!date) return false;
+    return new Date(date) < new Date();
+  }
+
+  isExpiringSoon(date: string | null): boolean {
+    if (!date) return false;
+    const expiry = new Date(date);
+    const now = new Date();
+    const inThreeMonths = new Date();
+    inThreeMonths.setMonth(inThreeMonths.getMonth() + 3);
+    return expiry >= now && expiry <= inThreeMonths;
+  }
+
+  private resetCertForm(): void {
+    this.certName = '';
+    this.certIssuer = '';
+    this.certIssuedDate = '';
+    this.certExpiryDate = '';
+    this.certSkill = undefined;
+    this.certFile = null;
+    this.showCertForm.set(false);
   }
 
   private buildRadarData(p: EmployeeProfile): void {

@@ -157,6 +157,24 @@
     "PASSWORDS_MISMATCH": "Passwords do not match.",
     "LANGUAGE": "Language"
   },
+  "CERTIFICATES": {
+    "TITLE": "Certificates",
+    "ADD": "Add Certificate",
+    "EMPTY": "No certificates yet.",
+    "NAME": "Certificate name",
+    "ISSUER": "Issuer",
+    "ISSUED_DATE": "Issued date",
+    "EXPIRY_DATE": "Expiry date",
+    "SKILL": "Linked skill",
+    "SKILL_NONE": "None",
+    "FILE": "File",
+    "UPLOAD": "Upload file",
+    "SAVE": "Save",
+    "CANCEL": "Cancel",
+    "DELETE_CONFIRM": "Delete this certificate?",
+    "EXPIRED": "Expired",
+    "EXPIRES_SOON": "Expires soon"
+  },
   "COMMON": {
     "MEMBERS": "members"
   }

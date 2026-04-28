@@ -63,6 +63,118 @@
     <p>{{ 'EMPLOYEE_PROFILE.EMPTY_SKILLS' | translate }}</p>
   }
 
+  <mat-card class="cert-card">
+    <mat-card-header>
+      <mat-card-title>{{ 'CERTIFICATES.TITLE' | translate }}</mat-card-title>
+      @if (canEdit()) {
+        <button mat-button color="primary" (click)="toggleCertForm()">
+          <mat-icon>add</mat-icon>
+          {{ 'CERTIFICATES.ADD' | translate }}
+        </button>
+      }
+    </mat-card-header>
+    <mat-card-content>
+      @if (showCertForm()) {
+        <div class="cert-form">
+          <mat-form-field>
+            <mat-label>{{ 'CERTIFICATES.NAME' | translate }}</mat-label>
+            <input matInput [(ngModel)]="certName">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>{{ 'CERTIFICATES.ISSUER' | translate }}</mat-label>
+            <input matInput [(ngModel)]="certIssuer">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>{{ 'CERTIFICATES.SKILL' | translate }}</mat-label>
+            <mat-select [(ngModel)]="certSkill">
+              <mat-option>{{ 'CERTIFICATES.SKILL_NONE' | translate }}</mat-option>
+              @for (s of skills(); track s.id) {
+                <mat-option [value]="s.id">{{ s.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>{{ 'CERTIFICATES.ISSUED_DATE' | translate }}</mat-label>
+            <input matInput type="date" [(ngModel)]="certIssuedDate">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>{{ 'CERTIFICATES.EXPIRY_DATE' | translate }}</mat-label>
+            <input matInput type="date" [(ngModel)]="certExpiryDate">
+          </mat-form-field>
+          <div class="cert-file-row">
+            <button mat-stroked-button (click)="fileInput.click()">
+              {{ 'CERTIFICATES.UPLOAD' | translate }}
+            </button>
+            <input #fileInput type="file" hidden (change)="onCertFileSelected($event)">
+            @if (certFile) {
+              <span class="file-name">{{ certFile.name }}</span>
+            }
+          </div>
+          <div class="cert-form-actions">
+            <button mat-button (click)="toggleCertForm()">{{ 'CERTIFICATES.CANCEL' | translate }}</button>
+            <button mat-flat-button color="primary" (click)="saveCertificate()">{{ 'CERTIFICATES.SAVE' | translate }}</button>
+          </div>
+        </div>
+      }
+
+      @if (certificates().length) {
+        <table mat-table [dataSource]="certificates()">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>{{ 'CERTIFICATES.NAME' | translate }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+          </ng-container>
+          <ng-container matColumnDef="skill_name">
+            <th mat-header-cell *matHeaderCellDef>{{ 'CERTIFICATES.SKILL' | translate }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.skill_name ?? '–' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="issuer">
+            <th mat-header-cell *matHeaderCellDef>{{ 'CERTIFICATES.ISSUER' | translate }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.issuer || '–' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="expiry_date">
+            <th mat-header-cell *matHeaderCellDef>{{ 'CERTIFICATES.EXPIRY_DATE' | translate }}</th>
+            <td mat-cell *matCellDef="let row">
+              @if (row.expiry_date) {
+                <span [class.expired]="isExpired(row.expiry_date)"
+                      [class.expiring-soon]="isExpiringSoon(row.expiry_date)">
+                  {{ row.expiry_date | date:'mediumDate' }}
+                </span>
+              } @else {
+                –
+              }
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="file">
+            <th mat-header-cell *matHeaderCellDef>{{ 'CERTIFICATES.FILE' | translate }}</th>
+            <td mat-cell *matCellDef="let row">
+              @if (row.file) {
+                <a [href]="row.file" target="_blank" mat-icon-button>
+                  <mat-icon>download</mat-icon>
+                </a>
+              } @else {
+                –
+              }
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let row">
+              @if (canEdit()) {
+                <button mat-icon-button color="warn" (click)="deleteCertificate(row.id)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="certColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: certColumns"></tr>
+        </table>
+      } @else if (!showCertForm()) {
+        <p>{{ 'CERTIFICATES.EMPTY' | translate }}</p>
+      }
+    </mat-card-content>
+  </mat-card>
+
   @if (hasTrends()) {
     <mat-card class="trend-card">
       <mat-card-header>

@@ -64,3 +64,58 @@
     width: 100%;
   }
 }
+
+.cert-card {
+  margin-top: 1.5rem;
+
+  mat-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  table {
+    width: 100%;
+  }
+}
+
+.cert-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1rem;
+  margin-bottom: 1rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cert-file-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  grid-column: 1 / -1;
+  margin-bottom: 0.5rem;
+
+  .file-name {
+    color: #666;
+    font-size: 0.875rem;
+  }
+}
+
+.cert-form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.expired {
+  color: #d32f2f;
+  font-weight: 500;
+}
+
+.expiring-soon {
+  color: #f57c00;
+  font-weight: 500;
+}
