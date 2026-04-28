@@ -10,6 +10,7 @@
     "EMPLOYEES": "Employees",
     "ADMIN": "Admin",
     "SIGN_OUT": "Sign out",
+    "PROPOSALS": "Proposals",
     "SETTINGS": "Settings",
     "TOGGLE_DARK_MODE": "Toggle dark mode"
   },
@@ -156,6 +157,19 @@
     "WRONG_PASSWORD": "Current password is incorrect.",
     "PASSWORDS_MISMATCH": "Passwords do not match.",
     "LANGUAGE": "Language"
+  },
+  "PROPOSALS": {
+    "TITLE": "Skill Proposals",
+    "PROPOSE": "Propose Skill",
+    "SKILL_NAME": "Skill name",
+    "REASON": "Reason",
+    "PROPOSED_BY": "Proposed by",
+    "SUBMIT": "Submit",
+    "ALL": "All",
+    "PENDING": "Pending",
+    "APPROVED": "Approved",
+    "REJECTED": "Rejected",
+    "EMPTY": "No proposals yet."
   },
   "DEV_PLANS": {
     "TITLE": "Development Plans",

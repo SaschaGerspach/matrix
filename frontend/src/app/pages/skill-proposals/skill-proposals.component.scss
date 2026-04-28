@@ -1,0 +1,43 @@
+.proposals-toolbar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.proposal-form-card {
+  margin-bottom: 1.5rem;
+}
+
+.proposal-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1rem;
+
+  .full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+.form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+table {
+  width: 100%;
+}
+
+.status-pending {
+  background-color: #fff3e0 !important;
+}
+
+.status-approved {
+  background-color: #e8f5e9 !important;
+}
+
+.status-rejected {
+  background-color: #ffebee !important;
+}

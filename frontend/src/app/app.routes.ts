@@ -55,6 +55,11 @@ export const routes: Routes = [
           import('./pages/kpi/kpi.component').then((m) => m.KpiComponent),
       },
       {
+        path: 'skill-proposals',
+        loadComponent: () =>
+          import('./pages/skill-proposals/skill-proposals.component').then((m) => m.SkillProposalsComponent),
+      },
+      {
         path: 'admin',
         loadComponent: () =>
           import('./pages/admin/admin.component').then((m) => m.AdminComponent),

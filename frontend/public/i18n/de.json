@@ -10,6 +10,7 @@
     "EMPLOYEES": "Mitarbeiter",
     "ADMIN": "Admin",
     "SIGN_OUT": "Abmelden",
+    "PROPOSALS": "Vorschläge",
     "SETTINGS": "Einstellungen",
     "TOGGLE_DARK_MODE": "Dunkelmodus umschalten"
   },
@@ -156,6 +157,19 @@
     "WRONG_PASSWORD": "Aktuelles Passwort ist falsch.",
     "PASSWORDS_MISMATCH": "Passwörter stimmen nicht überein.",
     "LANGUAGE": "Sprache"
+  },
+  "PROPOSALS": {
+    "TITLE": "Skill-Vorschläge",
+    "PROPOSE": "Skill vorschlagen",
+    "SKILL_NAME": "Skill-Name",
+    "REASON": "Begründung",
+    "PROPOSED_BY": "Vorgeschlagen von",
+    "SUBMIT": "Einreichen",
+    "ALL": "Alle",
+    "PENDING": "Ausstehend",
+    "APPROVED": "Genehmigt",
+    "REJECTED": "Abgelehnt",
+    "EMPTY": "Noch keine Vorschläge."
   },
   "DEV_PLANS": {
     "TITLE": "Entwicklungspläne",
