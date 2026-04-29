@@ -68,6 +68,40 @@ def test_admin_can_create_team_with_members(admin_client):
     assert list(team.team_leads.all()) == [bob]
 
 
+def test_admin_can_update_team(admin_client):
+    dept = Department.objects.create(name='Eng')
+    team = Team.objects.create(name='Core', department=dept)
+
+    r = admin_client.patch(f'/api/teams/{team.id}/', {'name': 'Platform'}, format='json')
+    assert r.status_code == status.HTTP_200_OK
+    assert r.data['name'] == 'Platform'
+
+
+def test_admin_can_delete_team(admin_client):
+    dept = Department.objects.create(name='Eng')
+    team = Team.objects.create(name='Core', department=dept)
+
+    r = admin_client.delete(f'/api/teams/{team.id}/')
+    assert r.status_code == status.HTTP_204_NO_CONTENT
+    assert Team.objects.filter(pk=team.id).count() == 0
+
+
+def test_regular_user_cannot_update_team(regular_client):
+    dept = Department.objects.create(name='Eng')
+    team = Team.objects.create(name='Core', department=dept)
+
+    r = regular_client.patch(f'/api/teams/{team.id}/', {'name': 'X'}, format='json')
+    assert r.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_regular_user_cannot_delete_team(regular_client):
+    dept = Department.objects.create(name='Eng')
+    team = Team.objects.create(name='Core', department=dept)
+
+    r = regular_client.delete(f'/api/teams/{team.id}/')
+    assert r.status_code == status.HTTP_403_FORBIDDEN
+
+
 def test_regular_user_can_list_but_not_create(regular_client):
     r = regular_client.get('/api/departments/')
     assert r.status_code == status.HTTP_200_OK

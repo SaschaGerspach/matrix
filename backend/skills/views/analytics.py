@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 from common.permissions import IsAdminOrTeamLead
 from employees.models import Employee
 from employees.utils import get_employee
+from teams.models import Team
 from teams.utils import get_led_member_ids, is_team_lead
 
 from ..models import Skill, SkillAssignment, SkillAssignmentHistory, SkillRequirement
@@ -190,14 +191,18 @@ class SkillGapsView(APIView):
 
     def get(self, request):
         employee = get_employee(request.user)
-        if employee is None or not is_team_lead(request.user):
+
+        if request.user.is_staff:
+            teams = Team.objects.prefetch_related('members').all()
+        elif employee is not None and is_team_lead(request.user):
+            teams = employee.led_teams.prefetch_related('members').all()
+        else:
             return Response([])
 
-        member_ids = get_led_member_ids(employee)
-        led_teams = employee.led_teams.prefetch_related('members').all()
+        member_ids = set(teams.values_list('members__id', flat=True))
 
         requirements = SkillRequirement.objects.filter(
-            team__in=led_teams,
+            team__in=teams,
         ).select_related('skill__category', 'team')
 
         assignments = SkillAssignment.objects.filter(
@@ -209,7 +214,7 @@ class SkillGapsView(APIView):
 
         members = Employee.objects.filter(id__in=member_ids)
         member_teams = {}
-        for team in led_teams:
+        for team in teams:
             for m in team.members.all():
                 member_teams.setdefault(m.id, set()).add(team.id)
 

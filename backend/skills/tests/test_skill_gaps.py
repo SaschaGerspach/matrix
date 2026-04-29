@@ -95,6 +95,41 @@ def test_non_lead_gets_empty(db, skill):
     assert len(r.data) == 0
 
 
+def test_admin_sees_all_gaps(db, skill):
+    admin_user = User.objects.create_user(username='admin', password='pw!', is_staff=True)
+    Employee.objects.create(first_name='Admin', last_name='A', email='admin@x.com', user=admin_user)
+
+    dept = Department.objects.create(name='Sales')
+    team = Team.objects.create(name='Frontend', department=dept)
+    member = Employee.objects.create(first_name='Carol', last_name='C', email='carol@x.com')
+    team.members.add(member)
+    SkillRequirement.objects.create(team=team, skill=skill, required_level=3)
+
+    c = APIClient()
+    c.force_authenticate(user=admin_user)
+    r = c.get(URL)
+    assert r.status_code == status.HTTP_200_OK
+    assert len(r.data) == 1
+    assert r.data[0]['employee_name'] == 'Carol C'
+    assert r.data[0]['gap'] == 3
+
+
+def test_admin_without_employee_sees_all_gaps(db, skill):
+    admin_user = User.objects.create_user(username='admin2', password='pw!', is_staff=True)
+
+    dept = Department.objects.create(name='Sales')
+    team = Team.objects.create(name='Frontend', department=dept)
+    member = Employee.objects.create(first_name='Dave', last_name='D', email='dave@x.com')
+    team.members.add(member)
+    SkillRequirement.objects.create(team=team, skill=skill, required_level=2)
+
+    c = APIClient()
+    c.force_authenticate(user=admin_user)
+    r = c.get(URL)
+    assert r.status_code == status.HTTP_200_OK
+    assert len(r.data) == 1
+
+
 def test_unauthenticated_rejected():
     c = APIClient()
     r = c.get(URL)
