@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from rest_framework import serializers, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -28,6 +29,10 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField()
 
 
+MAX_LOGIN_ATTEMPTS = 10
+LOCKOUT_DURATION = 900
+
+
 class LoginView(APIView):
     permission_classes = ()
     authentication_classes = ()
@@ -37,18 +42,30 @@ class LoginView(APIView):
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        username = serializer.validated_data['username']
+        cache_key = f'login_attempts:{username}'
+
+        attempts = cache.get(cache_key, 0)
+        if attempts >= MAX_LOGIN_ATTEMPTS:
+            return Response(
+                {'detail': 'Account temporarily locked. Try again later.'},
+                status=status.HTTP_429_TOO_MANY_REQUESTS,
+            )
+
         from django.contrib.auth import authenticate
         user = authenticate(
             request=request,
-            username=serializer.validated_data['username'],
+            username=username,
             password=serializer.validated_data['password'],
         )
         if user is None:
+            cache.set(cache_key, attempts + 1, LOCKOUT_DURATION)
             return Response(
                 {'detail': 'Invalid credentials.'},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
+        cache.delete(cache_key)
         refresh = RefreshToken.for_user(user)
         return Response({
             'access': str(refresh.access_token),

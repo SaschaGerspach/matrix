@@ -4,6 +4,8 @@ from rest_framework import status
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from authentication.views import LoginView
+
 
 pytestmark = pytest.mark.django_db
 
@@ -157,3 +159,36 @@ def test_change_password_rejects_username_similar(db):
     }, format='json')
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert 'new_password' in response.data
+
+
+def test_account_lockout_after_max_attempts(user):
+    from unittest.mock import patch
+    from django.core.cache import cache
+    cache.clear()
+    client = APIClient()
+
+    with patch.object(LoginView, 'throttle_classes', ()):
+        for _ in range(10):
+            client.post(LOGIN_URL, {'username': 'tester', 'password': 'wrong'}, format='json')
+
+        response = client.post(LOGIN_URL, {'username': 'tester', 'password': 'wrong'}, format='json')
+        assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
+
+        response = client.post(LOGIN_URL, {'username': 'tester', 'password': 'pw12345!'}, format='json')
+        assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
+
+
+def test_successful_login_resets_lockout_counter(user):
+    from unittest.mock import patch
+    from django.core.cache import cache
+    cache.clear()
+    client = APIClient()
+
+    with patch.object(LoginView, 'throttle_classes', ()):
+        for _ in range(5):
+            client.post(LOGIN_URL, {'username': 'tester', 'password': 'wrong'}, format='json')
+
+        response = client.post(LOGIN_URL, {'username': 'tester', 'password': 'pw12345!'}, format='json')
+        assert response.status_code == status.HTTP_200_OK
+
+        assert cache.get('login_attempts:tester') is None
