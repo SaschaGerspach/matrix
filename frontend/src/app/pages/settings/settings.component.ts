@@ -5,12 +5,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
-
 import { TranslateModule } from '@ngx-translate/core';
 
 import { AuthService } from '../../core/auth.service';
 import { LanguageService } from '../../core/language.service';
+import { ToastService } from '../../core/toast.service';
 
 @Component({
   selector: 'app-settings',
@@ -29,7 +28,7 @@ import { LanguageService } from '../../core/language.service';
 })
 export class SettingsComponent {
   private readonly authService = inject(AuthService);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly toast = inject(ToastService);
   readonly langService = inject(LanguageService);
 
   currentPassword = '';
@@ -53,7 +52,7 @@ export class SettingsComponent {
         this.currentPassword = '';
         this.newPassword = '';
         this.confirmPassword = '';
-        this.snackBar.open('Password changed', '', { duration: 3000 });
+        this.toast.success('TOAST.PASSWORD_CHANGED');
       },
       error: () => {
         this.passwordError.set('SETTINGS.WRONG_PASSWORD');

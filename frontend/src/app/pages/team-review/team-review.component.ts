@@ -7,6 +7,7 @@ import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { SkillService, TeamAssignment } from '../../core/skill.service';
+import { ToastService } from '../../core/toast.service';
 
 @Component({
   selector: 'app-team-review',
@@ -17,6 +18,7 @@ import { SkillService, TeamAssignment } from '../../core/skill.service';
 })
 export class TeamReviewComponent implements OnInit {
   private readonly skillService = inject(SkillService);
+  private readonly toast = inject(ToastService);
 
   readonly data = signal<TeamAssignment[]>([]);
   readonly loading = signal(false);
@@ -39,7 +41,11 @@ export class TeamReviewComponent implements OnInit {
 
   confirm(id: number): void {
     this.skillService.confirmAssignment(id).subscribe({
-      next: () => this.loadAssignments(),
+      next: () => {
+        this.toast.success('TOAST.SKILL_CONFIRMED');
+        this.loadAssignments();
+      },
+      error: () => this.toast.error('TOAST.ERROR'),
     });
   }
 }

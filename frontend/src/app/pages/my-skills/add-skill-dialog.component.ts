@@ -9,6 +9,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { Skill, SkillService } from '../../core/skill.service';
 import { EmployeeService } from '../../core/employee.service';
+import { ToastService } from '../../core/toast.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
@@ -30,6 +31,7 @@ export class AddSkillDialogComponent implements OnInit {
   private readonly skillService = inject(SkillService);
   private readonly http = inject(HttpClient);
   private readonly dialogRef = inject(MatDialogRef<AddSkillDialogComponent>);
+  private readonly toast = inject(ToastService);
 
   readonly skills = signal<Skill[]>([]);
   readonly error = signal<string | null>(null);
@@ -52,7 +54,7 @@ export class AddSkillDialogComponent implements OnInit {
     this.http.get<{ id: number }>(`${environment.apiUrl}/me/`).subscribe({
       next: (me) => {
         this.skillService.createAssignment(skill!, level!, me.id).subscribe({
-          next: () => this.dialogRef.close(true),
+          next: () => { this.toast.success('TOAST.SKILL_ADDED'); this.dialogRef.close(true); },
           error: (err) => {
             const msg = err.error?.employee?.[0] || err.error?.skill?.[0] || 'Failed to add skill.';
             this.error.set(msg);

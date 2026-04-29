@@ -15,6 +15,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MeService } from '../../core/me.service';
 import { SkillCategory, SkillService } from '../../core/skill.service';
 import { SkillProposal, SkillProposalService } from '../../core/skill-proposal.service';
+import { ToastService } from '../../core/toast.service';
 
 @Component({
   selector: 'app-skill-proposals',
@@ -39,6 +40,7 @@ export class SkillProposalsComponent implements OnInit {
   private readonly proposalService = inject(SkillProposalService);
   private readonly skillService = inject(SkillService);
   private readonly meService = inject(MeService);
+  private readonly toast = inject(ToastService);
 
   readonly proposals = signal<SkillProposal[]>([]);
   readonly categories = signal<SkillCategory[]>([]);
@@ -84,23 +86,24 @@ export class SkillProposalsComponent implements OnInit {
         this.newCategory = undefined;
         this.newReason = '';
         this.showForm.set(false);
+        this.toast.success('TOAST.PROPOSAL_SUBMITTED');
         this.loadProposals();
       },
-      error: () => this.loadProposals(),
+      error: () => { this.toast.error('TOAST.ERROR'); this.loadProposals(); },
     });
   }
 
   approve(id: number): void {
     this.proposalService.approve(id).subscribe({
-      next: () => this.loadProposals(),
-      error: () => this.loadProposals(),
+      next: () => { this.toast.success('TOAST.PROPOSAL_APPROVED'); this.loadProposals(); },
+      error: () => { this.toast.error('TOAST.ERROR'); this.loadProposals(); },
     });
   }
 
   reject(id: number): void {
     this.proposalService.reject(id).subscribe({
-      next: () => this.loadProposals(),
-      error: () => this.loadProposals(),
+      next: () => { this.toast.success('TOAST.PROPOSAL_REJECTED'); this.loadProposals(); },
+      error: () => { this.toast.error('TOAST.ERROR'); this.loadProposals(); },
     });
   }
 }

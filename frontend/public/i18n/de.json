@@ -207,6 +207,27 @@
     "EXPIRED": "Abgelaufen",
     "EXPIRES_SOON": "Läuft bald ab"
   },
+  "TOAST": {
+    "SKILL_CONFIRMED": "Skill bestätigt.",
+    "SKILL_ADDED": "Skill hinzugefügt.",
+    "CATEGORY_CREATED": "Kategorie erstellt.",
+    "CATEGORY_DELETED": "Kategorie gelöscht.",
+    "SKILL_CREATED": "Skill erstellt.",
+    "SKILL_DELETED": "Skill gelöscht.",
+    "REQUIREMENT_CREATED": "Anforderung erstellt.",
+    "REQUIREMENT_DELETED": "Anforderung gelöscht.",
+    "LEVEL_DESC_CREATED": "Level-Beschreibung erstellt.",
+    "LEVEL_DESC_DELETED": "Level-Beschreibung gelöscht.",
+    "TEMPLATE_CREATED": "Rollenvorlage erstellt.",
+    "TEMPLATE_DELETED": "Rollenvorlage gelöscht.",
+    "TEMPLATE_APPLIED": "Vorlage auf Team angewendet.",
+    "IMPORT_COMPLETE": "Import abgeschlossen.",
+    "PASSWORD_CHANGED": "Passwort geändert.",
+    "PROPOSAL_SUBMITTED": "Vorschlag eingereicht.",
+    "PROPOSAL_APPROVED": "Vorschlag genehmigt.",
+    "PROPOSAL_REJECTED": "Vorschlag abgelehnt.",
+    "ERROR": "Ein Fehler ist aufgetreten. Bitte erneut versuchen."
+  },
   "COMMON": {
     "MEMBERS": "Mitglieder"
   }

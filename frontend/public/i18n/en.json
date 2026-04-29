@@ -207,6 +207,27 @@
     "EXPIRED": "Expired",
     "EXPIRES_SOON": "Expires soon"
   },
+  "TOAST": {
+    "SKILL_CONFIRMED": "Skill confirmed.",
+    "SKILL_ADDED": "Skill added.",
+    "CATEGORY_CREATED": "Category created.",
+    "CATEGORY_DELETED": "Category deleted.",
+    "SKILL_CREATED": "Skill created.",
+    "SKILL_DELETED": "Skill deleted.",
+    "REQUIREMENT_CREATED": "Requirement created.",
+    "REQUIREMENT_DELETED": "Requirement deleted.",
+    "LEVEL_DESC_CREATED": "Level description created.",
+    "LEVEL_DESC_DELETED": "Level description deleted.",
+    "TEMPLATE_CREATED": "Role template created.",
+    "TEMPLATE_DELETED": "Role template deleted.",
+    "TEMPLATE_APPLIED": "Template applied to team.",
+    "IMPORT_COMPLETE": "Import complete.",
+    "PASSWORD_CHANGED": "Password changed.",
+    "PROPOSAL_SUBMITTED": "Proposal submitted.",
+    "PROPOSAL_APPROVED": "Proposal approved.",
+    "PROPOSAL_REJECTED": "Proposal rejected.",
+    "ERROR": "An error occurred. Please try again."
+  },
   "COMMON": {
     "MEMBERS": "members"
   }

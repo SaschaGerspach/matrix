@@ -15,6 +15,7 @@ import { AuditLogEntry, AuditService } from '../../core/audit.service';
 import { CsvImportResult, EmployeeService } from '../../core/employee.service';
 import { RoleTemplate, Skill, SkillCategory, SkillLevelDescription, SkillRequirement, SkillService } from '../../core/skill.service';
 import { Team, TeamService } from '../../core/team.service';
+import { ToastService } from '../../core/toast.service';
 
 @Component({
   selector: 'app-admin',
@@ -39,6 +40,7 @@ export class AdminComponent implements OnInit {
   private readonly teamService = inject(TeamService);
   private readonly auditService = inject(AuditService);
   private readonly employeeService = inject(EmployeeService);
+  private readonly toast = inject(ToastService);
 
   readonly categories = signal<SkillCategory[]>([]);
   readonly skills = signal<Skill[]>([]);
@@ -84,16 +86,17 @@ export class AdminComponent implements OnInit {
     this.skillService.createCategory(this.newCategoryName.trim()).subscribe({
       next: () => {
         this.newCategoryName = '';
+        this.toast.success('TOAST.CATEGORY_CREATED');
         this.reloadCategories();
       },
-      error: () => this.reloadCategories(),
+      error: () => { this.toast.error('TOAST.ERROR'); this.reloadCategories(); },
     });
   }
 
   deleteCategory(id: number): void {
     this.skillService.deleteCategory(id).subscribe({
-      next: () => this.reloadCategories(),
-      error: () => this.reloadCategories(),
+      next: () => { this.toast.success('TOAST.CATEGORY_DELETED'); this.reloadCategories(); },
+      error: () => { this.toast.error('TOAST.ERROR'); this.reloadCategories(); },
     });
   }
 
@@ -103,16 +106,17 @@ export class AdminComponent implements OnInit {
       next: () => {
         this.newSkillName = '';
         this.newSkillCategory = undefined;
+        this.toast.success('TOAST.SKILL_CREATED');
         this.reloadSkills();
       },
-      error: () => this.reloadSkills(),
+      error: () => { this.toast.error('TOAST.ERROR'); this.reloadSkills(); },
     });
   }
 
   deleteSkill(id: number): void {
     this.skillService.deleteSkill(id).subscribe({
-      next: () => this.reloadSkills(),
-      error: () => this.reloadSkills(),
+      next: () => { this.toast.success('TOAST.SKILL_DELETED'); this.reloadSkills(); },
+      error: () => { this.toast.error('TOAST.ERROR'); this.reloadSkills(); },
     });
   }
 
@@ -127,16 +131,17 @@ export class AdminComponent implements OnInit {
         this.newReqTeam = undefined;
         this.newReqSkill = undefined;
         this.newReqLevel = undefined;
+        this.toast.success('TOAST.REQUIREMENT_CREATED');
         this.reloadRequirements();
       },
-      error: () => this.reloadRequirements(),
+      error: () => { this.toast.error('TOAST.ERROR'); this.reloadRequirements(); },
     });
   }
 
   deleteRequirement(id: number): void {
     this.skillService.deleteRequirement(id).subscribe({
-      next: () => this.reloadRequirements(),
-      error: () => this.reloadRequirements(),
+      next: () => { this.toast.success('TOAST.REQUIREMENT_DELETED'); this.reloadRequirements(); },
+      error: () => { this.toast.error('TOAST.ERROR'); this.reloadRequirements(); },
     });
   }
 
@@ -151,16 +156,17 @@ export class AdminComponent implements OnInit {
         this.newDescSkill = undefined;
         this.newDescLevel = undefined;
         this.newDescText = '';
+        this.toast.success('TOAST.LEVEL_DESC_CREATED');
         this.reloadLevelDescriptions();
       },
-      error: () => this.reloadLevelDescriptions(),
+      error: () => { this.toast.error('TOAST.ERROR'); this.reloadLevelDescriptions(); },
     });
   }
 
   deleteLevelDescription(id: number): void {
     this.skillService.deleteLevelDescription(id).subscribe({
-      next: () => this.reloadLevelDescriptions(),
-      error: () => this.reloadLevelDescriptions(),
+      next: () => { this.toast.success('TOAST.LEVEL_DESC_DELETED'); this.reloadLevelDescriptions(); },
+      error: () => { this.toast.error('TOAST.ERROR'); this.reloadLevelDescriptions(); },
     });
   }
 
@@ -170,16 +176,17 @@ export class AdminComponent implements OnInit {
       next: () => {
         this.newTemplateName = '';
         this.newTemplateDesc = '';
+        this.toast.success('TOAST.TEMPLATE_CREATED');
         this.reloadRoleTemplates();
       },
-      error: () => this.reloadRoleTemplates(),
+      error: () => { this.toast.error('TOAST.ERROR'); this.reloadRoleTemplates(); },
     });
   }
 
   deleteRoleTemplate(id: number): void {
     this.skillService.deleteRoleTemplate(id).subscribe({
-      next: () => this.reloadRoleTemplates(),
-      error: () => this.reloadRoleTemplates(),
+      next: () => { this.toast.success('TOAST.TEMPLATE_DELETED'); this.reloadRoleTemplates(); },
+      error: () => { this.toast.error('TOAST.ERROR'); this.reloadRoleTemplates(); },
     });
   }
 
@@ -208,9 +215,10 @@ export class AdminComponent implements OnInit {
       next: () => {
         this.applyTemplateId = undefined;
         this.applyTeamId = undefined;
+        this.toast.success('TOAST.TEMPLATE_APPLIED');
         this.reloadRequirements();
       },
-      error: () => this.reloadRequirements(),
+      error: () => { this.toast.error('TOAST.ERROR'); this.reloadRequirements(); },
     });
   }
 
@@ -246,8 +254,8 @@ export class AdminComponent implements OnInit {
     if (!file) return;
     this.employeeImportResult.set(null);
     this.employeeService.importCsv(file).subscribe({
-      next: (result) => this.employeeImportResult.set(result),
-      error: () => this.employeeImportResult.set({ created: 0, skipped: 0, errors: [{ row: 0, detail: 'Import failed' }] }),
+      next: (result) => { this.employeeImportResult.set(result); this.toast.success('TOAST.IMPORT_COMPLETE'); },
+      error: () => { this.employeeImportResult.set({ created: 0, skipped: 0, errors: [{ row: 0, detail: 'Import failed' }] }); this.toast.error('TOAST.ERROR'); },
     });
   }
 
@@ -258,10 +266,11 @@ export class AdminComponent implements OnInit {
     this.skillService.importSkillsCsv(file).subscribe({
       next: (result) => {
         this.skillImportResult.set(result);
+        this.toast.success('TOAST.IMPORT_COMPLETE');
         this.reloadSkills();
         this.reloadCategories();
       },
-      error: () => this.skillImportResult.set({ created: 0, skipped: 0, errors: [{ row: 0, detail: 'Import failed' }] }),
+      error: () => { this.skillImportResult.set({ created: 0, skipped: 0, errors: [{ row: 0, detail: 'Import failed' }] }); this.toast.error('TOAST.ERROR'); },
     });
   }
 }
