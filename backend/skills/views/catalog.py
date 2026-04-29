@@ -1,6 +1,7 @@
 import csv
 import io
 
+from django.db import transaction
 from rest_framework import status as http_status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
@@ -10,6 +11,8 @@ from common.audit import log_action
 from common.mixins import AuditMixin
 from common.models import AuditLog
 from common.permissions import IsAdminOrReadOnly
+
+MAX_CSV_SIZE = 5 * 1024 * 1024
 
 from ..models import Skill, SkillCategory, SkillLevelDescription, SkillRequirement, RoleTemplate, RoleTemplateSkill
 from ..serializers import (
@@ -29,6 +32,7 @@ class SkillCategoryViewSet(AuditMixin, viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = None
     audit_entity_type = 'SkillCategory'
+    invalidate_cache_on_write = True
 
 
 class SkillViewSet(AuditMixin, viewsets.ModelViewSet):
@@ -37,12 +41,15 @@ class SkillViewSet(AuditMixin, viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = None
     audit_entity_type = 'Skill'
+    invalidate_cache_on_write = True
 
     @action(detail=False, methods=['post'], parser_classes=(MultiPartParser,), url_path='import-csv')
     def import_csv(self, request):
         file = request.FILES.get('file')
         if not file:
             return Response({'detail': 'No file provided.'}, status=http_status.HTTP_400_BAD_REQUEST)
+        if file.size > MAX_CSV_SIZE:
+            return Response({'detail': 'File too large. Maximum 5MB.'}, status=http_status.HTTP_400_BAD_REQUEST)
 
         try:
             decoded = file.read().decode('utf-8-sig')
@@ -67,26 +74,27 @@ class SkillViewSet(AuditMixin, viewsets.ModelViewSet):
         errors = []
         category_cache: dict[str, SkillCategory] = {}
 
-        for i, row in enumerate(reader, start=2):
-            name = (row.get('name') or '').strip()
-            category_name = (row.get('category') or '').strip()
+        with transaction.atomic():
+            for i, row in enumerate(reader, start=2):
+                name = (row.get('name') or '').strip()
+                category_name = (row.get('category') or '').strip()
 
-            if not name or not category_name:
-                errors.append({'row': i, 'detail': 'Missing required field.'})
-                continue
+                if not name or not category_name:
+                    errors.append({'row': i, 'detail': 'Missing required field.'})
+                    continue
 
-            if category_name not in category_cache:
-                cat, _ = SkillCategory.objects.get_or_create(name=category_name)
-                category_cache[category_name] = cat
+                if category_name not in category_cache:
+                    cat, _ = SkillCategory.objects.get_or_create(name=category_name)
+                    category_cache[category_name] = cat
 
-            _, was_created = Skill.objects.get_or_create(
-                name=name,
-                category=category_cache[category_name],
-            )
-            if was_created:
-                created.append({'row': i, 'name': name, 'category': category_name})
-            else:
-                skipped.append({'row': i, 'name': name})
+                _, was_created = Skill.objects.get_or_create(
+                    name=name,
+                    category=category_cache[category_name],
+                )
+                if was_created:
+                    created.append({'row': i, 'name': name, 'category': category_name})
+                else:
+                    skipped.append({'row': i, 'name': name})
 
         if created:
             log_action(
@@ -95,6 +103,8 @@ class SkillViewSet(AuditMixin, viewsets.ModelViewSet):
                 entity_type='Skill',
                 detail=f'Imported {len(created)} skills',
             )
+            from .analytics import invalidate_analytics_cache
+            invalidate_analytics_cache()
 
         return Response({
             'created': len(created),
@@ -118,6 +128,7 @@ class SkillRequirementViewSet(AuditMixin, viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = None
     audit_entity_type = 'SkillRequirement'
+    invalidate_cache_on_write = True
 
 
 class RoleTemplateViewSet(AuditMixin, viewsets.ModelViewSet):
@@ -159,6 +170,8 @@ class RoleTemplateViewSet(AuditMixin, viewsets.ModelViewSet):
             entity_id=template.pk,
             detail=f'Applied "{template.name}" to team "{team.name}": {created} created, {updated} updated',
         )
+        from .analytics import invalidate_analytics_cache
+        invalidate_analytics_cache()
 
         return Response({'created': created, 'updated': updated})
 

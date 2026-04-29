@@ -52,6 +52,13 @@ class ChangePasswordView(APIView):
         if not request.user.check_password(serializer.validated_data['current_password']):
             return Response({'current_password': ['Incorrect password.']}, status=status.HTTP_400_BAD_REQUEST)
 
+        from django.contrib.auth.password_validation import validate_password
+        from django.core.exceptions import ValidationError
+        try:
+            validate_password(serializer.validated_data['new_password'], user=request.user)
+        except ValidationError as e:
+            return Response({'new_password': e.messages}, status=status.HTTP_400_BAD_REQUEST)
+
         request.user.set_password(serializer.validated_data['new_password'])
         request.user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)

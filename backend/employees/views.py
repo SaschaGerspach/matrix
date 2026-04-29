@@ -1,6 +1,7 @@
 import csv
 import io
 
+from django.db import transaction
 from rest_framework import serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
@@ -19,6 +20,7 @@ from .serializers import EmployeeSerializer
 from .utils import get_employee
 
 REQUIRED_CSV_COLUMNS = {'first_name', 'last_name', 'email'}
+MAX_CSV_SIZE = 5 * 1024 * 1024
 
 
 class EmployeeViewSet(viewsets.ModelViewSet):
@@ -43,6 +45,8 @@ class EmployeeViewSet(viewsets.ModelViewSet):
         file = request.FILES.get('file')
         if not file:
             return Response({'detail': 'No file provided.'}, status=status.HTTP_400_BAD_REQUEST)
+        if file.size > MAX_CSV_SIZE:
+            return Response({'detail': 'File too large. Maximum 5MB.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             decoded = file.read().decode('utf-8-sig')
@@ -65,29 +69,30 @@ class EmployeeViewSet(viewsets.ModelViewSet):
         skipped = []
         errors = []
 
-        for i, row in enumerate(reader, start=2):
-            email = (row.get('email') or '').strip().lower()
-            first_name = (row.get('first_name') or '').strip()
-            last_name = (row.get('last_name') or '').strip()
+        with transaction.atomic():
+            for i, row in enumerate(reader, start=2):
+                email = (row.get('email') or '').strip().lower()
+                first_name = (row.get('first_name') or '').strip()
+                last_name = (row.get('last_name') or '').strip()
 
-            if not email or not first_name or not last_name:
-                errors.append({'row': i, 'detail': 'Missing required field.'})
-                continue
+                if not email or not first_name or not last_name:
+                    errors.append({'row': i, 'detail': 'Missing required field.'})
+                    continue
 
-            try:
-                serializers.EmailField().run_validators(email)
-            except serializers.ValidationError:
-                errors.append({'row': i, 'detail': f'Invalid email: {email}'})
-                continue
+                try:
+                    serializers.EmailField().run_validators(email)
+                except serializers.ValidationError:
+                    errors.append({'row': i, 'detail': f'Invalid email: {email}'})
+                    continue
 
-            _, was_created = Employee.objects.get_or_create(
-                email=email,
-                defaults={'first_name': first_name, 'last_name': last_name},
-            )
-            if was_created:
-                created.append({'row': i, 'email': email})
-            else:
-                skipped.append({'row': i, 'email': email})
+                _, was_created = Employee.objects.get_or_create(
+                    email=email,
+                    defaults={'first_name': first_name, 'last_name': last_name},
+                )
+                if was_created:
+                    created.append({'row': i, 'email': email})
+                else:
+                    skipped.append({'row': i, 'email': email})
 
         if created:
             log_action(
@@ -96,6 +101,8 @@ class EmployeeViewSet(viewsets.ModelViewSet):
                 entity_type='Employee',
                 detail=f'Imported {len(created)} employees',
             )
+            from skills.views.analytics import invalidate_analytics_cache
+            invalidate_analytics_cache()
 
         return Response({
             'created': len(created),

@@ -49,6 +49,8 @@ def import_skills_csv(csv_content, user_id):
                 entity_type='Skill',
                 detail=f'Imported {len(created)} skills',
             )
+        from skills.views.analytics import invalidate_analytics_cache
+        invalidate_analytics_cache()
 
     return {
         'created': len(created),

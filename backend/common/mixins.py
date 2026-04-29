@@ -4,6 +4,12 @@ from .models import AuditLog
 
 class AuditMixin:
     audit_entity_type: str = ''
+    invalidate_cache_on_write: bool = False
+
+    def _invalidate_cache(self):
+        if self.invalidate_cache_on_write:
+            from skills.views.analytics import invalidate_analytics_cache
+            invalidate_analytics_cache()
 
     def perform_create(self, serializer):
         instance = serializer.save()
@@ -14,6 +20,7 @@ class AuditMixin:
             entity_id=instance.pk,
             detail=str(instance),
         )
+        self._invalidate_cache()
 
     def perform_update(self, serializer):
         instance = serializer.save()
@@ -24,6 +31,7 @@ class AuditMixin:
             entity_id=instance.pk,
             detail=str(instance),
         )
+        self._invalidate_cache()
 
     def perform_destroy(self, instance):
         entity_id = instance.pk
@@ -36,3 +44,4 @@ class AuditMixin:
             entity_id=entity_id,
             detail=detail,
         )
+        self._invalidate_cache()
