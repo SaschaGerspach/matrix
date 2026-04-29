@@ -13,12 +13,13 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { AuditLogEntry, AuditService } from '../../core/audit.service';
-import { CsvImportResult, EmployeeService } from '../../core/employee.service';
-import { RoleTemplateService } from '../../core/role-template.service';
 import { SkillCatalogService } from '../../core/skill-catalog.service';
-import { RoleTemplate, Skill, SkillCategory, SkillLevelDescription, SkillRequirement } from '../../core/skill.models';
+import { Skill, SkillCategory, SkillLevelDescription, SkillRequirement } from '../../core/skill.models';
 import { Team, TeamService } from '../../core/team.service';
 import { ToastService } from '../../core/toast.service';
+
+import { AdminImportComponent } from './admin-import.component';
+import { AdminRoleTemplatesComponent } from './admin-role-templates.component';
 
 @Component({
   selector: 'app-admin',
@@ -34,16 +35,16 @@ import { ToastService } from '../../core/toast.service';
     MatTableModule,
     MatTabsModule,
     TranslateModule,
+    AdminImportComponent,
+    AdminRoleTemplatesComponent,
   ],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss',
 })
 export class AdminComponent implements OnInit {
   private readonly catalogService = inject(SkillCatalogService);
-  private readonly roleTemplateService = inject(RoleTemplateService);
   private readonly teamService = inject(TeamService);
   private readonly auditService = inject(AuditService);
-  private readonly employeeService = inject(EmployeeService);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -52,7 +53,6 @@ export class AdminComponent implements OnInit {
   readonly teams = signal<Team[]>([]);
   readonly requirements = signal<SkillRequirement[]>([]);
   readonly levelDescriptions = signal<SkillLevelDescription[]>([]);
-  readonly roleTemplates = signal<RoleTemplate[]>([]);
   readonly auditLog = signal<AuditLogEntry[]>([]);
 
   newCategoryName = '';
@@ -64,13 +64,6 @@ export class AdminComponent implements OnInit {
   newDescSkill: number | undefined;
   newDescLevel: number | undefined;
   newDescText = '';
-  newTemplateName = '';
-  newTemplateDesc = '';
-  selectedTemplateId: number | undefined;
-  newTplSkill: number | undefined;
-  newTplLevel: number | undefined;
-  applyTemplateId: number | undefined;
-  applyTeamId: number | undefined;
 
   ngOnInit(): void {
     this.loadAll();
@@ -82,7 +75,6 @@ export class AdminComponent implements OnInit {
     this.teamService.list().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((t) => this.teams.set(t));
     this.catalogService.listRequirements().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((r) => this.requirements.set(r));
     this.catalogService.listLevelDescriptions().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((d) => this.levelDescriptions.set(d));
-    this.roleTemplateService.list().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((t) => this.roleTemplates.set(t));
     this.auditService.list().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((res) => this.auditLog.set(res.results));
   }
 
@@ -175,62 +167,6 @@ export class AdminComponent implements OnInit {
     });
   }
 
-  addRoleTemplate(): void {
-    if (!this.newTemplateName.trim()) return;
-    this.roleTemplateService.create(this.newTemplateName.trim(), this.newTemplateDesc.trim()).subscribe({
-      next: () => {
-        this.newTemplateName = '';
-        this.newTemplateDesc = '';
-        this.toast.success('TOAST.TEMPLATE_CREATED');
-        this.reloadRoleTemplates();
-      },
-      error: () => { this.toast.error('TOAST.ERROR'); this.reloadRoleTemplates(); },
-    });
-  }
-
-  deleteRoleTemplate(id: number): void {
-    this.roleTemplateService.delete(id).subscribe({
-      next: () => { this.toast.success('TOAST.TEMPLATE_DELETED'); this.reloadRoleTemplates(); },
-      error: () => { this.toast.error('TOAST.ERROR'); this.reloadRoleTemplates(); },
-    });
-  }
-
-  addTemplateSkill(): void {
-    if (!this.selectedTemplateId || !this.newTplSkill || !this.newTplLevel) return;
-    this.roleTemplateService.addSkill(this.selectedTemplateId, this.newTplSkill, this.newTplLevel).subscribe({
-      next: (tpl) => {
-        this.roleTemplates.update((list) => list.map((t) => (t.id === tpl.id ? tpl : t)));
-        this.newTplSkill = undefined;
-        this.newTplLevel = undefined;
-      },
-      error: () => this.reloadRoleTemplates(),
-    });
-  }
-
-  removeTemplateSkill(templateId: number, skillPk: number): void {
-    this.roleTemplateService.removeSkill(templateId, skillPk).subscribe({
-      next: (tpl) => this.roleTemplates.update((list) => list.map((t) => (t.id === tpl.id ? tpl : t))),
-      error: () => this.reloadRoleTemplates(),
-    });
-  }
-
-  applyTemplate(): void {
-    if (!this.applyTemplateId || !this.applyTeamId) return;
-    this.roleTemplateService.apply(this.applyTemplateId, this.applyTeamId).subscribe({
-      next: () => {
-        this.applyTemplateId = undefined;
-        this.applyTeamId = undefined;
-        this.toast.success('TOAST.TEMPLATE_APPLIED');
-        this.reloadRequirements();
-      },
-      error: () => { this.toast.error('TOAST.ERROR'); this.reloadRequirements(); },
-    });
-  }
-
-  selectedTemplate(): RoleTemplate | undefined {
-    return this.roleTemplates().find((t) => t.id === this.selectedTemplateId);
-  }
-
   private reloadCategories(): void {
     this.catalogService.listCategories().subscribe((c) => this.categories.set(c));
   }
@@ -245,37 +181,5 @@ export class AdminComponent implements OnInit {
 
   private reloadLevelDescriptions(): void {
     this.catalogService.listLevelDescriptions().subscribe((d) => this.levelDescriptions.set(d));
-  }
-
-  private reloadRoleTemplates(): void {
-    this.roleTemplateService.list().subscribe((t) => this.roleTemplates.set(t));
-  }
-
-  readonly employeeImportResult = signal<CsvImportResult | null>(null);
-  readonly skillImportResult = signal<CsvImportResult | null>(null);
-
-  onEmployeeCsvSelected(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) return;
-    this.employeeImportResult.set(null);
-    this.employeeService.importCsv(file).subscribe({
-      next: (result) => { this.employeeImportResult.set(result); this.toast.success('TOAST.IMPORT_COMPLETE'); },
-      error: () => { this.employeeImportResult.set({ created: 0, skipped: 0, errors: [{ row: 0, detail: 'Import failed' }] }); this.toast.error('TOAST.ERROR'); },
-    });
-  }
-
-  onSkillCsvSelected(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) return;
-    this.skillImportResult.set(null);
-    this.catalogService.importSkillsCsv(file).subscribe({
-      next: (result) => {
-        this.skillImportResult.set(result);
-        this.toast.success('TOAST.IMPORT_COMPLETE');
-        this.reloadSkills();
-        this.reloadCategories();
-      },
-      error: () => { this.skillImportResult.set({ created: 0, skipped: 0, errors: [{ row: 0, detail: 'Import failed' }] }); this.toast.error('TOAST.ERROR'); },
-    });
   }
 }
