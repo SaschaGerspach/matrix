@@ -1,6 +1,8 @@
 import csv
+import hashlib
 import io
 
+from django.core.cache import cache
 from django.db import models
 from django.http import HttpResponse
 from rest_framework import status as http_status
@@ -14,6 +16,19 @@ from teams.utils import get_led_member_ids, is_team_lead
 
 from ..models import Skill, SkillAssignment, SkillAssignmentHistory, SkillRequirement
 from ..serializers import MatrixAssignmentSerializer, MatrixEmployeeSerializer, MatrixSkillSerializer
+
+CACHE_TTL = 300
+
+CACHE_KEYS_PREFIX = 'analytics_'
+
+
+def _cache_key(view_name, **params):
+    raw = f"{view_name}:{sorted(params.items())}"
+    return CACHE_KEYS_PREFIX + hashlib.md5(raw.encode()).hexdigest()
+
+
+def invalidate_analytics_cache():
+    cache.delete_pattern(f'{CACHE_KEYS_PREFIX}*') if hasattr(cache, 'delete_pattern') else cache.clear()
 
 
 def can_view_employee_data(user, target_employee_id):
@@ -45,20 +60,26 @@ class SkillMatrixView(APIView):
     def get(self, request):
         from teams.models import Team
 
+        team_id = request.query_params.get('team', '')
+        category_id = request.query_params.get('category', '')
+        search = request.query_params.get('search', '').strip()
+
+        key = _cache_key('matrix', team=team_id, category=category_id, search=search)
+        cached = cache.get(key)
+        if cached is not None:
+            return Response(cached)
+
         employees = Employee.objects.all().order_by('last_name', 'first_name')
         skills = Skill.objects.select_related('category').order_by('category__name', 'name')
 
-        team_id = request.query_params.get('team')
         if team_id:
             team = Team.objects.filter(id=team_id).first()
             if team:
                 employees = employees.filter(teams=team)
 
-        category_id = request.query_params.get('category')
         if category_id:
             skills = skills.filter(category_id=category_id)
 
-        search = request.query_params.get('search', '').strip()
         if search:
             employees = employees.filter(
                 models.Q(first_name__icontains=search) | models.Q(last_name__icontains=search)
@@ -79,11 +100,13 @@ class SkillMatrixView(APIView):
             {'id': s.id, 'name': s.name, 'category_name': s.category.name} for s in skills
         ]
 
-        return Response({
+        data = {
             'employees': MatrixEmployeeSerializer(employee_data, many=True).data,
             'skills': MatrixSkillSerializer(skill_data, many=True).data,
             'assignments': MatrixAssignmentSerializer(assignments, many=True).data,
-        })
+        }
+        cache.set(key, data, CACHE_TTL)
+        return Response(data)
 
 
 class SkillMatrixExportView(APIView):
@@ -328,6 +351,11 @@ class KpiView(APIView):
     def get(self, request):
         from teams.models import Team
 
+        key = _cache_key('kpi')
+        cached = cache.get(key)
+        if cached is not None:
+            return Response(cached)
+
         teams = list(Team.objects.prefetch_related('members').all())
         total_skills = Skill.objects.count()
 
@@ -380,6 +408,7 @@ class KpiView(APIView):
                 'confirmed_ratio': round(confirmed_count / total_assignments * 100, 1),
             })
 
+        cache.set(key, result, CACHE_TTL)
         return Response(result)
 
 
@@ -388,6 +417,11 @@ class LevelDistributionView(APIView):
 
     def get(self, request):
         from teams.models import Team
+
+        key = _cache_key('level_distribution')
+        cached = cache.get(key)
+        if cached is not None:
+            return Response(cached)
 
         teams = list(Team.objects.prefetch_related('members').all())
 
@@ -420,7 +454,9 @@ class LevelDistributionView(APIView):
                 'distribution': dist,
             })
 
-        return Response({
+        data = {
             'overall': overall,
             'teams': per_team,
-        })
+        }
+        cache.set(key, data, CACHE_TTL)
+        return Response(data)

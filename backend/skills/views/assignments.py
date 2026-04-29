@@ -16,7 +16,7 @@ from ..serializers import (
     SkillAssignmentSerializer,
     TeamAssignmentSerializer,
 )
-from .analytics import can_view_employee_data
+from .analytics import can_view_employee_data, invalidate_analytics_cache
 
 
 class MySkillsViewSet(viewsets.ReadOnlyModelViewSet):
@@ -66,6 +66,7 @@ class SkillAssignmentViewSet(viewsets.ModelViewSet):
             changed_by=get_employee(self.request.user),
         )
         notify_team_leads_pending(assignment.employee, assignment.skill, assignment.level)
+        invalidate_analytics_cache()
 
     def perform_update(self, serializer):
         old_level = serializer.instance.level
@@ -82,6 +83,7 @@ class SkillAssignmentViewSet(viewsets.ModelViewSet):
                 changed_by=changed_by,
             )
             notify_skill_updated(assignment.employee, assignment.skill, old_level, assignment.level, changed_by)
+        invalidate_analytics_cache()
 
     def perform_destroy(self, instance):
         SkillAssignmentHistory.objects.create(
@@ -94,6 +96,7 @@ class SkillAssignmentViewSet(viewsets.ModelViewSet):
             changed_by=get_employee(self.request.user),
         )
         instance.delete()
+        invalidate_analytics_cache()
 
     @action(detail=True, methods=['post'], permission_classes=(CanConfirmSkillAssignment,))
     def confirm(self, request, pk=None):
@@ -115,6 +118,7 @@ class SkillAssignmentViewSet(viewsets.ModelViewSet):
             changed_by=employee,
         )
         notify_skill_confirmed(assignment.employee, assignment.skill, employee)
+        invalidate_analytics_cache()
         serializer = self.get_serializer(assignment)
         return Response(serializer.data)
 
