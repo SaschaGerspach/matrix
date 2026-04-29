@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'drf_spectacular',
     'authentication',
     'employees',
     'teams',
@@ -150,4 +151,12 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'auth': '5/minute',
     },
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Skill Matrix API',
+    'DESCRIPTION': 'API for managing employee skills, teams, and development plans.',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }
