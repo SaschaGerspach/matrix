@@ -33,6 +33,10 @@ export class AuthService {
     return localStorage.getItem(TOKEN_KEY);
   }
 
+  clearToken(): void {
+    localStorage.removeItem(TOKEN_KEY);
+  }
+
   isLoggedIn(): boolean {
     return this.getToken() !== null;
   }

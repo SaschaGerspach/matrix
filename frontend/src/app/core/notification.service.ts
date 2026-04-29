@@ -73,12 +73,21 @@ export class NotificationService implements OnDestroy {
   private createSocket(): void {
     if (!this.token) return;
 
-    const wsUrl = `${environment.wsUrl}/notifications/?token=${this.token}`;
+    const wsUrl = `${environment.wsUrl}/notifications/`;
     this.socket = new WebSocket(wsUrl);
 
+    this.socket.onopen = () => {
+      this.socket?.send(JSON.stringify({ type: 'authenticate', token: this.token }));
+    };
+
     this.socket.onmessage = (event) => {
-      const data = JSON.parse(event.data) as NotificationItem;
-      this.latestNotification.set(data);
+      const data = JSON.parse(event.data);
+      if (data.type === 'auth_error') {
+        this.socket?.close();
+        return;
+      }
+      if (data.type === 'auth_ok') return;
+      this.latestNotification.set(data as NotificationItem);
       this.unreadCount.update((c) => c + 1);
     };
 

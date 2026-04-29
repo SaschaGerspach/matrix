@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.utils import timezone
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -100,23 +101,25 @@ class SkillAssignmentViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], permission_classes=(CanConfirmSkillAssignment,))
     def confirm(self, request, pk=None):
-        assignment = self.get_object()
-        if assignment.status == SkillAssignment.Status.CONFIRMED:
-            return Response({'detail': 'Already confirmed.'}, status=400)
-        employee = get_employee(request.user)
-        assignment.status = SkillAssignment.Status.CONFIRMED
-        assignment.confirmed_by = employee
-        assignment.confirmed_at = timezone.now()
-        assignment.save()
-        SkillAssignmentHistory.objects.create(
-            assignment=assignment,
-            employee=assignment.employee,
-            skill=assignment.skill,
-            old_level=assignment.level,
-            new_level=assignment.level,
-            action=SkillAssignmentHistory.Action.CONFIRMED,
-            changed_by=employee,
-        )
+        with transaction.atomic():
+            assignment = SkillAssignment.objects.select_for_update().get(pk=pk)
+            self.check_object_permissions(request, assignment)
+            if assignment.status == SkillAssignment.Status.CONFIRMED:
+                return Response({'detail': 'Already confirmed.'}, status=400)
+            employee = get_employee(request.user)
+            assignment.status = SkillAssignment.Status.CONFIRMED
+            assignment.confirmed_by = employee
+            assignment.confirmed_at = timezone.now()
+            assignment.save()
+            SkillAssignmentHistory.objects.create(
+                assignment=assignment,
+                employee=assignment.employee,
+                skill=assignment.skill,
+                old_level=assignment.level,
+                new_level=assignment.level,
+                action=SkillAssignmentHistory.Action.CONFIRMED,
+                changed_by=employee,
+            )
         notify_skill_confirmed(assignment.employee, assignment.skill, employee)
         invalidate_analytics_cache()
         serializer = self.get_serializer(assignment)

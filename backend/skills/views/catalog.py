@@ -66,7 +66,6 @@ class SkillViewSet(AuditMixin, viewsets.ModelViewSet):
         skipped = []
         errors = []
         category_cache: dict[str, SkillCategory] = {}
-        existing = set(Skill.objects.values_list('name', 'category__name'))
 
         for i, row in enumerate(reader, start=2):
             name = (row.get('name') or '').strip()
@@ -76,17 +75,18 @@ class SkillViewSet(AuditMixin, viewsets.ModelViewSet):
                 errors.append({'row': i, 'detail': 'Missing required field.'})
                 continue
 
-            if (name, category_name) in existing:
-                skipped.append({'row': i, 'name': name})
-                continue
-
             if category_name not in category_cache:
                 cat, _ = SkillCategory.objects.get_or_create(name=category_name)
                 category_cache[category_name] = cat
 
-            Skill.objects.create(name=name, category=category_cache[category_name])
-            existing.add((name, category_name))
-            created.append({'row': i, 'name': name, 'category': category_name})
+            _, was_created = Skill.objects.get_or_create(
+                name=name,
+                category=category_cache[category_name],
+            )
+            if was_created:
+                created.append({'row': i, 'name': name, 'category': category_name})
+            else:
+                skipped.append({'row': i, 'name': name})
 
         if created:
             log_action(

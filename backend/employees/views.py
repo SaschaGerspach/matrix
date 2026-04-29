@@ -64,7 +64,6 @@ class EmployeeViewSet(viewsets.ModelViewSet):
         created = []
         skipped = []
         errors = []
-        existing_emails = set(Employee.objects.values_list('email', flat=True))
 
         for i, row in enumerate(reader, start=2):
             email = (row.get('email') or '').strip().lower()
@@ -75,19 +74,20 @@ class EmployeeViewSet(viewsets.ModelViewSet):
                 errors.append({'row': i, 'detail': 'Missing required field.'})
                 continue
 
-            if email in existing_emails:
-                skipped.append({'row': i, 'email': email})
-                continue
-
             try:
                 serializers.EmailField().run_validators(email)
             except serializers.ValidationError:
                 errors.append({'row': i, 'detail': f'Invalid email: {email}'})
                 continue
 
-            Employee.objects.create(first_name=first_name, last_name=last_name, email=email)
-            existing_emails.add(email)
-            created.append({'row': i, 'email': email})
+            _, was_created = Employee.objects.get_or_create(
+                email=email,
+                defaults={'first_name': first_name, 'last_name': last_name},
+            )
+            if was_created:
+                created.append({'row': i, 'email': email})
+            else:
+                skipped.append({'row': i, 'email': email})
 
         if created:
             log_action(
