@@ -61,6 +61,7 @@ const skillsResponse: unknown[] = [];
 
 function flushInitRequests(
   http: HttpTestingController,
+  fixture: ComponentFixture<EmployeeProfileComponent>,
   profile = profileResponse,
   history = historyResponse,
   trends = trendsResponse,
@@ -68,10 +69,11 @@ function flushInitRequests(
   http.expectOne(`${environment.apiUrl}/employees/1/profile/`).flush(profile);
   http.expectOne((r) => r.url === `${environment.apiUrl}/skill-history/`).flush(history);
   http.expectOne((r) => r.url === `${environment.apiUrl}/skill-trends/`).flush(trends);
-  http.expectOne((r) => r.url === `${environment.apiUrl}/certificates/`).flush(certsResponse);
-  http.expectOne((r) => r.url === `${environment.apiUrl}/development-plans/`).flush(plansResponse);
   http.expectOne(`${environment.apiUrl}/skills/`).flush(skillsResponse);
   http.expectOne(`${environment.apiUrl}/me/`).flush(meResponse);
+  fixture.detectChanges();
+  http.expectOne((r) => r.url === `${environment.apiUrl}/certificates/`).flush(certsResponse);
+  http.expectOne((r) => r.url === `${environment.apiUrl}/development-plans/`).flush(plansResponse);
 }
 
 describe('EmployeeProfileComponent', () => {
@@ -103,7 +105,7 @@ describe('EmployeeProfileComponent', () => {
 
   it('loads and displays employee profile', () => {
     fixture.detectChanges();
-    flushInitRequests(http);
+    flushInitRequests(http, fixture);
     fixture.detectChanges();
 
     expect(component.profile()?.full_name).toBe('Alice A');
@@ -117,7 +119,7 @@ describe('EmployeeProfileComponent', () => {
 
   it('builds radar data from skills', () => {
     fixture.detectChanges();
-    flushInitRequests(http);
+    flushInitRequests(http, fixture);
 
     expect(component.radarData.labels).toEqual(['Python', 'Docker']);
     expect(component.radarData.datasets[0].data).toEqual([4, 2]);
@@ -125,7 +127,7 @@ describe('EmployeeProfileComponent', () => {
 
   it('shows skills table', () => {
     fixture.detectChanges();
-    flushInitRequests(http);
+    flushInitRequests(http, fixture);
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
@@ -136,7 +138,7 @@ describe('EmployeeProfileComponent', () => {
 
   it('shows empty state when no skills', () => {
     fixture.detectChanges();
-    flushInitRequests(http, { ...profileResponse, skills: [] });
+    flushInitRequests(http, fixture, { ...profileResponse, skills: [] });
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
@@ -145,7 +147,7 @@ describe('EmployeeProfileComponent', () => {
 
   it('displays history entries', () => {
     fixture.detectChanges();
-    flushInitRequests(http);
+    flushInitRequests(http, fixture);
     fixture.detectChanges();
 
     expect(component.history().length).toBe(1);
@@ -156,7 +158,7 @@ describe('EmployeeProfileComponent', () => {
 
   it('hides history when empty', () => {
     fixture.detectChanges();
-    flushInitRequests(http, profileResponse, { count: 0, next: null, previous: null, results: [] });
+    flushInitRequests(http, fixture, profileResponse, { count: 0, next: null, previous: null, results: [] });
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
@@ -165,7 +167,7 @@ describe('EmployeeProfileComponent', () => {
 
   it('shows trend chart when data available', () => {
     fixture.detectChanges();
-    flushInitRequests(http);
+    flushInitRequests(http, fixture);
 
     expect(component.hasTrends()).toBeTrue();
     expect(component.trendData.datasets.length).toBe(1);
@@ -174,40 +176,9 @@ describe('EmployeeProfileComponent', () => {
 
   it('hides trend chart when no data', () => {
     fixture.detectChanges();
-    flushInitRequests(http, profileResponse, historyResponse, []);
+    flushInitRequests(http, fixture, profileResponse, historyResponse, []);
 
     expect(component.hasTrends()).toBeFalse();
-  });
-
-  it('rejects files with invalid type', () => {
-    fixture.detectChanges();
-    flushInitRequests(http);
-    const file = new File(['content'], 'script.exe', { type: 'application/octet-stream' });
-    const event = { target: { files: [file] } } as unknown as Event;
-    component.onCertFileSelected(event);
-    expect(component.certFile).toBeNull();
-    expect(component.certFileError).toBe('CERTIFICATES.INVALID_FILE_TYPE');
-  });
-
-  it('rejects files that are too large', () => {
-    fixture.detectChanges();
-    flushInitRequests(http);
-    const blob = new Blob([new ArrayBuffer(11 * 1024 * 1024)], { type: 'application/pdf' });
-    const file = new File([blob], 'big.pdf', { type: 'application/pdf' });
-    const event = { target: { files: [file] } } as unknown as Event;
-    component.onCertFileSelected(event);
-    expect(component.certFile).toBeNull();
-    expect(component.certFileError).toBe('CERTIFICATES.FILE_TOO_LARGE');
-  });
-
-  it('accepts valid PDF files', () => {
-    fixture.detectChanges();
-    flushInitRequests(http);
-    const file = new File(['%PDF-1.4'], 'cert.pdf', { type: 'application/pdf' });
-    const event = { target: { files: [file] } } as unknown as Event;
-    component.onCertFileSelected(event);
-    expect(component.certFile).toBe(file);
-    expect(component.certFileError).toBe('');
   });
 
   it('handles error gracefully', () => {
@@ -219,8 +190,6 @@ describe('EmployeeProfileComponent', () => {
       { count: 0, next: null, previous: null, results: [] },
     );
     http.expectOne((r) => r.url === `${environment.apiUrl}/skill-trends/`).flush([]);
-    http.expectOne((r) => r.url === `${environment.apiUrl}/certificates/`).flush(certsResponse);
-    http.expectOne((r) => r.url === `${environment.apiUrl}/development-plans/`).flush(plansResponse);
     http.expectOne(`${environment.apiUrl}/skills/`).flush(skillsResponse);
     http.expectOne(`${environment.apiUrl}/me/`).flush(meResponse);
     fixture.detectChanges();
