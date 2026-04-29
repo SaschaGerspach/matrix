@@ -59,6 +59,7 @@ class LoginView(APIView):
 class RefreshView(APIView):
     permission_classes = ()
     authentication_classes = ()
+    throttle_classes = (AuthAnonThrottle,)
 
     def post(self, request):
         token = request.data.get('refresh')
