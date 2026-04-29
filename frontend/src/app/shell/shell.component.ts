@@ -49,6 +49,12 @@ export class ShellComponent implements OnInit, OnDestroy {
       },
     });
     this.notificationService.loadUnreadCount();
+
+    const token = this.auth.getToken();
+    if (token) {
+      this.notificationService.connectWebSocket(token);
+    }
+
     this.pollTimer = setInterval(() => this.notificationService.loadUnreadCount(), 60_000);
   }
 
@@ -57,6 +63,7 @@ export class ShellComponent implements OnInit, OnDestroy {
       clearInterval(this.pollTimer);
       this.pollTimer = null;
     }
+    this.notificationService.disconnectWebSocket();
   }
 
   loadNotifications(): void {
@@ -83,6 +90,7 @@ export class ShellComponent implements OnInit, OnDestroy {
 
   logout(): void {
     if (this.pollTimer) clearInterval(this.pollTimer);
+    this.notificationService.disconnectWebSocket();
     this.meService.clearCache();
     this.auth.logout().subscribe({
       next: () => this.router.navigate(['/login']),

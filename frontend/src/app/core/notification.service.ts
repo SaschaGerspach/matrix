@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, OnDestroy } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 
 import { PaginatedResponse } from './pagination';
@@ -16,11 +16,16 @@ export interface NotificationItem {
 }
 
 @Injectable({ providedIn: 'root' })
-export class NotificationService {
+export class NotificationService implements OnDestroy {
   private readonly http = inject(HttpClient);
   private readonly url = `${environment.apiUrl}/notifications/`;
 
   readonly unreadCount = signal(0);
+  readonly latestNotification = signal<NotificationItem | null>(null);
+
+  private socket: WebSocket | null = null;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private token: string | null = null;
 
   list(): Observable<PaginatedResponse<NotificationItem>> {
     return this.http.get<PaginatedResponse<NotificationItem>>(this.url);
@@ -42,5 +47,45 @@ export class NotificationService {
     return this.http.post<{ status: string }>(`${this.url}read_all/`, {}).pipe(
       tap(() => this.unreadCount.set(0)),
     );
+  }
+
+  connectWebSocket(token: string): void {
+    this.token = token;
+    this.createSocket();
+  }
+
+  disconnectWebSocket(): void {
+    this.token = null;
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+    if (this.socket) {
+      this.socket.close();
+      this.socket = null;
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.disconnectWebSocket();
+  }
+
+  private createSocket(): void {
+    if (!this.token) return;
+
+    const wsUrl = `${environment.wsUrl}/notifications/?token=${this.token}`;
+    this.socket = new WebSocket(wsUrl);
+
+    this.socket.onmessage = (event) => {
+      const data = JSON.parse(event.data) as NotificationItem;
+      this.latestNotification.set(data);
+      this.unreadCount.update((c) => c + 1);
+    };
+
+    this.socket.onclose = () => {
+      if (this.token) {
+        this.reconnectTimer = setTimeout(() => this.createSocket(), 5000);
+      }
+    };
   }
 }
