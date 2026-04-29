@@ -1,4 +1,4 @@
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 from employees.utils import get_employee
 from teams.utils import get_led_member_ids, is_team_lead
@@ -29,9 +29,7 @@ class SkillAssignmentPermission(BasePermission):
             return False
         if obj.employee_id == employee.id:
             return True
-        if obj.employee_id in get_led_member_ids(employee):
-            return True
-        return False
+        return obj.employee_id in get_led_member_ids(employee)
 
 
 class CanConfirmSkillAssignment(BasePermission):

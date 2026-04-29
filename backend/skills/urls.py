@@ -2,24 +2,24 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from .views import (
+    KpiView,
+    LevelDistributionView,
     MySkillsViewSet,
     RoleTemplateViewSet,
     SkillAssignmentViewSet,
     SkillCategoryViewSet,
     SkillGapsView,
     SkillHistoryViewSet,
-    LevelDistributionView,
+    SkillLevelDescriptionViewSet,
     SkillMatrixExportView,
+    SkillMatrixPdfExportView,
     SkillMatrixView,
+    SkillRecommendationsView,
     SkillRequirementViewSet,
+    SkillTrendsView,
     SkillViewSet,
     TeamAssignmentsViewSet,
     TeamComparisonView,
-    KpiView,
-    SkillLevelDescriptionViewSet,
-    SkillMatrixPdfExportView,
-    SkillRecommendationsView,
-    SkillTrendsView,
 )
 
 router = DefaultRouter()

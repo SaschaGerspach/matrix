@@ -3,7 +3,16 @@ from rest_framework import serializers
 from employees.utils import get_employee
 from teams.utils import get_led_member_ids
 
-from .models import Skill, SkillAssignment, SkillAssignmentHistory, SkillCategory, SkillLevelDescription, SkillRequirement, RoleTemplate, RoleTemplateSkill
+from .models import (
+    RoleTemplate,
+    RoleTemplateSkill,
+    Skill,
+    SkillAssignment,
+    SkillAssignmentHistory,
+    SkillCategory,
+    SkillLevelDescription,
+    SkillRequirement,
+)
 
 
 class SkillCategorySerializer(serializers.ModelSerializer):

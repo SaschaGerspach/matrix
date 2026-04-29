@@ -1,7 +1,8 @@
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
 from django.contrib.auth import get_user_model
 from django.core import mail
-from unittest.mock import patch, MagicMock, AsyncMock
 
 from employees.models import Employee
 from notifications.tasks import send_notification_email

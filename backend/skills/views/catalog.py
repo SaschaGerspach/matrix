@@ -2,7 +2,8 @@ import csv
 import io
 
 from django.db import transaction
-from rest_framework import status as http_status, viewsets
+from rest_framework import status as http_status
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
@@ -15,7 +16,7 @@ from common.permissions import IsAdminOrReadOnly
 MAX_CSV_SIZE = 5 * 1024 * 1024
 MAX_CSV_ROWS = 5000
 
-from ..models import Skill, SkillCategory, SkillLevelDescription, SkillRequirement, RoleTemplate, RoleTemplateSkill
+from ..models import RoleTemplate, RoleTemplateSkill, Skill, SkillCategory, SkillLevelDescription, SkillRequirement
 from ..serializers import (
     RoleTemplateApplySerializer,
     RoleTemplateSerializer,

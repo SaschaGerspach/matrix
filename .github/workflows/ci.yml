@@ -47,6 +47,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Lint with ruff
+        run: ruff check .
+
       - name: Django system checks
         run: python manage.py check --fail-level WARNING
 
@@ -81,6 +84,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Lint
+        run: npx ng lint
 
       - name: Run tests
         run: npx ng test --watch=false --browsers=ChromeHeadless

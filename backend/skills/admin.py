@@ -1,6 +1,15 @@
 from django.contrib import admin
 
-from .models import Skill, SkillAssignment, SkillAssignmentHistory, SkillCategory, SkillLevelDescription, SkillRequirement, RoleTemplate, RoleTemplateSkill
+from .models import (
+    RoleTemplate,
+    RoleTemplateSkill,
+    Skill,
+    SkillAssignment,
+    SkillAssignmentHistory,
+    SkillCategory,
+    SkillLevelDescription,
+    SkillRequirement,
+)
 
 
 @admin.register(SkillCategory)

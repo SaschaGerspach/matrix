@@ -1,0 +1,19 @@
+[tool.ruff]
+target-version = "py313"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B", "SIM", "S"]
+ignore = [
+    "S101",  # assert in tests is fine
+    "S105",  # hardcoded passwords in tests
+    "S106",  # hardcoded passwords in tests
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S"]
+"**/migrations/**" = ["E501"]
+"config/settings.py" = ["E402"]
+"config/settings_*.py" = ["E402", "F405"]
+"config/asgi.py" = ["E402"]
+"skills/views/catalog.py" = ["E402"]

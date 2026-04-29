@@ -64,10 +64,11 @@ def import_skills_csv(csv_content, user_id):
 @shared_task
 def generate_matrix_pdf():
     from reportlab.lib import colors
-    from reportlab.lib.pagesizes import landscape, A4
+    from reportlab.lib.pagesizes import A4, landscape
     from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 
     from employees.models import Employee
+
     from .models import SkillAssignment
 
     employees = list(Employee.objects.all().order_by('last_name', 'first_name'))
@@ -100,8 +101,9 @@ def generate_matrix_pdf():
     ]))
     doc.build([table])
 
-    from django.conf import settings
     import os
+
+    from django.conf import settings
     output_dir = os.path.join(settings.MEDIA_ROOT, 'exports')
     os.makedirs(output_dir, exist_ok=True)
     path = os.path.join(output_dir, 'skill-matrix.pdf')

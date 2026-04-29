@@ -7,7 +7,6 @@ from employees.models import Employee
 from skills.models import Skill, SkillAssignment, SkillCategory, SkillRequirement
 from teams.models import Department, Team
 
-
 pytestmark = pytest.mark.django_db
 
 User = get_user_model()

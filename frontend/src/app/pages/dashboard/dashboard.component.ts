@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
 
 import { TranslateModule } from '@ngx-translate/core';
 
-import { MatrixAssignment, MatrixEmployee, MatrixSkill, Skill, SkillCategory, SkillService } from '../../core/skill.service';
+import { MatrixAssignment, MatrixEmployee, MatrixSkill, SkillCategory, SkillService } from '../../core/skill.service';
 import { MeService } from '../../core/me.service';
 import { Team, TeamService } from '../../core/team.service';
 

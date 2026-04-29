@@ -19,7 +19,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   const isAuthUrl = req.url.includes('/auth/login') || req.url.includes('/auth/refresh');
 
-  let headers: Record<string, string> = {};
+  const headers: Record<string, string> = {};
   const csrf = getCsrfToken();
   if (csrf && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
     headers['X-CSRFToken'] = csrf;

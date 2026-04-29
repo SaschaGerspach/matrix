@@ -154,7 +154,7 @@ class SkillMatrixPdfExportView(APIView):
 
     def get(self, request):
         from reportlab.lib import colors
-        from reportlab.lib.pagesizes import landscape, A4
+        from reportlab.lib.pagesizes import A4, landscape
         from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 
         employees, skills, assignment_map = _build_export_data()

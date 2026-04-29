@@ -60,7 +60,6 @@ def test_async_employee_import_returns_task_id(admin_user):
     client = APIClient()
     client.force_authenticate(user=admin_user)
 
-    import io
     from django.core.files.uploadedfile import SimpleUploadedFile
 
     csv_bytes = b'first_name,last_name,email\nAlice,Smith,alice@test.com'

@@ -6,7 +6,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from authentication.views import LoginView
 
-
 pytestmark = pytest.mark.django_db
 
 
@@ -194,7 +193,9 @@ def test_failed_login_creates_audit_log(user):
 
 def test_lockout_creates_audit_log(user):
     from unittest.mock import patch
+
     from django.core.cache import cache
+
     from common.models import AuditLog
     cache.clear()
     client = APIClient()
@@ -221,6 +222,7 @@ def test_logout_creates_audit_log(user):
 
 def test_account_lockout_after_max_attempts(user):
     from unittest.mock import patch
+
     from django.core.cache import cache
     cache.clear()
     client = APIClient()
@@ -238,6 +240,7 @@ def test_account_lockout_after_max_attempts(user):
 
 def test_successful_login_resets_lockout_counter(user):
     from unittest.mock import patch
+
     from django.core.cache import cache
     cache.clear()
     client = APIClient()

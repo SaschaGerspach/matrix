@@ -4,17 +4,16 @@ from django.conf import settings
 from django.core.cache import cache
 from django.middleware.csrf import get_token
 from rest_framework import serializers, status
-
-from common.audit import log_action
-
-logger = logging.getLogger(__name__)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle, SimpleRateThrottle
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.tokens import RefreshToken
 
+from common.audit import log_action
+
+logger = logging.getLogger(__name__)
 
 ACCESS_COOKIE_MAX_AGE = int(settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'].total_seconds())
 REFRESH_COOKIE_MAX_AGE = int(settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'].total_seconds())
@@ -151,12 +150,11 @@ class LogoutView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
+        import contextlib
         token = request.COOKIES.get('refresh_token')
         if token:
-            try:
+            with contextlib.suppress(TokenError):
                 RefreshToken(token).blacklist()
-            except TokenError:
-                pass
         log_action(request.user, 'logout', 'User', entity_id=request.user.pk)
         response = Response(status=status.HTTP_204_NO_CONTENT)
         _clear_auth_cookies(response)

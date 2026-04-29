@@ -165,7 +165,6 @@ def test_optional_fields(admin_client):
 
 
 def test_upload_valid_pdf(admin_client):
-    from io import BytesIO
     from django.core.files.uploadedfile import SimpleUploadedFile
     emp = Employee.objects.create(first_name='A', last_name='B', email='a@b.com')
     pdf_content = b'%PDF-1.4 fake pdf content'

@@ -1,7 +1,7 @@
 import pytest
+from django.contrib.auth import get_user_model
 from django.test import override_settings
 from rest_framework.test import APIClient
-from django.contrib.auth import get_user_model
 
 pytestmark = pytest.mark.django_db
 

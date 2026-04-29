@@ -5,7 +5,6 @@ from rest_framework.test import APIClient
 
 from employees.models import Employee
 
-
 pytestmark = pytest.mark.django_db
 
 User = get_user_model()
@@ -37,7 +36,8 @@ def regular_client(regular_user):
 
 
 def test_admin_can_create_employee(admin_client):
-    r = admin_client.post(URL, {'first_name': 'Ada', 'last_name': 'Lovelace', 'email': 'ada@example.com'}, format='json')
+    data = {'first_name': 'Ada', 'last_name': 'Lovelace', 'email': 'ada@example.com'}
+    r = admin_client.post(URL, data, format='json')
     assert r.status_code == status.HTTP_201_CREATED
     assert r.data['full_name'] == 'Ada Lovelace'
 
@@ -62,7 +62,8 @@ def test_unauthenticated_access_rejected():
 
 
 def test_admin_can_update_employee(admin_client):
-    r = admin_client.post(URL, {'first_name': 'Ada', 'last_name': 'Lovelace', 'email': 'ada@example.com'}, format='json')
+    data = {'first_name': 'Ada', 'last_name': 'Lovelace', 'email': 'ada@example.com'}
+    r = admin_client.post(URL, data, format='json')
     emp_id = r.data['id']
 
     r = admin_client.patch(f'{URL}{emp_id}/', {'first_name': 'Augusta'}, format='json')
@@ -71,7 +72,8 @@ def test_admin_can_update_employee(admin_client):
 
 
 def test_admin_can_delete_employee(admin_client):
-    r = admin_client.post(URL, {'first_name': 'Ada', 'last_name': 'Lovelace', 'email': 'ada@example.com'}, format='json')
+    data = {'first_name': 'Ada', 'last_name': 'Lovelace', 'email': 'ada@example.com'}
+    r = admin_client.post(URL, data, format='json')
     emp_id = r.data['id']
 
     r = admin_client.delete(f'{URL}{emp_id}/')

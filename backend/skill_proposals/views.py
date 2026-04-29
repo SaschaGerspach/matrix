@@ -8,6 +8,7 @@ from common.mixins import AuditMixin
 from employees.utils import get_employee
 from skills.models import Skill
 from teams.utils import is_team_lead
+
 from .models import SkillProposal
 from .permissions import SkillProposalPermission
 from .serializers import SkillProposalSerializer
@@ -27,10 +28,7 @@ class SkillProposalViewSet(AuditMixin, viewsets.ModelViewSet):
             qs = qs.filter(status=status_filter)
         if not self.request.user.is_staff and not is_team_lead(self.request.user):
             employee = get_employee(self.request.user)
-            if employee:
-                qs = qs.filter(proposed_by=employee)
-            else:
-                qs = qs.none()
+            qs = qs.filter(proposed_by=employee) if employee else qs.none()
         return qs
 
     @action(detail=True, methods=['post'])

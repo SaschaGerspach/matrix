@@ -1,4 +1,4 @@
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 from employees.utils import get_employee
 from teams.utils import is_team_lead
@@ -6,9 +6,7 @@ from teams.utils import is_team_lead
 
 class SkillProposalPermission(BasePermission):
     def has_permission(self, request, view):
-        if not (request.user and request.user.is_authenticated):
-            return False
-        return True
+        return bool(request.user and request.user.is_authenticated)
 
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:

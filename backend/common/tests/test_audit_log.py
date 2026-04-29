@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from common.models import AuditLog
-from skills.models import Skill, SkillCategory
+from skills.models import SkillCategory
 
 pytestmark = pytest.mark.django_db
 

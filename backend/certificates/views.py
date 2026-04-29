@@ -1,9 +1,10 @@
 from rest_framework import viewsets
-from rest_framework.parsers import MultiPartParser, JSONParser
+from rest_framework.parsers import JSONParser, MultiPartParser
 
 from common.mixins import AuditMixin
 from employees.utils import get_employee
 from teams.utils import get_led_member_ids
+
 from .models import Certificate
 from .permissions import CertificatePermission
 from .serializers import CertificateSerializer

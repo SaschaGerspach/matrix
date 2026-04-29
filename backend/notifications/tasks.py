@@ -26,4 +26,4 @@ def send_notification_email(self, recipient_email, notification_type, message):
         )
     except Exception as exc:
         logger.warning('Failed to send email to %s: %s', recipient_email, exc)
-        raise self.retry(exc=exc)
+        raise self.retry(exc=exc) from exc

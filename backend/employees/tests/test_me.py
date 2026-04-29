@@ -6,7 +6,6 @@ from rest_framework.test import APIClient
 from employees.models import Employee
 from teams.models import Department, Team
 
-
 pytestmark = pytest.mark.django_db
 
 User = get_user_model()

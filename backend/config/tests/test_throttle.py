@@ -1,7 +1,6 @@
 import importlib
-import types
 
-from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
 
 def _load_prod_settings():
