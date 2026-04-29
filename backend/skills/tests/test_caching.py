@@ -6,7 +6,7 @@ from rest_framework.test import APIClient
 
 from employees.models import Employee
 from skills.models import Skill, SkillAssignment, SkillCategory
-from skills.views.analytics import _cache_key, _register_cache_key, invalidate_analytics_cache
+from skills.views._cache import _cache_key, _register_cache_key, invalidate_analytics_cache
 from teams.models import Department, Team
 
 pytestmark = pytest.mark.django_db

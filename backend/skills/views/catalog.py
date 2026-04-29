@@ -109,7 +109,7 @@ class SkillViewSet(AuditMixin, viewsets.ModelViewSet):
                 entity_type='Skill',
                 detail=f'Imported {len(created)} skills',
             )
-            from .analytics import invalidate_analytics_cache
+            from ._cache import invalidate_analytics_cache
             invalidate_analytics_cache()
 
         return Response({
@@ -176,7 +176,7 @@ class RoleTemplateViewSet(AuditMixin, viewsets.ModelViewSet):
             entity_id=template.pk,
             detail=f'Applied "{template.name}" to team "{team.name}": {created} created, {updated} updated',
         )
-        from .analytics import invalidate_analytics_cache
+        from ._cache import invalidate_analytics_cache
         invalidate_analytics_cache()
 
         return Response({'created': created, 'updated': updated})

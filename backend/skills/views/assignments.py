@@ -17,7 +17,8 @@ from ..serializers import (
     SkillAssignmentSerializer,
     TeamAssignmentSerializer,
 )
-from .analytics import can_view_employee_data, invalidate_analytics_cache
+from ._cache import invalidate_analytics_cache
+from ._helpers import can_view_employee_data
 
 
 class MySkillsViewSet(viewsets.ReadOnlyModelViewSet):

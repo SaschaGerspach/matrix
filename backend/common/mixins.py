@@ -8,7 +8,7 @@ class AuditMixin:
 
     def _invalidate_cache(self):
         if self.invalidate_cache_on_write:
-            from skills.views.analytics import invalidate_analytics_cache
+            from skills.views._cache import invalidate_analytics_cache
             invalidate_analytics_cache()
 
     def perform_create(self, serializer):

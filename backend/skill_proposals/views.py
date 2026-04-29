@@ -59,7 +59,7 @@ class SkillProposalViewSet(AuditMixin, viewsets.ModelViewSet):
                 category=proposal.category,
             )
             if created:
-                from skills.views.analytics import invalidate_analytics_cache
+                from skills.views._cache import invalidate_analytics_cache
                 invalidate_analytics_cache()
 
         return Response(SkillProposalSerializer(proposal).data)
