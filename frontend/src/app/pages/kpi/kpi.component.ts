@@ -8,6 +8,7 @@ import { ChartConfiguration } from 'chart.js';
 
 import { TranslateModule } from '@ngx-translate/core';
 
+import { LevelDistribution, SkillService } from '../../core/skill.service';
 import { environment } from '../../../environments/environment';
 
 export interface TeamKpi {
@@ -20,6 +21,8 @@ export interface TeamKpi {
   confirmed_ratio: number;
 }
 
+const DOUGHNUT_COLORS = ['#ef5350', '#ff9800', '#fdd835', '#66bb6a', '#2e7d32'];
+
 @Component({
   selector: 'app-kpi',
   standalone: true,
@@ -29,8 +32,10 @@ export interface TeamKpi {
 })
 export class KpiComponent implements OnInit {
   private readonly http = inject(HttpClient);
+  private readonly skillService = inject(SkillService);
 
   readonly data = signal<TeamKpi[]>([]);
+  readonly distribution = signal<LevelDistribution | null>(null);
   readonly loading = signal(false);
 
   readonly barChartConfig = computed<ChartConfiguration<'bar'>>(() => {
@@ -59,6 +64,30 @@ export class KpiComponent implements OnInit {
     };
   });
 
+  readonly doughnutConfig = computed<ChartConfiguration<'doughnut'> | null>(() => {
+    const dist = this.distribution();
+    if (!dist) return null;
+    const levels = ['1', '2', '3', '4', '5'];
+    const values = levels.map((l) => dist.overall[l] ?? 0);
+    if (values.every((v) => v === 0)) return null;
+    return {
+      type: 'doughnut',
+      data: {
+        labels: levels.map((l) => `Level ${l}`),
+        datasets: [{
+          data: values,
+          backgroundColor: DOUGHNUT_COLORS,
+        }],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'right' },
+        },
+      },
+    };
+  });
+
   ngOnInit(): void {
     this.loading.set(true);
     this.http.get<TeamKpi[]>(`${environment.apiUrl}/kpi/`).subscribe({
@@ -68,5 +97,6 @@ export class KpiComponent implements OnInit {
       },
       error: () => this.loading.set(false),
     });
+    this.skillService.levelDistribution().subscribe((d) => this.distribution.set(d));
   }
 }

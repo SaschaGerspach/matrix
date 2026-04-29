@@ -55,7 +55,9 @@
   "TEAM_COMPARISON": {
     "TITLE": "Team Comparison",
     "SELECT_TEAMS": "Select teams",
-    "COMPARE": "Compare"
+    "COMPARE": "Compare",
+    "BAR_CHART": "Bar Chart",
+    "RADAR_CHART": "Radar Chart"
   },
   "EMPLOYEE_PROFILE": {
     "BACK": "Back",
@@ -84,7 +86,9 @@
     "AVG_LEVEL": "Avg. Level",
     "COVERAGE": "Skill Coverage",
     "CONFIRMED": "Confirmed",
-    "TOTAL_ASSIGNMENTS": "Total Assignments"
+    "TOTAL_ASSIGNMENTS": "Total Assignments",
+    "TEAM_OVERVIEW": "Team Overview",
+    "LEVEL_DISTRIBUTION": "Level Distribution"
   },
   "ADMIN": {
     "TITLE": "Admin",

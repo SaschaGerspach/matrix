@@ -1,5 +1,6 @@
 from .analytics import (  # noqa: F401
     KpiView,
+    LevelDistributionView,
     SkillGapsView,
     SkillMatrixExportView,
     SkillMatrixPdfExportView,

@@ -8,6 +8,7 @@ from .views import (
     SkillCategoryViewSet,
     SkillGapsView,
     SkillHistoryViewSet,
+    LevelDistributionView,
     SkillMatrixExportView,
     SkillMatrixView,
     SkillRequirementViewSet,
@@ -41,4 +42,5 @@ urlpatterns = [
     path('skill-trends/', SkillTrendsView.as_view(), name='skill-trends'),
     path('skill-recommendations/', SkillRecommendationsView.as_view(), name='skill-recommendations'),
     path('kpi/', KpiView.as_view(), name='kpi'),
+    path('kpi/level-distribution/', LevelDistributionView.as_view(), name='level-distribution'),
 ] + router.urls

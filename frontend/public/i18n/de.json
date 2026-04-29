@@ -55,7 +55,9 @@
   "TEAM_COMPARISON": {
     "TITLE": "Team-Vergleich",
     "SELECT_TEAMS": "Teams auswählen",
-    "COMPARE": "Vergleichen"
+    "COMPARE": "Vergleichen",
+    "BAR_CHART": "Balkendiagramm",
+    "RADAR_CHART": "Netzdiagramm"
   },
   "EMPLOYEE_PROFILE": {
     "BACK": "Zurück",
@@ -84,7 +86,9 @@
     "AVG_LEVEL": "Ø Level",
     "COVERAGE": "Skill-Abdeckung",
     "CONFIRMED": "Bestätigt",
-    "TOTAL_ASSIGNMENTS": "Zuweisungen gesamt"
+    "TOTAL_ASSIGNMENTS": "Zuweisungen gesamt",
+    "TEAM_OVERVIEW": "Team-Übersicht",
+    "LEVEL_DISTRIBUTION": "Level-Verteilung"
   },
   "ADMIN": {
     "TITLE": "Admin",

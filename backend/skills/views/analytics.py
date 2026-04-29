@@ -381,3 +381,46 @@ class KpiView(APIView):
             })
 
         return Response(result)
+
+
+class LevelDistributionView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        from teams.models import Team
+
+        teams = list(Team.objects.prefetch_related('members').all())
+
+        all_member_ids = set()
+        team_member_ids = {}
+        for team in teams:
+            ids = set(team.members.values_list('id', flat=True))
+            team_member_ids[team.id] = ids
+            all_member_ids |= ids
+
+        assignments = SkillAssignment.objects.filter(employee_id__in=all_member_ids)
+        emp_assignments: dict = {}
+        for a in assignments:
+            emp_assignments.setdefault(a.employee_id, []).append(a)
+
+        overall = {'1': 0, '2': 0, '3': 0, '4': 0, '5': 0}
+        per_team = []
+
+        for team in teams:
+            members = team_member_ids[team.id]
+            dist = {'1': 0, '2': 0, '3': 0, '4': 0, '5': 0}
+            for mid in members:
+                for a in emp_assignments.get(mid, []):
+                    if 1 <= a.level <= 5:
+                        dist[str(a.level)] += 1
+                        overall[str(a.level)] += 1
+            per_team.append({
+                'team_id': team.id,
+                'team_name': team.name,
+                'distribution': dist,
+            })
+
+        return Response({
+            'overall': overall,
+            'teams': per_team,
+        })

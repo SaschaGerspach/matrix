@@ -134,6 +134,11 @@ export interface RoleTemplate {
   skills: RoleTemplateSkill[];
 }
 
+export interface LevelDistribution {
+  overall: Record<string, number>;
+  teams: { team_id: number; team_name: string; distribution: Record<string, number> }[];
+}
+
 export interface SkillHistoryEntry {
   id: number;
   employee: number;
@@ -306,6 +311,10 @@ export class SkillService {
     return this.http.get<PaginatedResponse<SkillHistoryEntry>>(
       `${environment.apiUrl}/skill-history/`, { params },
     );
+  }
+
+  levelDistribution(): Observable<LevelDistribution> {
+    return this.http.get<LevelDistribution>(`${environment.apiUrl}/kpi/level-distribution/`);
   }
 
   exportMatrixCsv(): Observable<Blob> {

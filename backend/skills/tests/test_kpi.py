@@ -63,3 +63,39 @@ def test_unauthenticated():
     c = APIClient()
     r = c.get(URL)
     assert r.status_code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN)
+
+
+DIST_URL = '/api/kpi/level-distribution/'
+
+
+def test_level_distribution(setup):
+    c = APIClient()
+    c.force_authenticate(user=setup)
+    r = c.get(DIST_URL)
+    assert r.status_code == status.HTTP_200_OK
+    assert 'overall' in r.data
+    assert 'teams' in r.data
+    overall = r.data['overall']
+    assert overall['2'] == 1
+    assert overall['4'] == 1
+    assert overall['1'] == 0
+    alpha = next(t for t in r.data['teams'] if t['team_name'] == 'Alpha')
+    assert alpha['distribution']['4'] == 1
+    assert alpha['distribution']['2'] == 1
+
+
+def test_level_distribution_empty_team(db):
+    user = User.objects.create_user(username='viewer', password='pw!')
+    dept = Department.objects.create(name='Eng')
+    Team.objects.create(name='Empty', department=dept)
+    c = APIClient()
+    c.force_authenticate(user=user)
+    r = c.get(DIST_URL)
+    empty = next(t for t in r.data['teams'] if t['team_name'] == 'Empty')
+    assert empty['distribution'] == {'1': 0, '2': 0, '3': 0, '4': 0, '5': 0}
+
+
+def test_level_distribution_unauthenticated():
+    c = APIClient()
+    r = c.get(DIST_URL)
+    assert r.status_code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN)

@@ -36,11 +36,25 @@
     }
   </div>
 
-  <div class="chart-container">
-    <canvas baseChart
-      [type]="barChartConfig().type"
-      [data]="barChartConfig().data"
-      [options]="barChartConfig().options">
-    </canvas>
+  <div class="charts-row">
+    <div class="chart-container">
+      <h3>{{ 'KPI.TEAM_OVERVIEW' | translate }}</h3>
+      <canvas baseChart
+        [type]="barChartConfig().type"
+        [data]="barChartConfig().data"
+        [options]="barChartConfig().options">
+      </canvas>
+    </div>
+
+    @if (doughnutConfig(); as config) {
+      <div class="chart-container">
+        <h3>{{ 'KPI.LEVEL_DISTRIBUTION' | translate }}</h3>
+        <canvas baseChart
+          [type]="config.type"
+          [data]="config.data"
+          [options]="config.options">
+        </canvas>
+      </div>
+    }
   </div>
 }
