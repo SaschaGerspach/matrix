@@ -29,12 +29,14 @@ env = environ.Env(
     EMAIL_USE_TLS=(bool, True),
     DEFAULT_FROM_EMAIL=(str, 'noreply@skillmatrix.local'),
     SENTRY_DSN=(str, ''),
+    ADMIN_URL=(str, 'backoffice'),
 )
 environ.Env.read_env(BASE_DIR / '.env')
 
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
+ADMIN_URL = env('ADMIN_URL')
 
 INSECURE_KEYS = {'change-me', 'change-me-in-production'}
 if not DEBUG and SECRET_KEY in INSECURE_KEYS:
