@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import patch, MagicMock, AsyncMock
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-from rest_framework.authtoken.models import Token
+from rest_framework_simplejwt.tokens import AccessToken
 
 from employees.models import Employee
 from notifications.models import Notification
@@ -22,17 +22,8 @@ def employee(user):
 
 
 @pytest.fixture
-def token(user):
-    return Token.objects.create(user=user)
-
-
-def test_token_auth_resolves_user(token):
-    resolved = Token.objects.select_related('user').get(key=token.key)
-    assert resolved.user.id == token.user_id
-
-
-def test_invalid_token_returns_anonymous():
-    assert not Token.objects.filter(key='invalid-token').exists()
+def access_token(user):
+    return str(AccessToken.for_user(user))
 
 
 def test_send_ws_notification_calls_channel_layer(employee):
@@ -127,7 +118,7 @@ async def test_consumer_accepts_connection_without_auth():
 
 @pytest.mark.asyncio
 @pytest.mark.django_db(transaction=True)
-async def test_consumer_auth_with_valid_token(user, token):
+async def test_consumer_auth_with_valid_token(user, access_token):
     import json
     from notifications.consumers import NotificationConsumer
 
@@ -143,7 +134,7 @@ async def test_consumer_auth_with_valid_token(user, token):
 
     await consumer.connect()
 
-    auth_msg = json.dumps({'type': 'authenticate', 'token': token.key})
+    auth_msg = json.dumps({'type': 'authenticate', 'token': access_token})
     await consumer.receive(text_data=auth_msg)
 
     assert consumer.authenticated is True

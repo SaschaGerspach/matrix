@@ -3,7 +3,8 @@ import json
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth.models import AnonymousUser
-from rest_framework.authtoken.models import Token
+from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.exceptions import TokenError
 
 
 class NotificationConsumer(AsyncWebsocketConsumer):
@@ -45,8 +46,10 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def _get_user(self, token_key):
         try:
-            return Token.objects.select_related('user').get(key=token_key).user
-        except Token.DoesNotExist:
+            validated = AccessToken(token_key)
+            from django.contrib.auth import get_user_model
+            return get_user_model().objects.get(pk=validated['user_id'])
+        except (TokenError, Exception):
             return AnonymousUser()
 
     async def disconnect(self, close_code):

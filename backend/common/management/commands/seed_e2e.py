@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
-from rest_framework.authtoken.models import Token
 
 from employees.models import Employee
 from skills.models import Skill, SkillAssignment, SkillCategory
@@ -17,7 +16,6 @@ class Command(BaseCommand):
         )
         admin_user.set_password('admin123')
         admin_user.save()
-        Token.objects.get_or_create(user=admin_user)
 
         admin_emp, _ = Employee.objects.get_or_create(
             user=admin_user,
@@ -34,7 +32,6 @@ class Command(BaseCommand):
         )
         dev_user.set_password('dev12345')
         dev_user.save()
-        Token.objects.get_or_create(user=dev_user)
 
         dev_emp, _ = Employee.objects.get_or_create(
             user=dev_user,

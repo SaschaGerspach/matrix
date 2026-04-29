@@ -1,14 +1,15 @@
 import pytest
 from django.contrib.auth import get_user_model
 from rest_framework import status
-from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 pytestmark = pytest.mark.django_db
 
 
 LOGIN_URL = '/api/auth/login/'
+REFRESH_URL = '/api/auth/refresh/'
 LOGOUT_URL = '/api/auth/logout/'
 CHANGE_PW_URL = '/api/auth/change-password/'
 
@@ -18,35 +19,67 @@ def user(db):
     return get_user_model().objects.create_user(username='tester', password='pw12345!')
 
 
-def test_login_with_valid_credentials_returns_token(user):
+def _auth_client(user):
+    token = RefreshToken.for_user(user)
+    c = APIClient()
+    c.credentials(HTTP_AUTHORIZATION=f'Bearer {token.access_token}')
+    return c, token
+
+
+def test_login_with_valid_credentials_returns_tokens(user):
     client = APIClient()
     response = client.post(LOGIN_URL, {'username': 'tester', 'password': 'pw12345!'}, format='json')
     assert response.status_code == status.HTTP_200_OK
-    assert 'token' in response.data
-    assert Token.objects.filter(user=user, key=response.data['token']).exists()
+    assert 'access' in response.data
+    assert 'refresh' in response.data
 
 
 def test_login_with_invalid_credentials_is_rejected(user):
     client = APIClient()
     response = client.post(LOGIN_URL, {'username': 'tester', 'password': 'wrong'}, format='json')
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-def test_token_grants_access_to_protected_endpoint(user):
-    token, _ = Token.objects.get_or_create(user=user)
-    client = APIClient()
-    client.credentials(HTTP_AUTHORIZATION=f'Token {token.key}')
+def test_access_token_grants_access_to_protected_endpoint(user):
+    client, _ = _auth_client(user)
     response = client.get('/api/departments/')
     assert response.status_code == status.HTTP_200_OK
 
 
-def test_logout_deletes_token(user):
-    token, _ = Token.objects.get_or_create(user=user)
+def test_refresh_returns_new_tokens(user):
+    refresh = RefreshToken.for_user(user)
     client = APIClient()
-    client.credentials(HTTP_AUTHORIZATION=f'Token {token.key}')
-    response = client.post(LOGOUT_URL)
+    response = client.post(REFRESH_URL, {'refresh': str(refresh)}, format='json')
+    assert response.status_code == status.HTTP_200_OK
+    assert 'access' in response.data
+    assert 'refresh' in response.data
+    assert response.data['refresh'] != str(refresh)
+
+
+def test_refresh_blacklists_old_token(user):
+    refresh = RefreshToken.for_user(user)
+    old_token = str(refresh)
+    client = APIClient()
+    client.post(REFRESH_URL, {'refresh': old_token}, format='json')
+
+    response = client.post(REFRESH_URL, {'refresh': old_token}, format='json')
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_refresh_without_token_is_rejected():
+    client = APIClient()
+    response = client.post(REFRESH_URL, {}, format='json')
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_logout_blacklists_refresh_token(user):
+    client, token = _auth_client(user)
+    response = client.post(LOGOUT_URL, {'refresh': str(token)}, format='json')
     assert response.status_code == status.HTTP_204_NO_CONTENT
-    assert not Token.objects.filter(key=token.key).exists()
+
+    anon = APIClient()
+    response = anon.post(REFRESH_URL, {'refresh': str(token)}, format='json')
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_logout_requires_authentication():
@@ -56,8 +89,7 @@ def test_logout_requires_authentication():
 
 
 def test_change_password_succeeds(user):
-    client = APIClient()
-    client.force_authenticate(user=user)
+    client, _ = _auth_client(user)
     response = client.post(CHANGE_PW_URL, {
         'current_password': 'pw12345!',
         'new_password': 'newpass123!',
@@ -68,8 +100,7 @@ def test_change_password_succeeds(user):
 
 
 def test_change_password_rejects_wrong_current(user):
-    client = APIClient()
-    client.force_authenticate(user=user)
+    client, _ = _auth_client(user)
     response = client.post(CHANGE_PW_URL, {
         'current_password': 'wrong',
         'new_password': 'newpass123!',
@@ -80,8 +111,7 @@ def test_change_password_rejects_wrong_current(user):
 
 
 def test_change_password_rejects_short_new(user):
-    client = APIClient()
-    client.force_authenticate(user=user)
+    client, _ = _auth_client(user)
     response = client.post(CHANGE_PW_URL, {
         'current_password': 'pw12345!',
         'new_password': 'short',
@@ -99,8 +129,7 @@ def test_change_password_requires_auth():
 
 
 def test_change_password_rejects_common_password(user):
-    client = APIClient()
-    client.force_authenticate(user=user)
+    client, _ = _auth_client(user)
     response = client.post(CHANGE_PW_URL, {
         'current_password': 'pw12345!',
         'new_password': 'password',
@@ -110,8 +139,7 @@ def test_change_password_rejects_common_password(user):
 
 
 def test_change_password_rejects_numeric_only(user):
-    client = APIClient()
-    client.force_authenticate(user=user)
+    client, _ = _auth_client(user)
     response = client.post(CHANGE_PW_URL, {
         'current_password': 'pw12345!',
         'new_password': '12345678',
@@ -122,8 +150,7 @@ def test_change_password_rejects_numeric_only(user):
 
 def test_change_password_rejects_username_similar(db):
     u = get_user_model().objects.create_user(username='johndoe', password='pw12345!')
-    client = APIClient()
-    client.force_authenticate(user=u)
+    client, _ = _auth_client(u)
     response = client.post(CHANGE_PW_URL, {
         'current_password': 'pw12345!',
         'new_password': 'johndoe1',

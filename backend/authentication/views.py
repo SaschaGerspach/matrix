@@ -1,9 +1,10 @@
 from rest_framework import serializers, status
-from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle, SimpleRateThrottle
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 
 
 class AuthAnonThrottle(AnonRateThrottle):
@@ -22,17 +23,77 @@ class AuthUserThrottle(SimpleRateThrottle):
         return self.get_ident(request)
 
 
-class ThrottledObtainAuthToken(ObtainAuthToken):
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+
+class LoginView(APIView):
+    permission_classes = ()
+    authentication_classes = ()
     throttle_classes = (AuthAnonThrottle,)
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        from django.contrib.auth import authenticate
+        user = authenticate(
+            request=request,
+            username=serializer.validated_data['username'],
+            password=serializer.validated_data['password'],
+        )
+        if user is None:
+            return Response(
+                {'detail': 'Invalid credentials.'},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+        })
+
+
+class RefreshView(APIView):
+    permission_classes = ()
+    authentication_classes = ()
+
+    def post(self, request):
+        token = request.data.get('refresh')
+        if not token:
+            return Response(
+                {'detail': 'Refresh token required.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            old_refresh = RefreshToken(token)
+            old_refresh.blacklist()
+            from django.contrib.auth import get_user_model
+            user = get_user_model().objects.get(pk=old_refresh['user_id'])
+            new_refresh = RefreshToken.for_user(user)
+            return Response({
+                'access': str(new_refresh.access_token),
+                'refresh': str(new_refresh),
+            })
+        except TokenError:
+            return Response(
+                {'detail': 'Token is invalid or expired.'},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
 
 
 class LogoutView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        token = getattr(request.user, 'auth_token', None)
-        if token is not None:
-            token.delete()
+        token = request.data.get('refresh')
+        if token:
+            try:
+                RefreshToken(token).blacklist()
+            except TokenError:
+                pass
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -61,7 +122,4 @@ class ChangePasswordView(APIView):
 
         request.user.set_password(serializer.validated_data['new_password'])
         request.user.save()
-        token = getattr(request.user, 'auth_token', None)
-        if token is not None:
-            token.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
