@@ -25,7 +25,7 @@ export class NotificationService implements OnDestroy {
 
   private socket: WebSocket | null = null;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
-  private token: string | null = null;
+  private connected = false;
   private reconnectAttempts = 0;
   private readonly maxReconnectAttempts = 20;
 
@@ -51,14 +51,14 @@ export class NotificationService implements OnDestroy {
     );
   }
 
-  connectWebSocket(token: string): void {
-    this.token = token;
+  connectWebSocket(): void {
+    this.connected = true;
     this.reconnectAttempts = 0;
     this.createSocket();
   }
 
   disconnectWebSocket(): void {
-    this.token = null;
+    this.connected = false;
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
@@ -74,7 +74,7 @@ export class NotificationService implements OnDestroy {
   }
 
   private createSocket(): void {
-    if (!this.token) return;
+    if (!this.connected) return;
 
     const wsUrl = `${environment.wsUrl}/notifications/`;
     this.socket = new WebSocket(wsUrl);
@@ -86,22 +86,16 @@ export class NotificationService implements OnDestroy {
       } catch {
         return;
       }
-      if (data['type'] === 'auth_error') {
-        this.socket?.close();
-        return;
-      }
-      if (data['type'] === 'auth_ok') return;
       this.latestNotification.set(data as unknown as NotificationItem);
       this.unreadCount.update((c) => c + 1);
     };
 
     this.socket.onopen = () => {
       this.reconnectAttempts = 0;
-      this.socket?.send(JSON.stringify({ type: 'authenticate', token: this.token }));
     };
 
     this.socket.onclose = () => {
-      if (this.token && this.reconnectAttempts < this.maxReconnectAttempts) {
+      if (this.connected && this.reconnectAttempts < this.maxReconnectAttempts) {
         const delay = Math.min(5000 * Math.pow(2, this.reconnectAttempts), 60000);
         this.reconnectAttempts++;
         this.reconnectTimer = setTimeout(() => this.createSocket(), delay);

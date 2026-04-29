@@ -21,67 +21,78 @@ def user(db):
     return get_user_model().objects.create_user(username='tester', password='pw12345!')
 
 
+def _login(client, username='tester', password='pw12345!'):
+    return client.post(LOGIN_URL, {'username': username, 'password': password}, format='json')
+
+
 def _auth_client(user):
-    token = RefreshToken.for_user(user)
+    """Create client with access_token cookie set."""
+    refresh = RefreshToken.for_user(user)
     c = APIClient()
-    c.credentials(HTTP_AUTHORIZATION=f'Bearer {token.access_token}')
-    return c, token
+    c.cookies['access_token'] = str(refresh.access_token)
+    return c, refresh
 
 
-def test_login_with_valid_credentials_returns_tokens(user):
+def test_login_sets_httponly_cookies(user):
     client = APIClient()
-    response = client.post(LOGIN_URL, {'username': 'tester', 'password': 'pw12345!'}, format='json')
+    response = _login(client)
     assert response.status_code == status.HTTP_200_OK
-    assert 'access' in response.data
-    assert 'refresh' in response.data
+    assert 'access_token' in response.cookies
+    assert 'refresh_token' in response.cookies
+    assert response.cookies['access_token']['httponly']
+    assert response.cookies['refresh_token']['httponly']
 
 
 def test_login_with_invalid_credentials_is_rejected(user):
     client = APIClient()
     response = client.post(LOGIN_URL, {'username': 'tester', 'password': 'wrong'}, format='json')
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert 'access_token' not in response.cookies
 
 
-def test_access_token_grants_access_to_protected_endpoint(user):
+def test_access_cookie_grants_access_to_protected_endpoint(user):
     client, _ = _auth_client(user)
     response = client.get('/api/departments/')
     assert response.status_code == status.HTTP_200_OK
 
 
-def test_refresh_returns_new_tokens(user):
+def test_refresh_reads_cookie_and_sets_new_cookies(user):
     refresh = RefreshToken.for_user(user)
     client = APIClient()
-    response = client.post(REFRESH_URL, {'refresh': str(refresh)}, format='json')
+    client.cookies['refresh_token'] = str(refresh)
+    response = client.post(REFRESH_URL, format='json')
     assert response.status_code == status.HTTP_200_OK
-    assert 'access' in response.data
-    assert 'refresh' in response.data
-    assert response.data['refresh'] != str(refresh)
+    assert 'access_token' in response.cookies
+    assert 'refresh_token' in response.cookies
 
 
 def test_refresh_blacklists_old_token(user):
     refresh = RefreshToken.for_user(user)
     old_token = str(refresh)
     client = APIClient()
-    client.post(REFRESH_URL, {'refresh': old_token}, format='json')
+    client.cookies['refresh_token'] = old_token
+    client.post(REFRESH_URL, format='json')
 
-    response = client.post(REFRESH_URL, {'refresh': old_token}, format='json')
+    client2 = APIClient()
+    client2.cookies['refresh_token'] = old_token
+    response = client2.post(REFRESH_URL, format='json')
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-def test_refresh_without_token_is_rejected():
+def test_refresh_without_cookie_is_rejected():
     client = APIClient()
-    response = client.post(REFRESH_URL, {}, format='json')
+    response = client.post(REFRESH_URL, format='json')
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_logout_blacklists_refresh_token(user):
-    client, token = _auth_client(user)
-    response = client.post(LOGOUT_URL, {'refresh': str(token)}, format='json')
+def test_logout_clears_cookies(user):
+    client, _ = _auth_client(user)
+    refresh = RefreshToken.for_user(user)
+    client.cookies['refresh_token'] = str(refresh)
+    response = client.post(LOGOUT_URL, format='json')
     assert response.status_code == status.HTTP_204_NO_CONTENT
-
-    anon = APIClient()
-    response = anon.post(REFRESH_URL, {'refresh': str(token)}, format='json')
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.cookies['access_token']['max-age'] == 0
+    assert response.cookies['refresh_token']['max-age'] == 0
 
 
 def test_logout_requires_authentication():
@@ -164,7 +175,7 @@ def test_change_password_rejects_username_similar(db):
 def test_login_creates_audit_log(user):
     from common.models import AuditLog
     client = APIClient()
-    client.post(LOGIN_URL, {'username': 'tester', 'password': 'pw12345!'}, format='json')
+    _login(client)
     entry = AuditLog.objects.filter(action='login').last()
     assert entry is not None
     assert entry.user == user
@@ -200,8 +211,8 @@ def test_lockout_creates_audit_log(user):
 
 def test_logout_creates_audit_log(user):
     from common.models import AuditLog
-    client, token = _auth_client(user)
-    client.post(LOGOUT_URL, {'refresh': str(token)}, format='json')
+    client, _ = _auth_client(user)
+    client.post(LOGOUT_URL, format='json')
     entry = AuditLog.objects.filter(action='logout').last()
     assert entry is not None
     assert entry.user == user
@@ -239,3 +250,9 @@ def test_successful_login_resets_lockout_counter(user):
         assert response.status_code == status.HTTP_200_OK
 
         assert cache.get('login_attempts:tester') is None
+
+
+def test_refresh_cookie_path_is_scoped(user):
+    client = APIClient()
+    response = _login(client)
+    assert response.cookies['refresh_token']['path'] == '/api/auth/'

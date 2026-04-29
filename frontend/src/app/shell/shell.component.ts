@@ -50,10 +50,7 @@ export class ShellComponent implements OnInit, OnDestroy {
     });
     this.notificationService.loadUnreadCount();
 
-    const token = this.auth.getToken();
-    if (token) {
-      this.notificationService.connectWebSocket(token);
-    }
+    this.notificationService.connectWebSocket();
 
     this.pollTimer = setInterval(() => this.notificationService.loadUnreadCount(), 60_000);
   }

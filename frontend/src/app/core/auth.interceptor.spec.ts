@@ -30,24 +30,22 @@ describe('authInterceptor', () => {
     localStorage.clear();
   });
 
-  it('does not add an Authorization header when no token is stored', () => {
+  it('sets withCredentials on requests', () => {
+    http.get('/test').subscribe();
+    const req = controller.expectOne('/test');
+    expect(req.request.withCredentials).toBeTrue();
+    req.flush({});
+  });
+
+  it('does not add Authorization header', () => {
     http.get('/test').subscribe();
     const req = controller.expectOne('/test');
     expect(req.request.headers.has('Authorization')).toBeFalse();
     req.flush({});
   });
 
-  it('adds the Bearer Authorization header when a token is stored', () => {
-    localStorage.setItem('matrix.accessToken', 'access123');
-    http.get('/test').subscribe();
-    const req = controller.expectOne('/test');
-    expect(req.request.headers.get('Authorization')).toBe('Bearer access123');
-    req.flush({});
-  });
-
-  it('refreshes token and retries on 401', () => {
-    localStorage.setItem('matrix.accessToken', 'expired');
-    localStorage.setItem('matrix.refreshToken', 'valid-refresh');
+  it('refreshes and retries on 401', () => {
+    localStorage.setItem('matrix.loggedIn', '1');
 
     http.get('/api/test').subscribe();
 
@@ -55,20 +53,16 @@ describe('authInterceptor', () => {
     original.flush({}, { status: 401, statusText: 'Unauthorized' });
 
     const refresh = controller.expectOne(`${environment.apiUrl}/auth/refresh/`);
-    expect(refresh.request.body).toEqual({ refresh: 'valid-refresh' });
-    refresh.flush({ access: 'new-access', refresh: 'new-refresh' });
+    expect(refresh.request.withCredentials).toBeTrue();
+    refresh.flush({ detail: 'ok' });
 
     const retry = controller.expectOne('/api/test');
-    expect(retry.request.headers.get('Authorization')).toBe('Bearer new-access');
+    expect(retry.request.withCredentials).toBeTrue();
     retry.flush({ data: 'ok' });
-
-    expect(localStorage.getItem('matrix.accessToken')).toBe('new-access');
-    expect(localStorage.getItem('matrix.refreshToken')).toBe('new-refresh');
   });
 
   it('redirects to login when refresh also fails', () => {
-    localStorage.setItem('matrix.accessToken', 'expired');
-    localStorage.setItem('matrix.refreshToken', 'also-expired');
+    localStorage.setItem('matrix.loggedIn', '1');
 
     http.get('/api/test').subscribe({ error: () => {} });
 
@@ -77,8 +71,8 @@ describe('authInterceptor', () => {
       {}, { status: 401, statusText: 'Unauthorized' },
     );
 
-    expect(localStorage.getItem('matrix.accessToken')).toBeNull();
     expect(router.navigateByUrl).toHaveBeenCalledWith('/login');
+    expect(localStorage.getItem('matrix.loggedIn')).toBeNull();
   });
 
   it('does not intercept auth endpoints', () => {
@@ -90,12 +84,10 @@ describe('authInterceptor', () => {
   });
 
   it('does not redirect on non-401 errors', () => {
-    localStorage.setItem('matrix.accessToken', 'valid');
     http.get('/api/test').subscribe({ error: () => {} });
     const req = controller.expectOne('/api/test');
     req.flush({}, { status: 500, statusText: 'Server Error' });
 
-    expect(localStorage.getItem('matrix.accessToken')).toBe('valid');
     expect(router.navigateByUrl).not.toHaveBeenCalled();
   });
 });

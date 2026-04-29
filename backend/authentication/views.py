@@ -1,6 +1,8 @@
 import logging
 
+from django.conf import settings
 from django.core.cache import cache
+from django.middleware.csrf import get_token
 from rest_framework import serializers, status
 
 from common.audit import log_action
@@ -12,6 +14,38 @@ from rest_framework.throttling import AnonRateThrottle, SimpleRateThrottle
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
+
+
+ACCESS_COOKIE_MAX_AGE = int(settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'].total_seconds())
+REFRESH_COOKIE_MAX_AGE = int(settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'].total_seconds())
+COOKIE_SECURE = not settings.DEBUG
+COOKIE_SAMESITE = 'Lax'
+
+
+def _set_auth_cookies(response, access, refresh):
+    response.set_cookie(
+        'access_token',
+        access,
+        max_age=ACCESS_COOKIE_MAX_AGE,
+        httponly=True,
+        secure=COOKIE_SECURE,
+        samesite=COOKIE_SAMESITE,
+        path='/',
+    )
+    response.set_cookie(
+        'refresh_token',
+        refresh,
+        max_age=REFRESH_COOKIE_MAX_AGE,
+        httponly=True,
+        secure=COOKIE_SECURE,
+        samesite=COOKIE_SAMESITE,
+        path='/api/auth/',
+    )
+
+
+def _clear_auth_cookies(response):
+    response.delete_cookie('access_token', path='/')
+    response.delete_cookie('refresh_token', path='/api/auth/')
 
 
 class AuthAnonThrottle(AnonRateThrottle):
@@ -77,10 +111,10 @@ class LoginView(APIView):
         cache.delete(cache_key)
         log_action(user, 'login', 'User', entity_id=user.pk)
         refresh = RefreshToken.for_user(user)
-        return Response({
-            'access': str(refresh.access_token),
-            'refresh': str(refresh),
-        })
+        response = Response({'detail': 'ok'})
+        _set_auth_cookies(response, str(refresh.access_token), str(refresh))
+        get_token(request)
+        return response
 
 
 class RefreshView(APIView):
@@ -89,7 +123,7 @@ class RefreshView(APIView):
     throttle_classes = (AuthAnonThrottle,)
 
     def post(self, request):
-        token = request.data.get('refresh')
+        token = request.COOKIES.get('refresh_token')
         if not token:
             return Response(
                 {'detail': 'Refresh token required.'},
@@ -101,29 +135,32 @@ class RefreshView(APIView):
             from django.contrib.auth import get_user_model
             user = get_user_model().objects.get(pk=old_refresh['user_id'])
             new_refresh = RefreshToken.for_user(user)
-            return Response({
-                'access': str(new_refresh.access_token),
-                'refresh': str(new_refresh),
-            })
+            response = Response({'detail': 'ok'})
+            _set_auth_cookies(response, str(new_refresh.access_token), str(new_refresh))
+            return response
         except TokenError:
-            return Response(
+            response = Response(
                 {'detail': 'Token is invalid or expired.'},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
+            _clear_auth_cookies(response)
+            return response
 
 
 class LogoutView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        token = request.data.get('refresh')
+        token = request.COOKIES.get('refresh_token')
         if token:
             try:
                 RefreshToken(token).blacklist()
             except TokenError:
                 pass
         log_action(request.user, 'logout', 'User', entity_id=request.user.pk)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        response = Response(status=status.HTTP_204_NO_CONTENT)
+        _clear_auth_cookies(response)
+        return response
 
 
 class ChangePasswordSerializer(serializers.Serializer):

@@ -1,59 +1,42 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 
-const ACCESS_KEY = 'matrix.accessToken';
-const REFRESH_KEY = 'matrix.refreshToken';
-
-interface TokenResponse {
-  access: string;
-  refresh: string;
-}
+const LOGGED_IN_KEY = 'matrix.loggedIn';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
+  private readonly _loggedIn = signal(localStorage.getItem(LOGGED_IN_KEY) === '1');
 
-  login(username: string, password: string): Observable<TokenResponse> {
+  login(username: string, password: string): Observable<unknown> {
     return this.http
-      .post<TokenResponse>(`${environment.apiUrl}/auth/login/`, { username, password })
-      .pipe(tap((r) => this.storeTokens(r.access, r.refresh)));
+      .post(`${environment.apiUrl}/auth/login/`, { username, password }, { withCredentials: true })
+      .pipe(tap(() => this.setLoggedIn(true)));
   }
 
-  refresh(): Observable<TokenResponse> {
-    const token = this.getRefreshToken();
+  refresh(): Observable<unknown> {
     return this.http
-      .post<TokenResponse>(`${environment.apiUrl}/auth/refresh/`, { refresh: token })
-      .pipe(tap((r) => this.storeTokens(r.access, r.refresh)));
+      .post(`${environment.apiUrl}/auth/refresh/`, {}, { withCredentials: true });
   }
 
   logout(): Observable<void> {
-    const refresh = this.getRefreshToken();
-    return this.http.post<void>(`${environment.apiUrl}/auth/logout/`, { refresh }).pipe(
+    return this.http.post<void>(`${environment.apiUrl}/auth/logout/`, {}, { withCredentials: true }).pipe(
       tap({
-        next: () => this.clearTokens(),
-        error: () => this.clearTokens(),
+        next: () => this.setLoggedIn(false),
+        error: () => this.setLoggedIn(false),
       }),
     );
   }
 
-  getToken(): string | null {
-    return localStorage.getItem(ACCESS_KEY);
-  }
-
-  getRefreshToken(): string | null {
-    return localStorage.getItem(REFRESH_KEY);
-  }
-
-  clearTokens(): void {
-    localStorage.removeItem(ACCESS_KEY);
-    localStorage.removeItem(REFRESH_KEY);
-  }
-
   isLoggedIn(): boolean {
-    return this.getRefreshToken() !== null;
+    return this._loggedIn();
+  }
+
+  clearSession(): void {
+    this.setLoggedIn(false);
   }
 
   changePassword(currentPassword: string, newPassword: string): Observable<void> {
@@ -63,8 +46,12 @@ export class AuthService {
     });
   }
 
-  private storeTokens(access: string, refresh: string): void {
-    localStorage.setItem(ACCESS_KEY, access);
-    localStorage.setItem(REFRESH_KEY, refresh);
+  private setLoggedIn(value: boolean): void {
+    this._loggedIn.set(value);
+    if (value) {
+      localStorage.setItem(LOGGED_IN_KEY, '1');
+    } else {
+      localStorage.removeItem(LOGGED_IN_KEY);
+    }
   }
 }

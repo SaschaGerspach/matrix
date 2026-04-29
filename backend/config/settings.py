@@ -80,6 +80,9 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = env('CORS_ALLOWED_ORIGINS')
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = env('CORS_ALLOWED_ORIGINS')
 
 ROOT_URLCONF = 'config.urls'
 
@@ -207,7 +210,7 @@ if not EMAIL_HOST:
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'authentication.cookie_auth.CookieJWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
