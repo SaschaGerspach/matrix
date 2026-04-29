@@ -57,6 +57,11 @@ class SkillViewSet(AuditMixin, viewsets.ModelViewSet):
                 status=http_status.HTTP_400_BAD_REQUEST,
             )
 
+        if request.query_params.get('async') == 'true':
+            from ..tasks import import_skills_csv
+            task = import_skills_csv.delay(decoded, request.user.id)
+            return Response({'task_id': task.id}, status=http_status.HTTP_202_ACCEPTED)
+
         created = []
         skipped = []
         errors = []

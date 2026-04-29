@@ -39,6 +39,17 @@ services:
     volumes:
       - backend_static:/app/staticfiles
 
+  celery:
+    build: ./backend
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - ./backend/.env.docker
+    command: celery -A config worker --loglevel=info
+
   frontend:
     build: ./frontend
     depends_on:

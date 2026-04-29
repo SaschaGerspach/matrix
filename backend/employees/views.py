@@ -56,6 +56,11 @@ class EmployeeViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        if request.query_params.get('async') == 'true':
+            from .tasks import import_employees_csv
+            task = import_employees_csv.delay(decoded, request.user.id)
+            return Response({'task_id': task.id}, status=status.HTTP_202_ACCEPTED)
+
         created = []
         skipped = []
         errors = []

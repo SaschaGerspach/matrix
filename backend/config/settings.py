@@ -99,6 +99,13 @@ DATABASES = {
 
 REDIS_URL = env('REDIS_URL')
 
+CELERY_BROKER_URL = REDIS_URL or 'memory://'
+CELERY_RESULT_BACKEND = REDIS_URL or 'cache+memory://'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_TRACK_STARTED = True
+
 if REDIS_URL:
     CACHES = {
         'default': {

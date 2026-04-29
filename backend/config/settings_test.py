@@ -12,3 +12,6 @@ REST_FRAMEWORK['DEFAULT_THROTTLE_RATES'] = {
     'anon': '10000/minute',
     'auth': '5/minute',
 }
+
+CELERY_TASK_ALWAYS_EAGER = True
+CELERY_TASK_EAGER_PROPAGATES = True
