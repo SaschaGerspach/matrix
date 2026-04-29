@@ -6,7 +6,7 @@ from rest_framework.test import APIClient
 
 from employees.models import Employee
 from skills.models import Skill, SkillAssignment, SkillCategory
-from skills.views.analytics import _cache_key, invalidate_analytics_cache
+from skills.views.analytics import _cache_key, _register_cache_key, invalidate_analytics_cache
 from teams.models import Department, Team
 
 pytestmark = pytest.mark.django_db
@@ -133,15 +133,21 @@ def test_cache_invalidated_on_assignment_delete(user, setup_data):
 
 
 def test_invalidate_analytics_cache_clears_all_keys():
-    cache.set(_cache_key('matrix', team='', category='', search=''), 'data1')
-    cache.set(_cache_key('kpi'), 'data2')
-    cache.set(_cache_key('level_distribution'), 'data3')
+    k1 = _cache_key('matrix', team='', category='', search='')
+    k2 = _cache_key('kpi')
+    k3 = _cache_key('level_distribution')
+    cache.set(k1, 'data1')
+    cache.set(k2, 'data2')
+    cache.set(k3, 'data3')
+    _register_cache_key(k1)
+    _register_cache_key(k2)
+    _register_cache_key(k3)
 
     invalidate_analytics_cache()
 
-    assert cache.get(_cache_key('matrix', team='', category='', search='')) is None
-    assert cache.get(_cache_key('kpi')) is None
-    assert cache.get(_cache_key('level_distribution')) is None
+    assert cache.get(k1) is None
+    assert cache.get(k2) is None
+    assert cache.get(k3) is None
 
 
 def test_second_request_uses_cache(user, setup_data):

@@ -42,7 +42,7 @@ def _dispatch(notification):
 def notify_team_leads_pending(employee, skill, level):
     from teams.models import Team
 
-    teams = Team.objects.filter(members=employee)
+    teams = Team.objects.filter(members=employee).prefetch_related('team_leads')
     leads = set()
     for team in teams:
         for lead in team.team_leads.all():

@@ -20,15 +20,28 @@ from ..serializers import MatrixAssignmentSerializer, MatrixEmployeeSerializer, 
 CACHE_TTL = 300
 
 CACHE_KEYS_PREFIX = 'analytics_'
+CACHE_KEYS_REGISTRY = 'analytics_known_keys'
 
 
 def _cache_key(view_name, **params):
     raw = f"{view_name}:{sorted(params.items())}"
-    return CACHE_KEYS_PREFIX + hashlib.md5(raw.encode()).hexdigest()
+    return CACHE_KEYS_PREFIX + hashlib.sha256(raw.encode()).hexdigest()
+
+
+def _register_cache_key(key):
+    known = cache.get(CACHE_KEYS_REGISTRY) or set()
+    known.add(key)
+    cache.set(CACHE_KEYS_REGISTRY, known, None)
 
 
 def invalidate_analytics_cache():
-    cache.delete_pattern(f'{CACHE_KEYS_PREFIX}*') if hasattr(cache, 'delete_pattern') else cache.clear()
+    if hasattr(cache, 'delete_pattern'):
+        cache.delete_pattern(f'{CACHE_KEYS_PREFIX}*')
+    else:
+        known = cache.get(CACHE_KEYS_REGISTRY) or set()
+        for key in known:
+            cache.delete(key)
+        cache.delete(CACHE_KEYS_REGISTRY)
 
 
 def can_view_employee_data(user, target_employee_id):
@@ -45,10 +58,9 @@ def can_view_employee_data(user, target_employee_id):
 def _build_export_data():
     employees = list(Employee.objects.all().order_by('last_name', 'first_name'))
     skills = list(Skill.objects.select_related('category').order_by('category__name', 'name'))
-    assignments = SkillAssignment.objects.all()
 
     assignment_map = {}
-    for a in assignments:
+    for a in SkillAssignment.objects.only('employee_id', 'skill_id', 'level').iterator():
         assignment_map.setdefault(a.employee_id, {})[a.skill_id] = a.level
 
     return employees, skills, assignment_map
@@ -105,6 +117,7 @@ class SkillMatrixView(APIView):
             'skills': MatrixSkillSerializer(skill_data, many=True).data,
             'assignments': MatrixAssignmentSerializer(assignments, many=True).data,
         }
+        _register_cache_key(key)
         cache.set(key, data, CACHE_TTL)
         return Response(data)
 
@@ -180,7 +193,7 @@ class SkillGapsView(APIView):
             return Response([])
 
         member_ids = get_led_member_ids(employee)
-        led_teams = employee.led_teams.all()
+        led_teams = employee.led_teams.prefetch_related('members').all()
 
         requirements = SkillRequirement.objects.filter(
             team__in=led_teams,
@@ -196,8 +209,8 @@ class SkillGapsView(APIView):
         members = Employee.objects.filter(id__in=member_ids)
         member_teams = {}
         for team in led_teams:
-            for mid in team.members.values_list('id', flat=True):
-                member_teams.setdefault(mid, set()).add(team.id)
+            for m in team.members.all():
+                member_teams.setdefault(m.id, set()).add(team.id)
 
         gaps = []
         for member in members:
@@ -239,7 +252,7 @@ class TeamComparisonView(APIView):
         team_member_ids = {}
         all_member_ids = set()
         for team in teams:
-            ids = set(team.members.values_list('id', flat=True))
+            ids = {m.id for m in team.members.all()}
             team_member_ids[team.id] = ids
             all_member_ids |= ids
 
@@ -362,7 +375,7 @@ class KpiView(APIView):
         all_member_ids = set()
         team_member_ids = {}
         for team in teams:
-            ids = set(team.members.values_list('id', flat=True))
+            ids = {m.id for m in team.members.all()}
             team_member_ids[team.id] = ids
             all_member_ids |= ids
 
@@ -408,6 +421,7 @@ class KpiView(APIView):
                 'confirmed_ratio': round(confirmed_count / total_assignments * 100, 1),
             })
 
+        _register_cache_key(key)
         cache.set(key, result, CACHE_TTL)
         return Response(result)
 
@@ -428,7 +442,7 @@ class LevelDistributionView(APIView):
         all_member_ids = set()
         team_member_ids = {}
         for team in teams:
-            ids = set(team.members.values_list('id', flat=True))
+            ids = {m.id for m in team.members.all()}
             team_member_ids[team.id] = ids
             all_member_ids |= ids
 
@@ -458,5 +472,6 @@ class LevelDistributionView(APIView):
             'overall': overall,
             'teams': per_team,
         }
+        _register_cache_key(key)
         cache.set(key, data, CACHE_TTL)
         return Response(data)

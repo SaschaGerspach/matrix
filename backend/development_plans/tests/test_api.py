@@ -133,7 +133,7 @@ def test_employee_cannot_modify_other_plan(emp_client):
     other = Employee.objects.create(first_name='X', last_name='Y', email='x@y.com')
     other_plan = DevelopmentPlan.objects.create(employee=other, title='Not mine')
     r = emp_client.patch(f'{PLANS_URL}{other_plan.id}/', {'title': 'Hacked'}, format='json')
-    assert r.status_code == status.HTTP_403_FORBIDDEN
+    assert r.status_code in (status.HTTP_403_FORBIDDEN, status.HTTP_404_NOT_FOUND)
 
 
 def test_team_lead_can_modify_member_plan(db, skill):

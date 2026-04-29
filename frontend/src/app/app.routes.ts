@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 
+import { adminGuard } from './core/admin.guard';
 import { authGuard } from './core/auth.guard';
+import { teamLeadGuard } from './core/team-lead.guard';
 
 export const routes: Routes = [
   {
@@ -21,6 +23,7 @@ export const routes: Routes = [
       },
       {
         path: 'team-review',
+        canActivate: [teamLeadGuard],
         loadComponent: () =>
           import('./pages/team-review/team-review.component').then((m) => m.TeamReviewComponent),
       },
@@ -31,6 +34,7 @@ export const routes: Routes = [
       },
       {
         path: 'skill-gaps',
+        canActivate: [teamLeadGuard],
         loadComponent: () =>
           import('./pages/skill-gaps/skill-gaps.component').then((m) => m.SkillGapsComponent),
       },
@@ -46,11 +50,13 @@ export const routes: Routes = [
       },
       {
         path: 'team-comparison',
+        canActivate: [teamLeadGuard],
         loadComponent: () =>
           import('./pages/team-comparison/team-comparison.component').then((m) => m.TeamComparisonComponent),
       },
       {
         path: 'kpi',
+        canActivate: [teamLeadGuard],
         loadComponent: () =>
           import('./pages/kpi/kpi.component').then((m) => m.KpiComponent),
       },
@@ -61,6 +67,7 @@ export const routes: Routes = [
       },
       {
         path: 'admin',
+        canActivate: [adminGuard],
         loadComponent: () =>
           import('./pages/admin/admin.component').then((m) => m.AdminComponent),
       },

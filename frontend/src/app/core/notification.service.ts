@@ -81,13 +81,18 @@ export class NotificationService implements OnDestroy {
     };
 
     this.socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === 'auth_error') {
+      let data: Record<string, unknown>;
+      try {
+        data = JSON.parse(event.data);
+      } catch {
+        return;
+      }
+      if (data['type'] === 'auth_error') {
         this.socket?.close();
         return;
       }
-      if (data.type === 'auth_ok') return;
-      this.latestNotification.set(data as NotificationItem);
+      if (data['type'] === 'auth_ok') return;
+      this.latestNotification.set(data as unknown as NotificationItem);
       this.unreadCount.update((c) => c + 1);
     };
 

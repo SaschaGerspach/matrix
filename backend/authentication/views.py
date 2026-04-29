@@ -61,4 +61,7 @@ class ChangePasswordView(APIView):
 
         request.user.set_password(serializer.validated_data['new_password'])
         request.user.save()
+        token = getattr(request.user, 'auth_token', None)
+        if token is not None:
+            token.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

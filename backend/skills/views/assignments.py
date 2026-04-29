@@ -102,7 +102,10 @@ class SkillAssignmentViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], permission_classes=(CanConfirmSkillAssignment,))
     def confirm(self, request, pk=None):
         with transaction.atomic():
-            assignment = SkillAssignment.objects.select_for_update().get(pk=pk)
+            try:
+                assignment = SkillAssignment.objects.select_for_update().get(pk=pk)
+            except SkillAssignment.DoesNotExist:
+                return Response({'detail': 'Not found.'}, status=404)
             self.check_object_permissions(request, assignment)
             if assignment.status == SkillAssignment.Status.CONFIRMED:
                 return Response({'detail': 'Already confirmed.'}, status=400)
