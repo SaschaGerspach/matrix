@@ -13,7 +13,8 @@ import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { MeService } from '../../core/me.service';
-import { SkillCategory, SkillService } from '../../core/skill.service';
+import { SkillCatalogService } from '../../core/skill-catalog.service';
+import { SkillCategory } from '../../core/skill.models';
 import { SkillProposal, SkillProposalService } from '../../core/skill-proposal.service';
 import { ToastService } from '../../core/toast.service';
 
@@ -38,7 +39,7 @@ import { ToastService } from '../../core/toast.service';
 })
 export class SkillProposalsComponent implements OnInit {
   private readonly proposalService = inject(SkillProposalService);
-  private readonly skillService = inject(SkillService);
+  private readonly skillService = inject(SkillCatalogService);
   private readonly meService = inject(MeService);
   private readonly toast = inject(ToastService);
 

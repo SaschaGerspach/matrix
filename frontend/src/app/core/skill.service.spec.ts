@@ -3,17 +3,38 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { environment } from '../../environments/environment';
-import { SkillService } from './skill.service';
+import { SkillAssignmentService } from './skill-assignment.service';
+import { SkillCatalogService } from './skill-catalog.service';
 
-describe('SkillService', () => {
-  let service: SkillService;
+describe('SkillCatalogService', () => {
+  let service: SkillCatalogService;
   let http: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
-    service = TestBed.inject(SkillService);
+    service = TestBed.inject(SkillCatalogService);
+    http = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => http.verify());
+
+  it('fetches available skills', () => {
+    service.listSkills().subscribe((data) => expect(data.length).toBe(1));
+    http.expectOne(`${environment.apiUrl}/skills/`).flush([{ id: 1, name: 'Python', category: 1 }]);
+  });
+});
+
+describe('SkillAssignmentService', () => {
+  let service: SkillAssignmentService;
+  let http: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    service = TestBed.inject(SkillAssignmentService);
     http = TestBed.inject(HttpTestingController);
   });
 
@@ -23,11 +44,6 @@ describe('SkillService', () => {
     const mock = [{ id: 1, skill: 1, skill_name: 'Python', category_name: 'Programming', level: 3, status: 'pending', confirmed_at: null, created_at: '2026-01-01' }];
     service.mySkills().subscribe((data) => expect(data).toEqual(mock));
     http.expectOne(`${environment.apiUrl}/my-skills/`).flush(mock);
-  });
-
-  it('fetches available skills', () => {
-    service.listSkills().subscribe((data) => expect(data.length).toBe(1));
-    http.expectOne(`${environment.apiUrl}/skills/`).flush([{ id: 1, name: 'Python', category: 1 }]);
   });
 
   it('creates an assignment', () => {

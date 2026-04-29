@@ -10,7 +10,8 @@ import { ChartConfiguration } from 'chart.js';
 
 import { TranslateModule } from '@ngx-translate/core';
 
-import { SkillService, TeamComparisonEntry } from '../../core/skill.service';
+import { SkillAnalyticsService } from '../../core/skill-analytics.service';
+import { TeamComparisonEntry } from '../../core/skill.models';
 import { Team, TeamService } from '../../core/team.service';
 
 const COLORS = [
@@ -48,7 +49,7 @@ const BORDER_COLORS = [
   styleUrl: './team-comparison.component.scss',
 })
 export class TeamComparisonComponent implements OnInit {
-  private readonly skillService = inject(SkillService);
+  private readonly skillService = inject(SkillAnalyticsService);
   private readonly teamService = inject(TeamService);
 
   readonly teams = signal<Team[]>([]);

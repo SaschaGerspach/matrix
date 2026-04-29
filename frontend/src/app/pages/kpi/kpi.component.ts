@@ -7,17 +7,8 @@ import { ChartConfiguration } from 'chart.js';
 
 import { TranslateModule } from '@ngx-translate/core';
 
-import { LevelDistribution, SkillService } from '../../core/skill.service';
-
-export interface TeamKpi {
-  team_id: number;
-  team_name: string;
-  member_count: number;
-  avg_level: number;
-  coverage: number;
-  total_assignments: number;
-  confirmed_ratio: number;
-}
+import { SkillAnalyticsService } from '../../core/skill-analytics.service';
+import { KpiEntry, LevelDistribution } from '../../core/skill.models';
 
 const DOUGHNUT_COLORS = ['#ef5350', '#ff9800', '#fdd835', '#66bb6a', '#2e7d32'];
 
@@ -29,9 +20,9 @@ const DOUGHNUT_COLORS = ['#ef5350', '#ff9800', '#fdd835', '#66bb6a', '#2e7d32'];
   styleUrl: './kpi.component.scss',
 })
 export class KpiComponent implements OnInit {
-  private readonly skillService = inject(SkillService);
+  private readonly skillService = inject(SkillAnalyticsService);
 
-  readonly data = signal<TeamKpi[]>([]);
+  readonly data = signal<KpiEntry[]>([]);
   readonly distribution = signal<LevelDistribution | null>(null);
   readonly loading = signal(false);
 

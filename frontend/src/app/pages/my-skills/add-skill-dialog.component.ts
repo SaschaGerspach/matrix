@@ -7,7 +7,9 @@ import { MatSelectModule } from '@angular/material/select';
 
 import { TranslateModule } from '@ngx-translate/core';
 
-import { Skill, SkillService } from '../../core/skill.service';
+import { SkillAssignmentService } from '../../core/skill-assignment.service';
+import { SkillCatalogService } from '../../core/skill-catalog.service';
+import { Skill } from '../../core/skill.models';
 import { ToastService } from '../../core/toast.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
@@ -27,7 +29,8 @@ import { environment } from '../../../environments/environment';
 })
 export class AddSkillDialogComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly skillService = inject(SkillService);
+  private readonly catalogService = inject(SkillCatalogService);
+  private readonly assignmentService = inject(SkillAssignmentService);
   private readonly http = inject(HttpClient);
   private readonly dialogRef = inject(MatDialogRef<AddSkillDialogComponent>);
   private readonly toast = inject(ToastService);
@@ -41,7 +44,7 @@ export class AddSkillDialogComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.skillService.listSkills().subscribe({
+    this.catalogService.listSkills().subscribe({
       next: (list) => this.skills.set(list),
     });
   }
@@ -52,7 +55,7 @@ export class AddSkillDialogComponent implements OnInit {
 
     this.http.get<{ id: number }>(`${environment.apiUrl}/me/`).subscribe({
       next: (me) => {
-        this.skillService.createAssignment(skill!, level!, me.id).subscribe({
+        this.assignmentService.createAssignment(skill!, level!, me.id).subscribe({
           next: () => { this.toast.success('TOAST.SKILL_ADDED'); this.dialogRef.close(true); },
           error: (err) => {
             const msg = err.error?.employee?.[0] || err.error?.skill?.[0] || 'Failed to add skill.';

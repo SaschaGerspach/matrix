@@ -6,7 +6,8 @@ import { MatTableModule } from '@angular/material/table';
 
 import { TranslateModule } from '@ngx-translate/core';
 
-import { SkillService, TeamAssignment } from '../../core/skill.service';
+import { SkillAssignmentService } from '../../core/skill-assignment.service';
+import { TeamAssignment } from '../../core/skill.models';
 import { ToastService } from '../../core/toast.service';
 
 @Component({
@@ -17,7 +18,7 @@ import { ToastService } from '../../core/toast.service';
   styleUrl: './team-review.component.scss',
 })
 export class TeamReviewComponent implements OnInit {
-  private readonly skillService = inject(SkillService);
+  private readonly skillService = inject(SkillAssignmentService);
   private readonly toast = inject(ToastService);
 
   readonly data = signal<TeamAssignment[]>([]);

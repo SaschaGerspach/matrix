@@ -14,7 +14,9 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { AuditLogEntry, AuditService } from '../../core/audit.service';
 import { CsvImportResult, EmployeeService } from '../../core/employee.service';
-import { RoleTemplate, Skill, SkillCategory, SkillLevelDescription, SkillRequirement, SkillService } from '../../core/skill.service';
+import { RoleTemplateService } from '../../core/role-template.service';
+import { SkillCatalogService } from '../../core/skill-catalog.service';
+import { RoleTemplate, Skill, SkillCategory, SkillLevelDescription, SkillRequirement } from '../../core/skill.models';
 import { Team, TeamService } from '../../core/team.service';
 import { ToastService } from '../../core/toast.service';
 
@@ -37,7 +39,8 @@ import { ToastService } from '../../core/toast.service';
   styleUrl: './admin.component.scss',
 })
 export class AdminComponent implements OnInit {
-  private readonly skillService = inject(SkillService);
+  private readonly catalogService = inject(SkillCatalogService);
+  private readonly roleTemplateService = inject(RoleTemplateService);
   private readonly teamService = inject(TeamService);
   private readonly auditService = inject(AuditService);
   private readonly employeeService = inject(EmployeeService);
@@ -74,18 +77,18 @@ export class AdminComponent implements OnInit {
   }
 
   loadAll(): void {
-    this.skillService.listCategories().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((c) => this.categories.set(c));
-    this.skillService.listSkills().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((s) => this.skills.set(s));
+    this.catalogService.listCategories().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((c) => this.categories.set(c));
+    this.catalogService.listSkills().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((s) => this.skills.set(s));
     this.teamService.list().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((t) => this.teams.set(t));
-    this.skillService.listRequirements().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((r) => this.requirements.set(r));
-    this.skillService.listLevelDescriptions().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((d) => this.levelDescriptions.set(d));
-    this.skillService.listRoleTemplates().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((t) => this.roleTemplates.set(t));
+    this.catalogService.listRequirements().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((r) => this.requirements.set(r));
+    this.catalogService.listLevelDescriptions().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((d) => this.levelDescriptions.set(d));
+    this.roleTemplateService.list().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((t) => this.roleTemplates.set(t));
     this.auditService.list().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((res) => this.auditLog.set(res.results));
   }
 
   addCategory(): void {
     if (!this.newCategoryName.trim()) return;
-    this.skillService.createCategory(this.newCategoryName.trim()).subscribe({
+    this.catalogService.createCategory(this.newCategoryName.trim()).subscribe({
       next: () => {
         this.newCategoryName = '';
         this.toast.success('TOAST.CATEGORY_CREATED');
@@ -96,7 +99,7 @@ export class AdminComponent implements OnInit {
   }
 
   deleteCategory(id: number): void {
-    this.skillService.deleteCategory(id).subscribe({
+    this.catalogService.deleteCategory(id).subscribe({
       next: () => { this.toast.success('TOAST.CATEGORY_DELETED'); this.reloadCategories(); },
       error: () => { this.toast.error('TOAST.ERROR'); this.reloadCategories(); },
     });
@@ -104,7 +107,7 @@ export class AdminComponent implements OnInit {
 
   addSkill(): void {
     if (!this.newSkillName.trim() || !this.newSkillCategory) return;
-    this.skillService.createSkill(this.newSkillName.trim(), this.newSkillCategory).subscribe({
+    this.catalogService.createSkill(this.newSkillName.trim(), this.newSkillCategory).subscribe({
       next: () => {
         this.newSkillName = '';
         this.newSkillCategory = undefined;
@@ -116,7 +119,7 @@ export class AdminComponent implements OnInit {
   }
 
   deleteSkill(id: number): void {
-    this.skillService.deleteSkill(id).subscribe({
+    this.catalogService.deleteSkill(id).subscribe({
       next: () => { this.toast.success('TOAST.SKILL_DELETED'); this.reloadSkills(); },
       error: () => { this.toast.error('TOAST.ERROR'); this.reloadSkills(); },
     });
@@ -128,7 +131,7 @@ export class AdminComponent implements OnInit {
 
   addRequirement(): void {
     if (!this.newReqTeam || !this.newReqSkill || !this.newReqLevel) return;
-    this.skillService.createRequirement(this.newReqTeam, this.newReqSkill, this.newReqLevel).subscribe({
+    this.catalogService.createRequirement(this.newReqTeam, this.newReqSkill, this.newReqLevel).subscribe({
       next: () => {
         this.newReqTeam = undefined;
         this.newReqSkill = undefined;
@@ -141,7 +144,7 @@ export class AdminComponent implements OnInit {
   }
 
   deleteRequirement(id: number): void {
-    this.skillService.deleteRequirement(id).subscribe({
+    this.catalogService.deleteRequirement(id).subscribe({
       next: () => { this.toast.success('TOAST.REQUIREMENT_DELETED'); this.reloadRequirements(); },
       error: () => { this.toast.error('TOAST.ERROR'); this.reloadRequirements(); },
     });
@@ -153,7 +156,7 @@ export class AdminComponent implements OnInit {
 
   addLevelDescription(): void {
     if (!this.newDescSkill || !this.newDescLevel || !this.newDescText.trim()) return;
-    this.skillService.createLevelDescription(this.newDescSkill, this.newDescLevel, this.newDescText.trim()).subscribe({
+    this.catalogService.createLevelDescription(this.newDescSkill, this.newDescLevel, this.newDescText.trim()).subscribe({
       next: () => {
         this.newDescSkill = undefined;
         this.newDescLevel = undefined;
@@ -166,7 +169,7 @@ export class AdminComponent implements OnInit {
   }
 
   deleteLevelDescription(id: number): void {
-    this.skillService.deleteLevelDescription(id).subscribe({
+    this.catalogService.deleteLevelDescription(id).subscribe({
       next: () => { this.toast.success('TOAST.LEVEL_DESC_DELETED'); this.reloadLevelDescriptions(); },
       error: () => { this.toast.error('TOAST.ERROR'); this.reloadLevelDescriptions(); },
     });
@@ -174,7 +177,7 @@ export class AdminComponent implements OnInit {
 
   addRoleTemplate(): void {
     if (!this.newTemplateName.trim()) return;
-    this.skillService.createRoleTemplate(this.newTemplateName.trim(), this.newTemplateDesc.trim()).subscribe({
+    this.roleTemplateService.create(this.newTemplateName.trim(), this.newTemplateDesc.trim()).subscribe({
       next: () => {
         this.newTemplateName = '';
         this.newTemplateDesc = '';
@@ -186,7 +189,7 @@ export class AdminComponent implements OnInit {
   }
 
   deleteRoleTemplate(id: number): void {
-    this.skillService.deleteRoleTemplate(id).subscribe({
+    this.roleTemplateService.delete(id).subscribe({
       next: () => { this.toast.success('TOAST.TEMPLATE_DELETED'); this.reloadRoleTemplates(); },
       error: () => { this.toast.error('TOAST.ERROR'); this.reloadRoleTemplates(); },
     });
@@ -194,7 +197,7 @@ export class AdminComponent implements OnInit {
 
   addTemplateSkill(): void {
     if (!this.selectedTemplateId || !this.newTplSkill || !this.newTplLevel) return;
-    this.skillService.addRoleTemplateSkill(this.selectedTemplateId, this.newTplSkill, this.newTplLevel).subscribe({
+    this.roleTemplateService.addSkill(this.selectedTemplateId, this.newTplSkill, this.newTplLevel).subscribe({
       next: (tpl) => {
         this.roleTemplates.update((list) => list.map((t) => (t.id === tpl.id ? tpl : t)));
         this.newTplSkill = undefined;
@@ -205,7 +208,7 @@ export class AdminComponent implements OnInit {
   }
 
   removeTemplateSkill(templateId: number, skillPk: number): void {
-    this.skillService.removeRoleTemplateSkill(templateId, skillPk).subscribe({
+    this.roleTemplateService.removeSkill(templateId, skillPk).subscribe({
       next: (tpl) => this.roleTemplates.update((list) => list.map((t) => (t.id === tpl.id ? tpl : t))),
       error: () => this.reloadRoleTemplates(),
     });
@@ -213,7 +216,7 @@ export class AdminComponent implements OnInit {
 
   applyTemplate(): void {
     if (!this.applyTemplateId || !this.applyTeamId) return;
-    this.skillService.applyRoleTemplate(this.applyTemplateId, this.applyTeamId).subscribe({
+    this.roleTemplateService.apply(this.applyTemplateId, this.applyTeamId).subscribe({
       next: () => {
         this.applyTemplateId = undefined;
         this.applyTeamId = undefined;
@@ -229,23 +232,23 @@ export class AdminComponent implements OnInit {
   }
 
   private reloadCategories(): void {
-    this.skillService.listCategories().subscribe((c) => this.categories.set(c));
+    this.catalogService.listCategories().subscribe((c) => this.categories.set(c));
   }
 
   private reloadSkills(): void {
-    this.skillService.listSkills().subscribe((s) => this.skills.set(s));
+    this.catalogService.listSkills().subscribe((s) => this.skills.set(s));
   }
 
   private reloadRequirements(): void {
-    this.skillService.listRequirements().subscribe((r) => this.requirements.set(r));
+    this.catalogService.listRequirements().subscribe((r) => this.requirements.set(r));
   }
 
   private reloadLevelDescriptions(): void {
-    this.skillService.listLevelDescriptions().subscribe((d) => this.levelDescriptions.set(d));
+    this.catalogService.listLevelDescriptions().subscribe((d) => this.levelDescriptions.set(d));
   }
 
   private reloadRoleTemplates(): void {
-    this.skillService.listRoleTemplates().subscribe((t) => this.roleTemplates.set(t));
+    this.roleTemplateService.list().subscribe((t) => this.roleTemplates.set(t));
   }
 
   readonly employeeImportResult = signal<CsvImportResult | null>(null);
@@ -265,7 +268,7 @@ export class AdminComponent implements OnInit {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
     this.skillImportResult.set(null);
-    this.skillService.importSkillsCsv(file).subscribe({
+    this.catalogService.importSkillsCsv(file).subscribe({
       next: (result) => {
         this.skillImportResult.set(result);
         this.toast.success('TOAST.IMPORT_COMPLETE');

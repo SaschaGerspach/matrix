@@ -9,7 +9,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { MySkillAssignment, SkillRecommendation, SkillService } from '../../core/skill.service';
+import { SkillAnalyticsService } from '../../core/skill-analytics.service';
+import { SkillAssignmentService } from '../../core/skill-assignment.service';
+import { MySkillAssignment, SkillRecommendation } from '../../core/skill.models';
 import { AddSkillDialogComponent } from './add-skill-dialog.component';
 
 @Component({
@@ -20,7 +22,8 @@ import { AddSkillDialogComponent } from './add-skill-dialog.component';
   styleUrl: './my-skills.component.scss',
 })
 export class MySkillsComponent implements OnInit {
-  private readonly skillService = inject(SkillService);
+  private readonly assignmentService = inject(SkillAssignmentService);
+  private readonly analyticsService = inject(SkillAnalyticsService);
   private readonly dialog = inject(MatDialog);
 
   readonly data = signal<MySkillAssignment[]>([]);
@@ -30,14 +33,14 @@ export class MySkillsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadSkills();
-    this.skillService.recommendations().subscribe({
+    this.analyticsService.recommendations().subscribe({
       next: (r) => this.recommendations.set(r),
     });
   }
 
   loadSkills(): void {
     this.loading.set(true);
-    this.skillService.mySkills().subscribe({
+    this.assignmentService.mySkills().subscribe({
       next: (list) => {
         this.data.set(list);
         this.loading.set(false);

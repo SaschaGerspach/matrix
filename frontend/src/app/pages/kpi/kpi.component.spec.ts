@@ -6,9 +6,10 @@ import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { TranslateTestingModule } from '../../core/testing/translate-testing';
 
 import { environment } from '../../../environments/environment';
-import { KpiComponent, TeamKpi } from './kpi.component';
+import { KpiEntry } from '../../core/skill.models';
+import { KpiComponent } from './kpi.component';
 
-const kpiData: TeamKpi[] = [
+const kpiData: KpiEntry[] = [
   {
     team_id: 1,
     team_name: 'Alpha',

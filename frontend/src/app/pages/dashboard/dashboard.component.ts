@@ -14,7 +14,10 @@ import { Router } from '@angular/router';
 
 import { TranslateModule } from '@ngx-translate/core';
 
-import { MatrixAssignment, MatrixEmployee, MatrixSkill, SkillCategory, SkillService } from '../../core/skill.service';
+import { SkillAnalyticsService } from '../../core/skill-analytics.service';
+import { SkillAssignmentService } from '../../core/skill-assignment.service';
+import { SkillCatalogService } from '../../core/skill-catalog.service';
+import { MatrixAssignment, MatrixEmployee, MatrixSkill, SkillCategory } from '../../core/skill.models';
 import { MeService } from '../../core/me.service';
 import { Team, TeamService } from '../../core/team.service';
 
@@ -37,7 +40,9 @@ import { Team, TeamService } from '../../core/team.service';
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit {
-  private readonly skillService = inject(SkillService);
+  private readonly catalogService = inject(SkillCatalogService);
+  private readonly analyticsService = inject(SkillAnalyticsService);
+  private readonly assignmentService = inject(SkillAssignmentService);
   private readonly meService = inject(MeService);
   private readonly router = inject(Router);
   private readonly teamService = inject(TeamService);
@@ -71,8 +76,8 @@ export class DashboardComponent implements OnInit {
       this.canEdit.set(p.is_team_lead || p.is_admin);
     });
     this.teamService.list().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((t) => this.teams.set(t));
-    this.skillService.listCategories().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((c) => this.categories.set(c));
-    this.skillService.listSkills().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((skills) => {
+    this.catalogService.listCategories().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((c) => this.categories.set(c));
+    this.catalogService.listSkills().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((skills) => {
       for (const skill of skills) {
         for (const desc of skill.level_descriptions ?? []) {
           this.descriptionMap.set(`${skill.id}_${desc.level}`, desc.description);
@@ -84,7 +89,7 @@ export class DashboardComponent implements OnInit {
 
   loadMatrix(): void {
     this.loading.set(true);
-    this.skillService.skillMatrix({
+    this.analyticsService.skillMatrix({
       team: this.selectedTeam,
       category: this.selectedCategory,
       search: this.searchTerm || undefined,
@@ -148,13 +153,13 @@ export class DashboardComponent implements OnInit {
     if (existing && level > 0) {
       const prev = { ...existing };
       this.assignmentMap.set(key, { ...existing, level });
-      this.skillService.updateAssignment(existing.id, level).subscribe({
+      this.assignmentService.updateAssignment(existing.id, level).subscribe({
         error: () => this.assignmentMap.set(key, prev),
       });
     } else if (!existing && level > 0) {
       const temp: MatrixAssignment = { id: 0, employee: employeeId, skill: skillId, level, status: 'pending' };
       this.assignmentMap.set(key, temp);
-      this.skillService.createAssignment(skillId, level, employeeId).subscribe({
+      this.assignmentService.createAssignment(skillId, level, employeeId).subscribe({
         next: (result) => this.assignmentMap.set(key, { ...temp, id: result.id }),
         error: () => this.assignmentMap.delete(key),
       });
@@ -166,14 +171,14 @@ export class DashboardComponent implements OnInit {
   }
 
   exportCsv(): void {
-    this.skillService.exportMatrixCsv().subscribe({
+    this.analyticsService.exportMatrixCsv().subscribe({
       next: (blob) => this.downloadBlob(blob, 'skill-matrix.csv'),
       error: () => {},
     });
   }
 
   exportPdf(): void {
-    this.skillService.exportMatrixPdf().subscribe({
+    this.analyticsService.exportMatrixPdf().subscribe({
       next: (blob) => this.downloadBlob(blob, 'skill-matrix.pdf'),
       error: () => {},
     });

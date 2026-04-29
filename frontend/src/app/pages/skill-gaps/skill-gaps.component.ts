@@ -4,7 +4,8 @@ import { MatTableModule } from '@angular/material/table';
 
 import { TranslateModule } from '@ngx-translate/core';
 
-import { SkillGap, SkillService } from '../../core/skill.service';
+import { SkillAnalyticsService } from '../../core/skill-analytics.service';
+import { SkillGap } from '../../core/skill.models';
 
 @Component({
   selector: 'app-skill-gaps',
@@ -14,7 +15,7 @@ import { SkillGap, SkillService } from '../../core/skill.service';
   styleUrl: './skill-gaps.component.scss',
 })
 export class SkillGapsComponent implements OnInit {
-  private readonly skillService = inject(SkillService);
+  private readonly skillService = inject(SkillAnalyticsService);
 
   readonly data = signal<SkillGap[]>([]);
   readonly loading = signal(false);

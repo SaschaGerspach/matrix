@@ -21,7 +21,9 @@ import { Certificate, CertificateService } from '../../core/certificate.service'
 import { DevelopmentPlan, DevelopmentPlanService } from '../../core/development-plan.service';
 import { EmployeeProfile, EmployeeService } from '../../core/employee.service';
 import { MeService } from '../../core/me.service';
-import { Skill, SkillHistoryEntry, SkillService, SkillTrendData } from '../../core/skill.service';
+import { SkillAnalyticsService } from '../../core/skill-analytics.service';
+import { SkillCatalogService } from '../../core/skill-catalog.service';
+import { Skill, SkillHistoryEntry, SkillTrendData } from '../../core/skill.models';
 
 const TREND_COLORS = [
   '#3f51b5', '#e91e63', '#4caf50', '#ff9800', '#9c27b0',
@@ -53,7 +55,8 @@ const TREND_COLORS = [
 export class EmployeeProfileComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly employeeService = inject(EmployeeService);
-  private readonly skillService = inject(SkillService);
+  private readonly catalogService = inject(SkillCatalogService);
+  private readonly analyticsService = inject(SkillAnalyticsService);
   private readonly certificateService = inject(CertificateService);
   private readonly devPlanService = inject(DevelopmentPlanService);
   private readonly meService = inject(MeService);
@@ -128,15 +131,15 @@ export class EmployeeProfileComponent implements OnInit {
       },
       error: () => this.loading.set(false),
     });
-    this.skillService.skillHistory(this.employeeId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.analyticsService.skillHistory(this.employeeId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => this.history.set(res.results),
     });
-    this.skillService.skillTrends(this.employeeId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.analyticsService.skillTrends(this.employeeId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => this.buildTrendData(data),
     });
     this.loadCertificates();
     this.loadDevPlans();
-    this.skillService.listSkills().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((s) => this.skills.set(s));
+    this.catalogService.listSkills().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((s) => this.skills.set(s));
     this.meService.getProfile().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((me) => {
       this.canEdit.set(me.is_admin || me.is_team_lead || me.id === this.employeeId);
     });
