@@ -50,7 +50,7 @@ describe('LoginComponent', () => {
     component.submit();
 
     const req = http.expectOne(`${environment.apiUrl}/auth/login/`);
-    req.flush({ token: 'abc123' });
+    req.flush({ access: 'access123', refresh: 'refresh123' });
 
     expect(navigateSpy).toHaveBeenCalledWith(['/my-skills']);
     expect(component.loading()).toBeFalse();
