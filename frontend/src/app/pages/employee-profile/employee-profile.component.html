@@ -105,9 +105,12 @@
             <button mat-stroked-button (click)="fileInput.click()">
               {{ 'CERTIFICATES.UPLOAD' | translate }}
             </button>
-            <input #fileInput type="file" hidden (change)="onCertFileSelected($event)">
+            <input #fileInput type="file" hidden accept=".pdf,.jpg,.jpeg,.png" (change)="onCertFileSelected($event)">
             @if (certFile) {
               <span class="file-name">{{ certFile.name }}</span>
+            }
+            @if (certFileError) {
+              <span class="file-error">{{ certFileError | translate }}</span>
             }
           </div>
           <div class="cert-form-actions">

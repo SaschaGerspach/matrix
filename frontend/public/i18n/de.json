@@ -208,7 +208,9 @@
     "CANCEL": "Abbrechen",
     "DELETE_CONFIRM": "Dieses Zertifikat löschen?",
     "EXPIRED": "Abgelaufen",
-    "EXPIRES_SOON": "Läuft bald ab"
+    "EXPIRES_SOON": "Läuft bald ab",
+    "INVALID_FILE_TYPE": "Nur PDF, JPG und PNG erlaubt.",
+    "FILE_TOO_LARGE": "Datei zu groß. Maximal 10 MB."
   },
   "TOAST": {
     "SKILL_CONFIRMED": "Skill bestätigt.",

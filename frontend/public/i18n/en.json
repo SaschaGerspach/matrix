@@ -208,7 +208,9 @@
     "CANCEL": "Cancel",
     "DELETE_CONFIRM": "Delete this certificate?",
     "EXPIRED": "Expired",
-    "EXPIRES_SOON": "Expires soon"
+    "EXPIRES_SOON": "Expires soon",
+    "INVALID_FILE_TYPE": "Only PDF, JPG, and PNG files are allowed.",
+    "FILE_TOO_LARGE": "File too large. Maximum 10 MB."
   },
   "TOAST": {
     "SKILL_CONFIRMED": "Skill confirmed.",

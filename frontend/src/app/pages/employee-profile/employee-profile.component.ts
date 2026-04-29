@@ -78,6 +78,10 @@ export class EmployeeProfileComponent implements OnInit {
   certExpiryDate = '';
   certSkill: number | undefined;
   certFile: File | null = null;
+  certFileError = '';
+
+  private readonly MAX_FILE_SIZE = 10 * 1024 * 1024;
+  private readonly ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
 
   newPlanTitle = '';
   newPlanNotes = '';
@@ -147,7 +151,21 @@ export class EmployeeProfileComponent implements OnInit {
   }
 
   onCertFileSelected(event: Event): void {
-    this.certFile = (event.target as HTMLInputElement).files?.[0] ?? null;
+    const file = (event.target as HTMLInputElement).files?.[0] ?? null;
+    this.certFileError = '';
+    if (file) {
+      if (!this.ALLOWED_TYPES.includes(file.type)) {
+        this.certFileError = 'CERTIFICATES.INVALID_FILE_TYPE';
+        this.certFile = null;
+        return;
+      }
+      if (file.size > this.MAX_FILE_SIZE) {
+        this.certFileError = 'CERTIFICATES.FILE_TOO_LARGE';
+        this.certFile = null;
+        return;
+      }
+    }
+    this.certFile = file;
   }
 
   saveCertificate(): void {

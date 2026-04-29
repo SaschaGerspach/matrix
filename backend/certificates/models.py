@@ -14,10 +14,27 @@ def certificate_upload_path(instance, filename):
     return f'certificates/{instance.employee_id}/{uuid4().hex}{ext}'
 
 
+ALLOWED_MIME_SIGNATURES = {
+    b'%PDF': 'application/pdf',
+    b'\xff\xd8\xff': 'image/jpeg',
+    b'\x89PNG\r\n\x1a\n': 'image/png',
+}
+
+
 def validate_file_size(file):
     if file.size > MAX_CERTIFICATE_FILE_SIZE:
         from django.core.exceptions import ValidationError
         raise ValidationError('File too large. Maximum 10MB.')
+
+
+def validate_file_content(file):
+    from django.core.exceptions import ValidationError
+    header = file.read(8)
+    file.seek(0)
+    for signature in ALLOWED_MIME_SIGNATURES:
+        if header.startswith(signature):
+            return
+    raise ValidationError('Invalid file content. Only PDF, JPEG, and PNG files are allowed.')
 
 
 class Certificate(models.Model):
@@ -43,6 +60,7 @@ class Certificate(models.Model):
         validators=[
             FileExtensionValidator(allowed_extensions=['pdf', 'jpg', 'jpeg', 'png']),
             validate_file_size,
+            validate_file_content,
         ],
     )
     created_at = models.DateTimeField(auto_now_add=True)

@@ -162,3 +162,57 @@ def test_optional_fields(admin_client):
     assert r.data['issuer'] == 'Acme Corp'
     assert r.data['issued_date'] == '2025-01-15'
     assert r.data['expiry_date'] == '2027-01-15'
+
+
+def test_upload_valid_pdf(admin_client):
+    from io import BytesIO
+    from django.core.files.uploadedfile import SimpleUploadedFile
+    emp = Employee.objects.create(first_name='A', last_name='B', email='a@b.com')
+    pdf_content = b'%PDF-1.4 fake pdf content'
+    f = SimpleUploadedFile('cert.pdf', pdf_content, content_type='application/pdf')
+    r = admin_client.post(URL, {'employee': emp.id, 'name': 'PDF Cert', 'file': f}, format='multipart')
+    assert r.status_code == status.HTTP_201_CREATED
+    assert r.data['file'] is not None
+
+
+def test_upload_valid_png(admin_client):
+    from django.core.files.uploadedfile import SimpleUploadedFile
+    emp = Employee.objects.create(first_name='A', last_name='B', email='a@b.com')
+    png_header = b'\x89PNG\r\n\x1a\n' + b'\x00' * 100
+    f = SimpleUploadedFile('cert.png', png_header, content_type='image/png')
+    r = admin_client.post(URL, {'employee': emp.id, 'name': 'PNG Cert', 'file': f}, format='multipart')
+    assert r.status_code == status.HTTP_201_CREATED
+
+
+def test_upload_valid_jpeg(admin_client):
+    from django.core.files.uploadedfile import SimpleUploadedFile
+    emp = Employee.objects.create(first_name='A', last_name='B', email='a@b.com')
+    jpeg_header = b'\xff\xd8\xff\xe0' + b'\x00' * 100
+    f = SimpleUploadedFile('cert.jpg', jpeg_header, content_type='image/jpeg')
+    r = admin_client.post(URL, {'employee': emp.id, 'name': 'JPEG Cert', 'file': f}, format='multipart')
+    assert r.status_code == status.HTTP_201_CREATED
+
+
+def test_upload_rejects_spoofed_extension(admin_client):
+    from django.core.files.uploadedfile import SimpleUploadedFile
+    emp = Employee.objects.create(first_name='A', last_name='B', email='a@b.com')
+    f = SimpleUploadedFile('malicious.pdf', b'not a real pdf', content_type='application/pdf')
+    r = admin_client.post(URL, {'employee': emp.id, 'name': 'Bad', 'file': f}, format='multipart')
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_upload_rejects_disallowed_extension(admin_client):
+    from django.core.files.uploadedfile import SimpleUploadedFile
+    emp = Employee.objects.create(first_name='A', last_name='B', email='a@b.com')
+    f = SimpleUploadedFile('script.exe', b'\x4d\x5a' + b'\x00' * 100, content_type='application/octet-stream')
+    r = admin_client.post(URL, {'employee': emp.id, 'name': 'Bad', 'file': f}, format='multipart')
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_upload_rejects_oversized_file(admin_client):
+    from django.core.files.uploadedfile import SimpleUploadedFile
+    emp = Employee.objects.create(first_name='A', last_name='B', email='a@b.com')
+    big_content = b'%PDF-1.4 ' + b'\x00' * (10 * 1024 * 1024 + 1)
+    f = SimpleUploadedFile('big.pdf', big_content, content_type='application/pdf')
+    r = admin_client.post(URL, {'employee': emp.id, 'name': 'Big', 'file': f}, format='multipart')
+    assert r.status_code == status.HTTP_400_BAD_REQUEST

@@ -179,6 +179,37 @@ describe('EmployeeProfileComponent', () => {
     expect(component.hasTrends()).toBeFalse();
   });
 
+  it('rejects files with invalid type', () => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+    const file = new File(['content'], 'script.exe', { type: 'application/octet-stream' });
+    const event = { target: { files: [file] } } as unknown as Event;
+    component.onCertFileSelected(event);
+    expect(component.certFile).toBeNull();
+    expect(component.certFileError).toBe('CERTIFICATES.INVALID_FILE_TYPE');
+  });
+
+  it('rejects files that are too large', () => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+    const blob = new Blob([new ArrayBuffer(11 * 1024 * 1024)], { type: 'application/pdf' });
+    const file = new File([blob], 'big.pdf', { type: 'application/pdf' });
+    const event = { target: { files: [file] } } as unknown as Event;
+    component.onCertFileSelected(event);
+    expect(component.certFile).toBeNull();
+    expect(component.certFileError).toBe('CERTIFICATES.FILE_TOO_LARGE');
+  });
+
+  it('accepts valid PDF files', () => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+    const file = new File(['%PDF-1.4'], 'cert.pdf', { type: 'application/pdf' });
+    const event = { target: { files: [file] } } as unknown as Event;
+    component.onCertFileSelected(event);
+    expect(component.certFile).toBe(file);
+    expect(component.certFileError).toBe('');
+  });
+
   it('handles error gracefully', () => {
     fixture.detectChanges();
     http.expectOne(`${environment.apiUrl}/employees/1/profile/`).flush(null, {
