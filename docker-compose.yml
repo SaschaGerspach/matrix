@@ -69,7 +69,24 @@ services:
       - certbot_webroot:/var/www/certbot:ro
     restart: unless-stopped
 
+  backup:
+    build: ./backup
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGHOST: db
+      PGUSER: matrix
+      PGPASSWORD: matrix
+      PGDATABASE: matrix
+      BACKUP_SCHEDULE: "0 2 * * *"
+      BACKUP_RETENTION_DAYS: "7"
+    volumes:
+      - db_backups:/backups
+    restart: unless-stopped
+
 volumes:
   pgdata:
   backend_static:
   certbot_webroot:
+  db_backups:
