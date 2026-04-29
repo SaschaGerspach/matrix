@@ -88,4 +88,22 @@ describe('TeamComparisonComponent', () => {
 
     expect(component.barData.labels).toEqual(['Python']);
   });
+
+  it('builds radar data alongside bar data', () => {
+    fixture.detectChanges();
+    http.expectOne(`${environment.apiUrl}/teams/`).flush([]);
+
+    component.selectedTeamIds = [1, 2];
+    component.compare();
+
+    http.expectOne((r) => r.url === `${environment.apiUrl}/team-comparison/`).flush(comparisonResponse);
+
+    expect(component.radarData.datasets.length).toBe(2);
+    expect(component.radarData.labels).toEqual(['Python', 'Docker']);
+    expect(component.radarData.datasets[0].label).toBe('Alpha');
+  });
+
+  it('defaults to bar chart mode', () => {
+    expect(component.chartMode).toBe('bar');
+  });
 });

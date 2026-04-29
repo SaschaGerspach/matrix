@@ -15,16 +15,31 @@
           (click)="compare()">
     {{ 'TEAM_COMPARISON.COMPARE' | translate }}
   </button>
+
+  @if (hasData()) {
+    <mat-button-toggle-group [(ngModel)]="chartMode">
+      <mat-button-toggle value="bar">{{ 'TEAM_COMPARISON.BAR_CHART' | translate }}</mat-button-toggle>
+      <mat-button-toggle value="radar">{{ 'TEAM_COMPARISON.RADAR_CHART' | translate }}</mat-button-toggle>
+    </mat-button-toggle-group>
+  }
 </div>
 
 @if (loading()) {
   <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
 } @else if (hasData()) {
   <div class="chart-wrapper">
-    <canvas baseChart
-            type="bar"
-            [data]="barData"
-            [options]="barOptions">
-    </canvas>
+    @if (chartMode === 'bar') {
+      <canvas baseChart
+              type="bar"
+              [data]="barData"
+              [options]="barOptions">
+      </canvas>
+    } @else {
+      <canvas baseChart
+              type="radar"
+              [data]="radarData"
+              [options]="radarOptions">
+      </canvas>
+    }
   </div>
 }

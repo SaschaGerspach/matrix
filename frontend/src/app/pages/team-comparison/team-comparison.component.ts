@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
@@ -21,6 +22,15 @@ const COLORS = [
   'rgba(0, 188, 212, 0.7)',
 ];
 
+const BORDER_COLORS = [
+  'rgb(63, 81, 181)',
+  'rgb(233, 30, 99)',
+  'rgb(76, 175, 80)',
+  'rgb(255, 152, 0)',
+  'rgb(156, 39, 176)',
+  'rgb(0, 188, 212)',
+];
+
 @Component({
   selector: 'app-team-comparison',
   standalone: true,
@@ -28,6 +38,7 @@ const COLORS = [
     BaseChartDirective,
     FormsModule,
     MatButtonModule,
+    MatButtonToggleModule,
     MatFormFieldModule,
     MatProgressSpinnerModule,
     MatSelectModule,
@@ -45,12 +56,24 @@ export class TeamComparisonComponent implements OnInit {
   readonly hasData = signal(false);
 
   selectedTeamIds: number[] = [];
+  chartMode: 'bar' | 'radar' = 'bar';
 
   barData: ChartConfiguration<'bar'>['data'] = { labels: [], datasets: [] };
   barOptions: ChartConfiguration<'bar'>['options'] = {
     responsive: true,
     scales: {
       y: { min: 0, max: 5, ticks: { stepSize: 1 } },
+    },
+    plugins: {
+      legend: { position: 'top' },
+    },
+  };
+
+  radarData: ChartConfiguration<'radar'>['data'] = { labels: [], datasets: [] };
+  radarOptions: ChartConfiguration<'radar'>['options'] = {
+    responsive: true,
+    scales: {
+      r: { min: 0, max: 5, ticks: { stepSize: 1 } },
     },
     plugins: {
       legend: { position: 'top' },
@@ -85,6 +108,18 @@ export class TeamComparisonComponent implements OnInit {
         label: name,
         data: filtered.map((d) => d.teams[name] ?? 0),
         backgroundColor: COLORS[i % COLORS.length],
+      })),
+    };
+
+    this.radarData = {
+      labels,
+      datasets: teamNames.map((name, i) => ({
+        label: name,
+        data: filtered.map((d) => d.teams[name] ?? 0),
+        backgroundColor: COLORS[i % COLORS.length],
+        borderColor: BORDER_COLORS[i % BORDER_COLORS.length],
+        borderWidth: 2,
+        pointBackgroundColor: BORDER_COLORS[i % BORDER_COLORS.length],
       })),
     };
   }
