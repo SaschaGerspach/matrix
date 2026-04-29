@@ -16,7 +16,7 @@
   <mat-form-field appearance="outline">
     <mat-label>{{ 'DASHBOARD.TEAM' | translate }}</mat-label>
     <mat-select [(ngModel)]="selectedTeam" (selectionChange)="applyFilters()">
-      <mat-option [value]="undefined">All teams</mat-option>
+      <mat-option [value]="undefined">{{ 'DASHBOARD.ALL_TEAMS' | translate }}</mat-option>
       @for (team of teams(); track team.id) {
         <mat-option [value]="team.id">{{ team.name }}</mat-option>
       }
@@ -26,7 +26,7 @@
   <mat-form-field appearance="outline">
     <mat-label>{{ 'DASHBOARD.CATEGORY' | translate }}</mat-label>
     <mat-select [(ngModel)]="selectedCategory" (selectionChange)="applyFilters()">
-      <mat-option [value]="undefined">All categories</mat-option>
+      <mat-option [value]="undefined">{{ 'DASHBOARD.ALL_CATEGORIES' | translate }}</mat-option>
       @for (cat of categories(); track cat.id) {
         <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
       }

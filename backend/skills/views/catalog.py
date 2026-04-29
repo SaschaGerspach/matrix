@@ -13,6 +13,7 @@ from common.models import AuditLog
 from common.permissions import IsAdminOrReadOnly
 
 MAX_CSV_SIZE = 5 * 1024 * 1024
+MAX_CSV_ROWS = 5000
 
 from ..models import Skill, SkillCategory, SkillLevelDescription, SkillRequirement, RoleTemplate, RoleTemplateSkill
 from ..serializers import (
@@ -76,6 +77,10 @@ class SkillViewSet(AuditMixin, viewsets.ModelViewSet):
 
         with transaction.atomic():
             for i, row in enumerate(reader, start=2):
+                if i - 1 > MAX_CSV_ROWS:
+                    errors.append({'row': i, 'detail': f'Row limit ({MAX_CSV_ROWS}) exceeded.'})
+                    break
+
                 name = (row.get('name') or '').strip()
                 category_name = (row.get('category') or '').strip()
 

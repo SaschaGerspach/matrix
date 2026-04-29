@@ -15,7 +15,7 @@ URL = '/api/skill-matrix/export/'
 
 @pytest.fixture
 def auth_client(db):
-    user = User.objects.create_user(username='u', password='pw!')
+    user = User.objects.create_user(username='u', password='pw!', is_staff=True)
     Employee.objects.create(first_name='Alice', last_name='A', email='a@x.com', user=user)
     c = APIClient()
     c.force_authenticate(user=user)

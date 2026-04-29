@@ -202,8 +202,9 @@ export class SkillService {
   }
 
   teamAssignments(status?: string): Observable<TeamAssignment[]> {
-    const params = status ? `?status=${status}` : '';
-    return this.http.get<TeamAssignment[]>(`${environment.apiUrl}/team-assignments/${params}`);
+    let params = new HttpParams();
+    if (status) params = params.set('status', status);
+    return this.http.get<TeamAssignment[]>(`${environment.apiUrl}/team-assignments/`, { params });
   }
 
   confirmAssignment(id: number): Observable<unknown> {
@@ -311,6 +312,10 @@ export class SkillService {
     return this.http.get<PaginatedResponse<SkillHistoryEntry>>(
       `${environment.apiUrl}/skill-history/`, { params },
     );
+  }
+
+  kpiData(): Observable<{ team_id: number; team_name: string; member_count: number; avg_level: number; coverage: number; total_assignments: number; confirmed_ratio: number }[]> {
+    return this.http.get<{ team_id: number; team_name: string; member_count: number; avg_level: number; coverage: number; total_assignments: number; confirmed_ratio: number }[]>(`${environment.apiUrl}/kpi/`);
   }
 
   levelDistribution(): Observable<LevelDistribution> {

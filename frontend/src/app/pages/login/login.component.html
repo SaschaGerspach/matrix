@@ -17,7 +17,7 @@
         </mat-form-field>
 
         @if (errorMessage(); as msg) {
-          <p class="error" data-testid="login-error">{{ msg }}</p>
+          <p class="error" data-testid="login-error">{{ msg | translate }}</p>
         }
 
         <button

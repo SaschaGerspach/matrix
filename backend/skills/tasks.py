@@ -100,5 +100,11 @@ def generate_matrix_pdf():
     ]))
     doc.build([table])
 
-    import base64
-    return base64.b64encode(buf.getvalue()).decode('ascii')
+    from django.conf import settings
+    import os
+    output_dir = os.path.join(settings.MEDIA_ROOT, 'exports')
+    os.makedirs(output_dir, exist_ok=True)
+    path = os.path.join(output_dir, 'skill-matrix.pdf')
+    with open(path, 'wb') as f:
+        f.write(buf.getvalue())
+    return {'path': path}

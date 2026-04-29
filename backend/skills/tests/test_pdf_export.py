@@ -14,7 +14,7 @@ URL = '/api/skill-matrix/export-pdf/'
 
 @pytest.fixture
 def setup(db):
-    user = User.objects.create_user(username='viewer', password='pw!')
+    user = User.objects.create_user(username='viewer', password='pw!', is_staff=True)
     emp = Employee.objects.create(first_name='Alice', last_name='A', email='a@x.com')
     cat = SkillCategory.objects.create(name='Programming')
     skill = Skill.objects.create(name='Python', category=cat)
@@ -33,7 +33,7 @@ def test_returns_pdf(setup):
 
 
 def test_empty_pdf(db):
-    user = User.objects.create_user(username='empty', password='pw!')
+    user = User.objects.create_user(username='empty', password='pw!', is_staff=True)
     c = APIClient()
     c.force_authenticate(user=user)
     r = c.get(URL)

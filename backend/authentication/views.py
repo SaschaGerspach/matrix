@@ -37,8 +37,8 @@ class LogoutView(APIView):
 
 
 class ChangePasswordSerializer(serializers.Serializer):
-    current_password = serializers.CharField()
-    new_password = serializers.CharField(min_length=8)
+    current_password = serializers.CharField(max_length=128)
+    new_password = serializers.CharField(min_length=8, max_length=128)
 
 
 class ChangePasswordView(APIView):

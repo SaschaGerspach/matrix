@@ -23,7 +23,8 @@
     "TITLE": "Anmelden",
     "USERNAME": "Benutzername",
     "PASSWORD": "Passwort",
-    "SUBMIT": "Anmelden"
+    "SUBMIT": "Anmelden",
+    "INVALID_CREDENTIALS": "Ungültige Anmeldedaten."
   },
   "MY_SKILLS": {
     "TITLE": "Meine Skills",
@@ -77,6 +78,8 @@
     "SEARCH_PLACEHOLDER": "Mitarbeitername...",
     "TEAM": "Team",
     "CATEGORY": "Kategorie",
+    "ALL_TEAMS": "Alle Teams",
+    "ALL_CATEGORIES": "Alle Kategorien",
     "CLEAR": "Zurücksetzen",
     "EMPTY": "Keine Mitarbeiter gefunden."
   },

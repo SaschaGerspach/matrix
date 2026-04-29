@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from common.permissions import IsAdminOrTeamLead
 from employees.models import Employee
 from employees.utils import get_employee
 from teams.utils import get_led_member_ids, is_team_lead
@@ -123,7 +124,7 @@ class SkillMatrixView(APIView):
 
 
 class SkillMatrixExportView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminOrTeamLead,)
 
     def get(self, request):
         employees, skills, assignment_map = _build_export_data()
@@ -148,7 +149,7 @@ class SkillMatrixExportView(APIView):
 
 
 class SkillMatrixPdfExportView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminOrTeamLead,)
 
     def get(self, request):
         from reportlab.lib import colors
@@ -237,12 +238,23 @@ class SkillGapsView(APIView):
 
 
 class TeamComparisonView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminOrTeamLead,)
+
+    MAX_TEAMS = 10
 
     def get(self, request):
         from teams.models import Team
 
-        team_ids = request.query_params.getlist('teams')
+        raw_ids = request.query_params.getlist('teams')
+        if not raw_ids:
+            return Response([])
+
+        team_ids = []
+        for raw in raw_ids[:self.MAX_TEAMS]:
+            try:
+                team_ids.append(int(raw))
+            except (ValueError, TypeError):
+                continue
         if not team_ids:
             return Response([])
 
@@ -359,7 +371,7 @@ class SkillRecommendationsView(APIView):
 
 
 class KpiView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminOrTeamLead,)
 
     def get(self, request):
         from teams.models import Team
@@ -427,7 +439,7 @@ class KpiView(APIView):
 
 
 class LevelDistributionView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminOrTeamLead,)
 
     def get(self, request):
         from teams.models import Team

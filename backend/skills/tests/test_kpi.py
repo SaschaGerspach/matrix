@@ -15,7 +15,7 @@ URL = '/api/kpi/'
 
 @pytest.fixture
 def setup(db):
-    user = User.objects.create_user(username='viewer', password='pw!')
+    user = User.objects.create_user(username='viewer', password='pw!', is_staff=True)
     emp1 = Employee.objects.create(first_name='Alice', last_name='A', email='a@x.com')
     emp2 = Employee.objects.create(first_name='Bob', last_name='B', email='b@x.com')
 
@@ -48,7 +48,7 @@ def test_returns_kpi(setup):
 
 
 def test_empty_team(db):
-    user = User.objects.create_user(username='viewer', password='pw!')
+    user = User.objects.create_user(username='viewer', password='pw!', is_staff=True)
     dept = Department.objects.create(name='Eng')
     Team.objects.create(name='Empty', department=dept)
     c = APIClient()
@@ -85,7 +85,7 @@ def test_level_distribution(setup):
 
 
 def test_level_distribution_empty_team(db):
-    user = User.objects.create_user(username='viewer', password='pw!')
+    user = User.objects.create_user(username='viewer', password='pw!', is_staff=True)
     dept = Department.objects.create(name='Eng')
     Team.objects.create(name='Empty', department=dept)
     c = APIClient()

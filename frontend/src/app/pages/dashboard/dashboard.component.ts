@@ -164,14 +164,16 @@ export class DashboardComponent implements OnInit {
   }
 
   exportCsv(): void {
-    this.skillService.exportMatrixCsv().subscribe((blob) => {
-      this.downloadBlob(blob, 'skill-matrix.csv');
+    this.skillService.exportMatrixCsv().subscribe({
+      next: (blob) => this.downloadBlob(blob, 'skill-matrix.csv'),
+      error: () => {},
     });
   }
 
   exportPdf(): void {
-    this.skillService.exportMatrixPdf().subscribe((blob) => {
-      this.downloadBlob(blob, 'skill-matrix.pdf');
+    this.skillService.exportMatrixPdf().subscribe({
+      next: (blob) => this.downloadBlob(blob, 'skill-matrix.pdf'),
+      error: () => {},
     });
   }
 

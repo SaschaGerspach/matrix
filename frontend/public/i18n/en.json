@@ -23,7 +23,8 @@
     "TITLE": "Sign in",
     "USERNAME": "Username",
     "PASSWORD": "Password",
-    "SUBMIT": "Sign in"
+    "SUBMIT": "Sign in",
+    "INVALID_CREDENTIALS": "Invalid credentials."
   },
   "MY_SKILLS": {
     "TITLE": "My Skills",
@@ -77,6 +78,8 @@
     "SEARCH_PLACEHOLDER": "Employee name...",
     "TEAM": "Team",
     "CATEGORY": "Category",
+    "ALL_TEAMS": "All teams",
+    "ALL_CATEGORIES": "All categories",
     "CLEAR": "Clear",
     "EMPTY": "No employees found."
   },

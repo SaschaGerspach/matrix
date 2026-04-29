@@ -68,6 +68,6 @@ describe('LoginComponent', () => {
     );
 
     expect(component.loading()).toBeFalse();
-    expect(component.errorMessage()).toBe('Invalid credentials.');
+    expect(component.errorMessage()).toBe('LOGIN.INVALID_CREDENTIALS');
   });
 });

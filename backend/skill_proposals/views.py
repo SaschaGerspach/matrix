@@ -37,8 +37,12 @@ class SkillProposalViewSet(AuditMixin, viewsets.ModelViewSet):
     def approve(self, request, pk=None):
         if not request.user.is_staff and not is_team_lead(request.user):
             return Response(status=status.HTTP_403_FORBIDDEN)
+        review_note = str(request.data.get('review_note', ''))[:2000]
         with transaction.atomic():
-            proposal = SkillProposal.objects.select_for_update().get(pk=pk)
+            try:
+                proposal = SkillProposal.objects.select_for_update().get(pk=pk)
+            except SkillProposal.DoesNotExist:
+                return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
             if proposal.status != SkillProposal.Status.PENDING:
                 return Response(
                     {'detail': 'Only pending proposals can be reviewed.'},
@@ -47,7 +51,7 @@ class SkillProposalViewSet(AuditMixin, viewsets.ModelViewSet):
             reviewer = get_employee(request.user)
             proposal.status = SkillProposal.Status.APPROVED
             proposal.reviewed_by = reviewer
-            proposal.review_note = request.data.get('review_note', '')
+            proposal.review_note = review_note
             proposal.reviewed_at = timezone.now()
             proposal.save()
 
@@ -66,8 +70,12 @@ class SkillProposalViewSet(AuditMixin, viewsets.ModelViewSet):
     def reject(self, request, pk=None):
         if not request.user.is_staff and not is_team_lead(request.user):
             return Response(status=status.HTTP_403_FORBIDDEN)
+        review_note = str(request.data.get('review_note', ''))[:2000]
         with transaction.atomic():
-            proposal = SkillProposal.objects.select_for_update().get(pk=pk)
+            try:
+                proposal = SkillProposal.objects.select_for_update().get(pk=pk)
+            except SkillProposal.DoesNotExist:
+                return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
             if proposal.status != SkillProposal.Status.PENDING:
                 return Response(
                     {'detail': 'Only pending proposals can be reviewed.'},
@@ -76,7 +84,7 @@ class SkillProposalViewSet(AuditMixin, viewsets.ModelViewSet):
             reviewer = get_employee(request.user)
             proposal.status = SkillProposal.Status.REJECTED
             proposal.reviewed_by = reviewer
-            proposal.review_note = request.data.get('review_note', '')
+            proposal.review_note = review_note
             proposal.reviewed_at = timezone.now()
             proposal.save()
         return Response(SkillProposalSerializer(proposal).data)

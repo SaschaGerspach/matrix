@@ -254,9 +254,11 @@ export class EmployeeProfileComponent implements OnInit {
     });
   }
 
-  goalProgress(goal: { current_level: number; target_level: number }): number {
+  goalProgress(goal: { current_level: number; target_level: number; status?: string }): number {
+    if (goal.status === 'completed') return 100;
     const range = goal.target_level - goal.current_level;
-    return range > 0 ? 0 : 100;
+    if (range <= 0) return 100;
+    return 0;
   }
 
   private resetCertForm(): void {

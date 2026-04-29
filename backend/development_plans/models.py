@@ -50,6 +50,16 @@ class DevelopmentGoal(models.Model):
     class Meta:
         unique_together = ('plan', 'skill')
         ordering = ['skill__name']
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(current_level__gte=1) & models.Q(current_level__lte=5),
+                name='devgoal_current_level_1_to_5',
+            ),
+            models.CheckConstraint(
+                condition=models.Q(target_level__gte=1) & models.Q(target_level__lte=5),
+                name='devgoal_target_level_1_to_5',
+            ),
+        ]
 
     def __str__(self):
         return f'{self.skill.name}: {self.current_level} → {self.target_level}'

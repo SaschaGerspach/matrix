@@ -8,7 +8,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { Skill, SkillService } from '../../core/skill.service';
-import { EmployeeService } from '../../core/employee.service';
 import { ToastService } from '../../core/toast.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';

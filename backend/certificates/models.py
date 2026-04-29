@@ -8,7 +8,10 @@ MAX_CERTIFICATE_FILE_SIZE = 10 * 1024 * 1024
 
 
 def certificate_upload_path(instance, filename):
-    return f'certificates/{instance.employee_id}/{filename}'
+    from pathlib import Path
+    from uuid import uuid4
+    ext = Path(filename).suffix
+    return f'certificates/{instance.employee_id}/{uuid4().hex}{ext}'
 
 
 def validate_file_size(file):

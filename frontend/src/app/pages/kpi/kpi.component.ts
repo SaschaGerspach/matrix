@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -9,7 +8,6 @@ import { ChartConfiguration } from 'chart.js';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { LevelDistribution, SkillService } from '../../core/skill.service';
-import { environment } from '../../../environments/environment';
 
 export interface TeamKpi {
   team_id: number;
@@ -31,7 +29,6 @@ const DOUGHNUT_COLORS = ['#ef5350', '#ff9800', '#fdd835', '#66bb6a', '#2e7d32'];
   styleUrl: './kpi.component.scss',
 })
 export class KpiComponent implements OnInit {
-  private readonly http = inject(HttpClient);
   private readonly skillService = inject(SkillService);
 
   readonly data = signal<TeamKpi[]>([]);
@@ -90,13 +87,16 @@ export class KpiComponent implements OnInit {
 
   ngOnInit(): void {
     this.loading.set(true);
-    this.http.get<TeamKpi[]>(`${environment.apiUrl}/kpi/`).subscribe({
+    this.skillService.kpiData().subscribe({
       next: (d) => {
         this.data.set(d);
         this.loading.set(false);
       },
       error: () => this.loading.set(false),
     });
-    this.skillService.levelDistribution().subscribe((d) => this.distribution.set(d));
+    this.skillService.levelDistribution().subscribe({
+      next: (d) => this.distribution.set(d),
+      error: () => {},
+    });
   }
 }

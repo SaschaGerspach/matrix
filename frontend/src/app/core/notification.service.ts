@@ -26,6 +26,8 @@ export class NotificationService implements OnDestroy {
   private socket: WebSocket | null = null;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private token: string | null = null;
+  private reconnectAttempts = 0;
+  private readonly maxReconnectAttempts = 20;
 
   list(): Observable<PaginatedResponse<NotificationItem>> {
     return this.http.get<PaginatedResponse<NotificationItem>>(this.url);
@@ -51,6 +53,7 @@ export class NotificationService implements OnDestroy {
 
   connectWebSocket(token: string): void {
     this.token = token;
+    this.reconnectAttempts = 0;
     this.createSocket();
   }
 
@@ -76,10 +79,6 @@ export class NotificationService implements OnDestroy {
     const wsUrl = `${environment.wsUrl}/notifications/`;
     this.socket = new WebSocket(wsUrl);
 
-    this.socket.onopen = () => {
-      this.socket?.send(JSON.stringify({ type: 'authenticate', token: this.token }));
-    };
-
     this.socket.onmessage = (event) => {
       let data: Record<string, unknown>;
       try {
@@ -96,9 +95,16 @@ export class NotificationService implements OnDestroy {
       this.unreadCount.update((c) => c + 1);
     };
 
+    this.socket.onopen = () => {
+      this.reconnectAttempts = 0;
+      this.socket?.send(JSON.stringify({ type: 'authenticate', token: this.token }));
+    };
+
     this.socket.onclose = () => {
-      if (this.token) {
-        this.reconnectTimer = setTimeout(() => this.createSocket(), 5000);
+      if (this.token && this.reconnectAttempts < this.maxReconnectAttempts) {
+        const delay = Math.min(5000 * Math.pow(2, this.reconnectAttempts), 60000);
+        this.reconnectAttempts++;
+        this.reconnectTimer = setTimeout(() => this.createSocket(), delay);
       }
     };
   }

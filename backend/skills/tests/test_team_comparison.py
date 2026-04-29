@@ -15,7 +15,7 @@ URL = '/api/team-comparison/'
 
 @pytest.fixture
 def setup(db):
-    user = User.objects.create_user(username='viewer', password='pw!')
+    user = User.objects.create_user(username='viewer', password='pw!', is_staff=True)
     dept = Department.objects.create(name='Eng')
 
     team_a = Team.objects.create(name='Alpha', department=dept)
