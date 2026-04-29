@@ -161,6 +161,53 @@ def test_change_password_rejects_username_similar(db):
     assert 'new_password' in response.data
 
 
+def test_login_creates_audit_log(user):
+    from common.models import AuditLog
+    client = APIClient()
+    client.post(LOGIN_URL, {'username': 'tester', 'password': 'pw12345!'}, format='json')
+    entry = AuditLog.objects.filter(action='login').last()
+    assert entry is not None
+    assert entry.user == user
+    assert entry.entity_id == user.pk
+
+
+def test_failed_login_creates_audit_log(user):
+    from common.models import AuditLog
+    client = APIClient()
+    client.post(LOGIN_URL, {'username': 'tester', 'password': 'wrong'}, format='json')
+    entry = AuditLog.objects.filter(action='login_failed').last()
+    assert entry is not None
+    assert entry.user is None
+    assert 'tester' in entry.detail
+
+
+def test_lockout_creates_audit_log(user):
+    from unittest.mock import patch
+    from django.core.cache import cache
+    from common.models import AuditLog
+    cache.clear()
+    client = APIClient()
+
+    with patch.object(LoginView, 'throttle_classes', ()):
+        for _ in range(10):
+            client.post(LOGIN_URL, {'username': 'tester', 'password': 'wrong'}, format='json')
+        client.post(LOGIN_URL, {'username': 'tester', 'password': 'wrong'}, format='json')
+
+    entry = AuditLog.objects.filter(action='lockout').last()
+    assert entry is not None
+    assert 'tester' in entry.detail
+
+
+def test_logout_creates_audit_log(user):
+    from common.models import AuditLog
+    client, token = _auth_client(user)
+    client.post(LOGOUT_URL, {'refresh': str(token)}, format='json')
+    entry = AuditLog.objects.filter(action='logout').last()
+    assert entry is not None
+    assert entry.user == user
+    assert entry.entity_id == user.pk
+
+
 def test_account_lockout_after_max_attempts(user):
     from unittest.mock import patch
     from django.core.cache import cache

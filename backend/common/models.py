@@ -9,6 +9,10 @@ class AuditLog(models.Model):
         DELETE = 'delete'
         APPLY = 'apply'
         IMPORT = 'import'
+        LOGIN = 'login'
+        LOGIN_FAILED = 'login_failed'
+        LOCKOUT = 'lockout'
+        LOGOUT = 'logout'
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,

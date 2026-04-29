@@ -1,5 +1,11 @@
+import logging
+
 from django.core.cache import cache
 from rest_framework import serializers, status
+
+from common.audit import log_action
+
+logger = logging.getLogger(__name__)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle, SimpleRateThrottle
@@ -47,6 +53,8 @@ class LoginView(APIView):
 
         attempts = cache.get(cache_key, 0)
         if attempts >= MAX_LOGIN_ATTEMPTS:
+            log_action(None, 'lockout', 'User', detail=f'Account locked: {username}')
+            logger.warning('Account locked out: %s', username)
             return Response(
                 {'detail': 'Account temporarily locked. Try again later.'},
                 status=status.HTTP_429_TOO_MANY_REQUESTS,
@@ -60,12 +68,14 @@ class LoginView(APIView):
         )
         if user is None:
             cache.set(cache_key, attempts + 1, LOCKOUT_DURATION)
+            log_action(None, 'login_failed', 'User', detail=f'Failed login: {username}')
             return Response(
                 {'detail': 'Invalid credentials.'},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
         cache.delete(cache_key)
+        log_action(user, 'login', 'User', entity_id=user.pk)
         refresh = RefreshToken.for_user(user)
         return Response({
             'access': str(refresh.access_token),
@@ -112,6 +122,7 @@ class LogoutView(APIView):
                 RefreshToken(token).blacklist()
             except TokenError:
                 pass
+        log_action(request.user, 'logout', 'User', entity_id=request.user.pk)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
