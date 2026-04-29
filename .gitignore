@@ -58,6 +58,7 @@ desktop.ini
 .env.docker
 *.pem
 *.key
+nginx/ssl/
 
 # ===== Coverage / Tests =====
 .coverage
