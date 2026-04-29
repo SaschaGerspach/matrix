@@ -17,10 +17,19 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  webServer: {
-    command: 'npx ng serve --port 4200',
-    url: 'http://localhost:4200',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+  webServer: [
+    {
+      command: 'python manage.py migrate --run-syncdb --settings=config.settings_e2e && python manage.py seed_e2e --settings=config.settings_e2e && python manage.py runserver 8000 --settings=config.settings_e2e',
+      url: 'http://localhost:8000/api/health/',
+      cwd: '../backend',
+      reuseExistingServer: !process.env.CI,
+      timeout: 60_000,
+    },
+    {
+      command: 'npx ng serve --port 4200',
+      url: 'http://localhost:4200',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+    },
+  ],
 });
