@@ -1,5 +1,7 @@
+import * as Sentry from '@sentry/angular';
+
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, ErrorHandler, provideZoneChangeDetection } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
@@ -8,6 +10,11 @@ import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { authInterceptor } from './core/auth.interceptor';
 import { routes } from './app.routes';
+import { environment } from '../environments/environment';
+
+const sentryProviders = environment.sentryDsn
+  ? [{ provide: ErrorHandler, useValue: Sentry.createErrorHandler({ showDialog: false }) }]
+  : [];
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,5 +27,6 @@ export const appConfig: ApplicationConfig = {
       defaultLanguage: 'en',
     }).providers!,
     provideTranslateHttpLoader({ prefix: './i18n/', suffix: '.json' }),
+    ...sentryProviders,
   ],
 };

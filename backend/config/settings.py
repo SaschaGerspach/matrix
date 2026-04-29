@@ -27,6 +27,7 @@ env = environ.Env(
     EMAIL_HOST_PASSWORD=(str, ''),
     EMAIL_USE_TLS=(bool, True),
     DEFAULT_FROM_EMAIL=(str, 'noreply@skillmatrix.local'),
+    SENTRY_DSN=(str, ''),
 )
 environ.Env.read_env(BASE_DIR / '.env')
 
@@ -230,3 +231,13 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 }
+
+SENTRY_DSN = env('SENTRY_DSN')
+if SENTRY_DSN:
+    import sentry_sdk
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        traces_sample_rate=0.2,
+        profiles_sample_rate=0.1,
+        send_default_pii=False,
+    )
