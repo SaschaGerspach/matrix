@@ -41,12 +41,27 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
 
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Django system checks
+        run: python manage.py check --fail-level WARNING
+
+      - name: Check for missing migrations
+        run: python manage.py makemigrations --check --dry-run
+
       - name: Run tests
-        run: python -m pytest -v
+        run: python -m pytest -v --cov-report=xml
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage.xml
 
   frontend:
     runs-on: ubuntu-latest
@@ -69,3 +84,6 @@ jobs:
 
       - name: Run tests
         run: npx ng test --watch=false --browsers=ChromeHeadless
+
+      - name: Build
+        run: npx ng build
