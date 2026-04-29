@@ -12,6 +12,7 @@ class SkillCategory(models.Model):
     )
 
     class Meta:
+        ordering = ['name']
         verbose_name_plural = 'Skill categories'
 
     def __str__(self):
@@ -27,6 +28,7 @@ class Skill(models.Model):
     )
 
     class Meta:
+        ordering = ['category__name', 'name']
         unique_together = ('name', 'category')
 
     def __str__(self):
@@ -89,6 +91,7 @@ class SkillAssignment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        ordering = ['employee', 'skill']
         unique_together = ('employee', 'skill')
         constraints = [
             models.CheckConstraint(
@@ -115,6 +118,7 @@ class SkillRequirement(models.Model):
     required_level = models.PositiveSmallIntegerField()
 
     class Meta:
+        ordering = ['team', 'skill']
         unique_together = ('team', 'skill')
         constraints = [
             models.CheckConstraint(
@@ -130,6 +134,9 @@ class SkillRequirement(models.Model):
 class RoleTemplate(models.Model):
     name = models.CharField(max_length=150, unique=True)
     description = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ['name']
 
     def __str__(self):
         return self.name
@@ -149,6 +156,7 @@ class RoleTemplateSkill(models.Model):
     required_level = models.PositiveSmallIntegerField()
 
     class Meta:
+        ordering = ['template', 'skill']
         unique_together = ('template', 'skill')
         constraints = [
             models.CheckConstraint(

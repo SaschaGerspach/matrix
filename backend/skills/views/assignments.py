@@ -51,7 +51,7 @@ class TeamAssignmentsViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class SkillAssignmentViewSet(viewsets.ModelViewSet):
-    queryset = SkillAssignment.objects.all()
+    queryset = SkillAssignment.objects.select_related('skill__category', 'employee', 'confirmed_by')
     serializer_class = SkillAssignmentSerializer
     permission_classes = (SkillAssignmentPermission,)
 

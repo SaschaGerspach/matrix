@@ -11,6 +11,9 @@ class Department(models.Model):
         related_name='children',
     )
 
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
         return self.name
 
@@ -32,6 +35,9 @@ class Team(models.Model):
         related_name='led_teams',
         blank=True,
     )
+
+    class Meta:
+        ordering = ['name']
 
     def __str__(self):
         return self.name

@@ -7,14 +7,14 @@ from .serializers import DepartmentSerializer, TeamSerializer
 
 
 class DepartmentViewSet(viewsets.ModelViewSet):
-    queryset = Department.objects.all()
+    queryset = Department.objects.select_related('parent')
     serializer_class = DepartmentSerializer
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = None
 
 
 class TeamViewSet(viewsets.ModelViewSet):
-    queryset = Team.objects.all()
+    queryset = Team.objects.select_related('department').prefetch_related('members', 'team_leads')
     serializer_class = TeamSerializer
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = None

@@ -3,6 +3,7 @@ import io
 
 from celery import shared_task
 from django.contrib.auth import get_user_model
+from django.db import transaction
 
 from common.audit import log_action
 from common.models import AuditLog
@@ -19,26 +20,27 @@ def import_skills_csv(csv_content, user_id):
     errors = []
     category_cache = {}
 
-    for i, row in enumerate(reader, start=2):
-        name = (row.get('name') or '').strip()
-        category_name = (row.get('category') or '').strip()
+    with transaction.atomic():
+        for i, row in enumerate(reader, start=2):
+            name = (row.get('name') or '').strip()
+            category_name = (row.get('category') or '').strip()
 
-        if not name or not category_name:
-            errors.append({'row': i, 'detail': 'Missing required field.'})
-            continue
+            if not name or not category_name:
+                errors.append({'row': i, 'detail': 'Missing required field.'})
+                continue
 
-        if category_name not in category_cache:
-            cat, _ = SkillCategory.objects.get_or_create(name=category_name)
-            category_cache[category_name] = cat
+            if category_name not in category_cache:
+                cat, _ = SkillCategory.objects.get_or_create(name=category_name)
+                category_cache[category_name] = cat
 
-        _, was_created = Skill.objects.get_or_create(
-            name=name,
-            category=category_cache[category_name],
-        )
-        if was_created:
-            created.append({'row': i, 'name': name, 'category': category_name})
-        else:
-            skipped.append({'row': i, 'name': name})
+            _, was_created = Skill.objects.get_or_create(
+                name=name,
+                category=category_cache[category_name],
+            )
+            if was_created:
+                created.append({'row': i, 'name': name, 'category': category_name})
+            else:
+                skipped.append({'row': i, 'name': name})
 
     if created:
         user = get_user_model().objects.filter(id=user_id).first()

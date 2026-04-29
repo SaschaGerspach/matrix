@@ -48,10 +48,13 @@ class SkillProposalViewSet(AuditMixin, viewsets.ModelViewSet):
         proposal.save()
 
         if proposal.category:
-            Skill.objects.get_or_create(
+            _, created = Skill.objects.get_or_create(
                 name=proposal.skill_name,
                 category=proposal.category,
             )
+            if created:
+                from skills.views.analytics import invalidate_analytics_cache
+                invalidate_analytics_cache()
 
         return Response(SkillProposalSerializer(proposal).data)
 

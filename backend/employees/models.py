@@ -14,5 +14,8 @@ class Employee(models.Model):
         related_name='employee',
     )
 
+    class Meta:
+        ordering = ['last_name', 'first_name']
+
     def __str__(self):
         return f'{self.first_name} {self.last_name}'

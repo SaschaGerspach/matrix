@@ -24,7 +24,7 @@ MAX_CSV_SIZE = 5 * 1024 * 1024
 
 
 class EmployeeViewSet(viewsets.ModelViewSet):
-    queryset = Employee.objects.all().order_by('last_name', 'first_name')
+    queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
     permission_classes = (IsAdminOrReadOnly,)
 
