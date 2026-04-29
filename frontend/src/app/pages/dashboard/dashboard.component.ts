@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -6,7 +7,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { Router } from '@angular/router';
@@ -28,8 +28,8 @@ import { Team, TeamService } from '../../core/team.service';
     MatProgressSpinnerModule,
     MatSelectModule,
     MatSlideToggleModule,
-    MatTableModule,
     MatTooltipModule,
+    ScrollingModule,
     TranslateModule,
   ],
   templateUrl: './dashboard.component.html',
@@ -59,8 +59,9 @@ export class DashboardComponent implements OnInit {
   private assignmentMap = new Map<string, MatrixAssignment>();
   private descriptionMap = new Map<string, string>();
 
-  readonly displayedColumns = computed(() => {
-    return ['employee', ...this.skills().map((s) => `skill_${s.id}`)];
+  readonly gridColumns = computed(() => {
+    const skillCount = this.skills().length;
+    return `180px repeat(${skillCount}, minmax(80px, 1fr))`;
   });
 
   ngOnInit(): void {

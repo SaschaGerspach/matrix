@@ -42,21 +42,22 @@
   <p>{{ 'DASHBOARD.EMPTY' | translate }}</p>
 } @else {
   <div class="matrix-wrapper">
-    <table mat-table [dataSource]="employees()">
-      <ng-container matColumnDef="employee">
-        <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.EMPLOYEE' | translate }}</th>
-        <td mat-cell *matCellDef="let row">
-          <a class="employee-link" (click)="openProfile(row.id)">{{ row.full_name }}</a>
-        </td>
-      </ng-container>
-
+    <div class="matrix-header" [style.grid-template-columns]="gridColumns()">
+      <div class="matrix-cell matrix-header-cell">{{ 'TABLE.EMPLOYEE' | translate }}</div>
       @for (skill of skills(); track skill.id) {
-        <ng-container [matColumnDef]="'skill_' + skill.id">
-          <th mat-header-cell *matHeaderCellDef>{{ skill.name }}</th>
-          <td mat-cell *matCellDef="let row"
-              class="level-cell"
-              [class.heatmap-cell]="heatmapMode"
-              [class]="heatmapMode && getLevel(row.id, skill.id) ? 'level-cell heatmap-cell heatmap-' + getLevel(row.id, skill.id) : 'level-cell'">
+        <div class="matrix-cell matrix-header-cell">{{ skill.name }}</div>
+      }
+    </div>
+
+    <cdk-virtual-scroll-viewport [itemSize]="48" class="matrix-viewport">
+      <div class="matrix-row" *cdkVirtualFor="let row of employees()" [style.grid-template-columns]="gridColumns()">
+        <div class="matrix-cell matrix-employee-cell">
+          <a class="employee-link" (click)="openProfile(row.id)">{{ row.full_name }}</a>
+        </div>
+        @for (skill of skills(); track skill.id) {
+          <div class="matrix-cell level-cell"
+               [class.heatmap-cell]="heatmapMode"
+               [class]="heatmapMode && getLevel(row.id, skill.id) ? 'matrix-cell level-cell heatmap-cell heatmap-' + getLevel(row.id, skill.id) : 'matrix-cell level-cell'">
             @if (heatmapMode) {
               <span [matTooltip]="(getLevel(row.id, skill.id) ?? '–') + (getLevelTooltip(skill.id, getLevel(row.id, skill.id)) ? ': ' + getLevelTooltip(skill.id, getLevel(row.id, skill.id)) : '')"
                     class="heatmap-display"
@@ -83,12 +84,9 @@
                 }
               </span>
             }
-          </td>
-        </ng-container>
-      }
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns()"></tr>
-    </table>
+          </div>
+        }
+      </div>
+    </cdk-virtual-scroll-viewport>
   </div>
 }

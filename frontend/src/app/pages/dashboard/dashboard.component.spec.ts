@@ -68,11 +68,11 @@ describe('DashboardComponent', () => {
     expect(component.loading()).toBeFalse();
   });
 
-  it('builds correct column list', () => {
+  it('builds grid columns from skills', () => {
     fixture.detectChanges();
     flushInitRequests(http);
 
-    expect(component.displayedColumns()).toEqual(['employee', 'skill_10', 'skill_11']);
+    expect(component.gridColumns()).toBe('180px repeat(2, minmax(80px, 1fr))');
   });
 
   it('returns level for existing assignment', () => {

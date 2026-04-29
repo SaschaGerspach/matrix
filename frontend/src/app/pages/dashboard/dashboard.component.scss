@@ -21,14 +21,56 @@
 
 .matrix-wrapper {
   overflow-x: auto;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
 }
 
-table {
-  width: 100%;
+.matrix-header {
+  display: grid;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f5f5f5;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.12);
 }
 
-.level-cell {
-  text-align: center;
+.matrix-header-cell {
+  font-weight: 500;
+  font-size: 0.8125rem;
+  padding: 12px 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.matrix-viewport {
+  height: 600px;
+}
+
+.matrix-row {
+  display: grid;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.02);
+  }
+}
+
+.matrix-cell {
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  box-sizing: border-box;
+}
+
+.matrix-employee-cell {
+  justify-content: flex-start;
+  position: sticky;
+  left: 0;
+  background: inherit;
+  z-index: 0;
 }
 
 .employee-link {
@@ -39,6 +81,10 @@ table {
   &:hover {
     text-decoration: underline;
   }
+}
+
+.level-cell {
+  text-align: center;
 }
 
 .level-badge {
@@ -98,7 +144,7 @@ table {
 .heatmap-display {
   display: block;
   width: 100%;
-  min-height: 36px;
+  min-height: 48px;
   cursor: default;
 }
 
