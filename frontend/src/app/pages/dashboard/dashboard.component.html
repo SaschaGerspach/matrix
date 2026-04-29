@@ -55,11 +55,13 @@
           <a class="employee-link" (click)="openProfile(row.id)">{{ row.full_name }}</a>
         </div>
         @for (skill of skills(); track skill.id) {
+          @let level = getLevel(row.id, skill.id);
+          @let tooltip = getLevelTooltip(skill.id, level);
           <div class="matrix-cell level-cell"
                [class.heatmap-cell]="heatmapMode"
-               [class]="heatmapMode && getLevel(row.id, skill.id) ? 'matrix-cell level-cell heatmap-cell heatmap-' + getLevel(row.id, skill.id) : 'matrix-cell level-cell'">
+               [class]="heatmapMode && level ? 'matrix-cell level-cell heatmap-cell heatmap-' + level : 'matrix-cell level-cell'">
             @if (heatmapMode) {
-              <span [matTooltip]="(getLevel(row.id, skill.id) ?? '–') + (getLevelTooltip(skill.id, getLevel(row.id, skill.id)) ? ': ' + getLevelTooltip(skill.id, getLevel(row.id, skill.id)) : '')"
+              <span [matTooltip]="(level ?? '–') + (tooltip ? ': ' + tooltip : '')"
                     class="heatmap-display"
                     (click)="startEdit(row.id, skill.id)">
               </span>
@@ -67,17 +69,17 @@
               <select class="inline-level-select"
                       (change)="setLevel(row.id, skill.id, +$any($event.target).value)"
                       (blur)="cancelEdit()">
-                <option value="0" [selected]="!getLevel(row.id, skill.id)">–</option>
+                <option value="0" [selected]="!level">–</option>
                 @for (l of levels; track l) {
-                  <option [value]="l" [selected]="getLevel(row.id, skill.id) === l">{{ l }}</option>
+                  <option [value]="l" [selected]="level === l">{{ l }}</option>
                 }
               </select>
             } @else {
               <span (click)="startEdit(row.id, skill.id)"
                     [class.editable]="canEdit()"
-                    [matTooltip]="getLevelTooltip(skill.id, getLevel(row.id, skill.id))"
+                    [matTooltip]="tooltip"
                     class="level-display">
-                @if (getLevel(row.id, skill.id); as level) {
+                @if (level) {
                   <span class="level-badge level-{{ level }}">{{ level }}</span>
                 } @else {
                   <span class="level-empty">–</span>

@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -56,6 +57,7 @@ export class EmployeeProfileComponent implements OnInit {
   private readonly certificateService = inject(CertificateService);
   private readonly devPlanService = inject(DevelopmentPlanService);
   private readonly meService = inject(MeService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly profile = signal<EmployeeProfile | null>(null);
   readonly history = signal<SkillHistoryEntry[]>([]);
@@ -118,7 +120,7 @@ export class EmployeeProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.employeeId = Number(this.route.snapshot.paramMap.get('id'));
-    this.employeeService.getProfile(this.employeeId).subscribe({
+    this.employeeService.getProfile(this.employeeId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (p) => {
         this.profile.set(p);
         this.buildRadarData(p);
@@ -126,16 +128,16 @@ export class EmployeeProfileComponent implements OnInit {
       },
       error: () => this.loading.set(false),
     });
-    this.skillService.skillHistory(this.employeeId).subscribe({
+    this.skillService.skillHistory(this.employeeId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => this.history.set(res.results),
     });
-    this.skillService.skillTrends(this.employeeId).subscribe({
+    this.skillService.skillTrends(this.employeeId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => this.buildTrendData(data),
     });
     this.loadCertificates();
     this.loadDevPlans();
-    this.skillService.listSkills().subscribe((s) => this.skills.set(s));
-    this.meService.getProfile().subscribe((me) => {
+    this.skillService.listSkills().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((s) => this.skills.set(s));
+    this.meService.getProfile().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((me) => {
       this.canEdit.set(me.is_admin || me.is_team_lead || me.id === this.employeeId);
     });
   }

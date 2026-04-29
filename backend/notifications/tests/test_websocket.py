@@ -173,6 +173,40 @@ async def test_consumer_sends_notification(user, access_token):
 
 @pytest.mark.asyncio
 @pytest.mark.django_db(transaction=True)
+async def test_consumer_rate_limits_connections(user, access_token):
+    from notifications.consumers import MAX_CONNECTS_PER_MINUTE, NotificationConsumer, _connect_timestamps
+
+    _connect_timestamps.pop(user.id, None)
+
+    for _ in range(MAX_CONNECTS_PER_MINUTE):
+        consumer = NotificationConsumer()
+        consumer.scope = {'user': AnonymousUser(), 'cookies': {'access_token': access_token}}
+        consumer.channel_name = 'test-channel'
+        consumer.channel_layer = MagicMock()
+        consumer.channel_layer.group_add = AsyncMock()
+        consumer.accept = AsyncMock()
+        consumer.close = AsyncMock()
+        consumer.send = AsyncMock()
+        await consumer.connect()
+        consumer.accept.assert_called_once()
+
+    consumer = NotificationConsumer()
+    consumer.scope = {'user': AnonymousUser(), 'cookies': {'access_token': access_token}}
+    consumer.channel_name = 'test-channel'
+    consumer.channel_layer = MagicMock()
+    consumer.channel_layer.group_add = AsyncMock()
+    consumer.accept = AsyncMock()
+    consumer.close = AsyncMock()
+    consumer.send = AsyncMock()
+    await consumer.connect()
+    consumer.accept.assert_not_called()
+    consumer.close.assert_called()
+
+    _connect_timestamps.pop(user.id, None)
+
+
+@pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
 async def test_consumer_disconnect_removes_group(user, access_token):
     from notifications.consumers import NotificationConsumer
 

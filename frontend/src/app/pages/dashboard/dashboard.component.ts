@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal, computed } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -40,6 +41,7 @@ export class DashboardComponent implements OnInit {
   private readonly meService = inject(MeService);
   private readonly router = inject(Router);
   private readonly teamService = inject(TeamService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly employees = signal<MatrixEmployee[]>([]);
   readonly skills = signal<MatrixSkill[]>([]);
@@ -65,12 +67,12 @@ export class DashboardComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.meService.getProfile().subscribe((p) => {
+    this.meService.getProfile().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((p) => {
       this.canEdit.set(p.is_team_lead || p.is_admin);
     });
-    this.teamService.list().subscribe((t) => this.teams.set(t));
-    this.skillService.listCategories().subscribe((c) => this.categories.set(c));
-    this.skillService.listSkills().subscribe((skills) => {
+    this.teamService.list().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((t) => this.teams.set(t));
+    this.skillService.listCategories().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((c) => this.categories.set(c));
+    this.skillService.listSkills().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((skills) => {
       for (const skill of skills) {
         for (const desc of skill.level_descriptions ?? []) {
           this.descriptionMap.set(`${skill.id}_${desc.level}`, desc.description);

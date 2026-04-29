@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -41,6 +42,7 @@ export class AdminComponent implements OnInit {
   private readonly auditService = inject(AuditService);
   private readonly employeeService = inject(EmployeeService);
   private readonly toast = inject(ToastService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly categories = signal<SkillCategory[]>([]);
   readonly skills = signal<Skill[]>([]);
@@ -72,13 +74,13 @@ export class AdminComponent implements OnInit {
   }
 
   loadAll(): void {
-    this.skillService.listCategories().subscribe((c) => this.categories.set(c));
-    this.skillService.listSkills().subscribe((s) => this.skills.set(s));
-    this.teamService.list().subscribe((t) => this.teams.set(t));
-    this.skillService.listRequirements().subscribe((r) => this.requirements.set(r));
-    this.skillService.listLevelDescriptions().subscribe((d) => this.levelDescriptions.set(d));
-    this.skillService.listRoleTemplates().subscribe((t) => this.roleTemplates.set(t));
-    this.auditService.list().subscribe((res) => this.auditLog.set(res.results));
+    this.skillService.listCategories().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((c) => this.categories.set(c));
+    this.skillService.listSkills().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((s) => this.skills.set(s));
+    this.teamService.list().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((t) => this.teams.set(t));
+    this.skillService.listRequirements().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((r) => this.requirements.set(r));
+    this.skillService.listLevelDescriptions().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((d) => this.levelDescriptions.set(d));
+    this.skillService.listRoleTemplates().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((t) => this.roleTemplates.set(t));
+    this.auditService.list().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((res) => this.auditLog.set(res.results));
   }
 
   addCategory(): void {
