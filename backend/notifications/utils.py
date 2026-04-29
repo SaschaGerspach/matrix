@@ -2,6 +2,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
 from .models import Notification
+from .tasks import send_notification_email
 
 
 def _send_ws_notification(notification):
@@ -26,6 +27,18 @@ def _send_ws_notification(notification):
     )
 
 
+def _send_email_notification(notification):
+    email = notification.recipient.email
+    if not email:
+        return
+    send_notification_email.delay(email, notification.type, notification.message)
+
+
+def _dispatch(notification):
+    _send_ws_notification(notification)
+    _send_email_notification(notification)
+
+
 def notify_team_leads_pending(employee, skill, level):
     from teams.models import Team
 
@@ -43,7 +56,7 @@ def notify_team_leads_pending(employee, skill, level):
             type=Notification.Type.SKILL_PENDING,
             message=f'{employee} added {skill.name} (level {level}) – pending review',
         )
-        _send_ws_notification(notification)
+        _dispatch(notification)
 
 
 def notify_skill_confirmed(employee, skill, confirmed_by):
@@ -53,7 +66,7 @@ def notify_skill_confirmed(employee, skill, confirmed_by):
         type=Notification.Type.SKILL_CONFIRMED,
         message=f'{confirmed_by} confirmed your {skill.name} skill',
     )
-    _send_ws_notification(notification)
+    _dispatch(notification)
 
 
 def notify_skill_updated(employee, skill, old_level, new_level, changed_by):
@@ -65,4 +78,4 @@ def notify_skill_updated(employee, skill, old_level, new_level, changed_by):
         type=Notification.Type.SKILL_UPDATED,
         message=f'{changed_by} updated your {skill.name} from level {old_level} to {new_level}',
     )
-    _send_ws_notification(notification)
+    _dispatch(notification)
