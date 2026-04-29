@@ -96,3 +96,37 @@ def test_change_password_requires_auth():
         'new_password': 'newpass123!',
     }, format='json')
     assert response.status_code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN)
+
+
+def test_change_password_rejects_common_password(user):
+    client = APIClient()
+    client.force_authenticate(user=user)
+    response = client.post(CHANGE_PW_URL, {
+        'current_password': 'pw12345!',
+        'new_password': 'password',
+    }, format='json')
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert 'new_password' in response.data
+
+
+def test_change_password_rejects_numeric_only(user):
+    client = APIClient()
+    client.force_authenticate(user=user)
+    response = client.post(CHANGE_PW_URL, {
+        'current_password': 'pw12345!',
+        'new_password': '12345678',
+    }, format='json')
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert 'new_password' in response.data
+
+
+def test_change_password_rejects_username_similar(db):
+    u = get_user_model().objects.create_user(username='johndoe', password='pw12345!')
+    client = APIClient()
+    client.force_authenticate(user=u)
+    response = client.post(CHANGE_PW_URL, {
+        'current_password': 'pw12345!',
+        'new_password': 'johndoe1',
+    }, format='json')
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert 'new_password' in response.data

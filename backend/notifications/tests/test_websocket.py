@@ -106,3 +106,129 @@ def test_consumer_rejects_anonymous():
     consumer = NotificationConsumer()
     consumer.scope = {'user': AnonymousUser()}
     assert consumer.scope['user'].is_anonymous
+
+
+@pytest.mark.asyncio
+async def test_consumer_accepts_connection_without_auth():
+    from notifications.consumers import NotificationConsumer
+    consumer = NotificationConsumer()
+    consumer.scope = {'user': AnonymousUser()}
+    consumer.channel_name = 'test-channel'
+    consumer.channel_layer = MagicMock()
+    sent_messages = []
+    consumer.send = AsyncMock(side_effect=lambda **kw: sent_messages.append(kw))
+    consumer.accept = AsyncMock()
+    consumer.close = AsyncMock()
+
+    await consumer.connect()
+    consumer.accept.assert_called_once()
+    assert consumer.authenticated is False
+
+
+@pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
+async def test_consumer_auth_with_valid_token(user, token):
+    import json
+    from notifications.consumers import NotificationConsumer
+
+    consumer = NotificationConsumer()
+    consumer.scope = {'user': AnonymousUser()}
+    consumer.channel_name = 'test-channel'
+    consumer.channel_layer = MagicMock()
+    consumer.channel_layer.group_add = AsyncMock()
+    sent = []
+    consumer.send = AsyncMock(side_effect=lambda **kw: sent.append(kw))
+    consumer.accept = AsyncMock()
+    consumer.close = AsyncMock()
+
+    await consumer.connect()
+
+    auth_msg = json.dumps({'type': 'authenticate', 'token': token.key})
+    await consumer.receive(text_data=auth_msg)
+
+    assert consumer.authenticated is True
+    assert consumer.group_name == f'notifications_{user.id}'
+    consumer.channel_layer.group_add.assert_called_once()
+    assert any('auth_ok' in str(m) for m in sent)
+
+
+@pytest.mark.asyncio
+async def test_consumer_auth_with_invalid_token(db):
+    import json
+    from notifications.consumers import NotificationConsumer
+
+    consumer = NotificationConsumer()
+    consumer.scope = {'user': AnonymousUser()}
+    consumer.channel_name = 'test-channel'
+    consumer.channel_layer = MagicMock()
+    sent = []
+    consumer.send = AsyncMock(side_effect=lambda **kw: sent.append(kw))
+    consumer.accept = AsyncMock()
+    consumer.close = AsyncMock()
+
+    await consumer.connect()
+    auth_msg = json.dumps({'type': 'authenticate', 'token': 'invalid-token'})
+    await consumer.receive(text_data=auth_msg)
+
+    assert consumer.authenticated is False
+    consumer.close.assert_called()
+    assert any('auth_error' in str(m) for m in sent)
+
+
+@pytest.mark.asyncio
+async def test_consumer_auth_with_invalid_json(db):
+    from notifications.consumers import NotificationConsumer
+
+    consumer = NotificationConsumer()
+    consumer.scope = {'user': AnonymousUser()}
+    consumer.channel_name = 'test-channel'
+    consumer.channel_layer = MagicMock()
+    sent = []
+    consumer.send = AsyncMock(side_effect=lambda **kw: sent.append(kw))
+    consumer.accept = AsyncMock()
+    consumer.close = AsyncMock()
+
+    await consumer.connect()
+    await consumer.receive(text_data='not json')
+
+    assert consumer.authenticated is False
+    consumer.close.assert_called()
+
+
+@pytest.mark.asyncio
+async def test_consumer_auth_missing_token_field(db):
+    import json
+    from notifications.consumers import NotificationConsumer
+
+    consumer = NotificationConsumer()
+    consumer.scope = {'user': AnonymousUser()}
+    consumer.channel_name = 'test-channel'
+    consumer.channel_layer = MagicMock()
+    sent = []
+    consumer.send = AsyncMock(side_effect=lambda **kw: sent.append(kw))
+    consumer.accept = AsyncMock()
+    consumer.close = AsyncMock()
+
+    await consumer.connect()
+    await consumer.receive(text_data=json.dumps({'type': 'authenticate'}))
+
+    assert consumer.authenticated is False
+    consumer.close.assert_called()
+
+
+@pytest.mark.asyncio
+async def test_consumer_send_notification_requires_auth(db):
+    from notifications.consumers import NotificationConsumer
+
+    consumer = NotificationConsumer()
+    consumer.scope = {'user': AnonymousUser()}
+    consumer.channel_name = 'test-channel'
+    consumer.channel_layer = MagicMock()
+    consumer.send = AsyncMock()
+    consumer.accept = AsyncMock()
+    consumer.close = AsyncMock()
+
+    await consumer.connect()
+    await consumer.send_notification({'data': {'message': 'test'}})
+
+    consumer.send.assert_not_called()

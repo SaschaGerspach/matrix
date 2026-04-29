@@ -152,3 +152,79 @@ def test_second_request_uses_cache(user, setup_data):
     response2 = client.get(MATRIX_URL)
 
     assert response1.data == response2.data
+
+
+def test_cache_invalidated_on_skill_create(user, setup_data):
+    _, _, _ = setup_data
+    client = APIClient()
+    client.force_authenticate(user=user)
+
+    client.get(MATRIX_URL)
+    key = _cache_key('matrix', team='', category='', search='')
+    assert cache.get(key) is not None
+
+    cat = SkillCategory.objects.first()
+    client.post('/api/skills/', {'name': 'NewSkill', 'category': cat.id}, format='json')
+
+    assert cache.get(key) is None
+
+
+def test_cache_invalidated_on_skill_delete(user, setup_data):
+    _, skill, _ = setup_data
+    client = APIClient()
+    client.force_authenticate(user=user)
+
+    client.get(KPI_URL)
+    key = _cache_key('kpi')
+    assert cache.get(key) is not None
+
+    client.delete(f'/api/skills/{skill.id}/')
+
+    assert cache.get(key) is None
+
+
+def test_cache_invalidated_on_category_create(user, setup_data):
+    client = APIClient()
+    client.force_authenticate(user=user)
+
+    client.get(MATRIX_URL)
+    key = _cache_key('matrix', team='', category='', search='')
+    assert cache.get(key) is not None
+
+    client.post('/api/skill-categories/', {'name': 'NewCat'}, format='json')
+
+    assert cache.get(key) is None
+
+
+def test_cache_invalidated_on_csv_import(user, setup_data):
+    from django.core.files.uploadedfile import SimpleUploadedFile
+
+    client = APIClient()
+    client.force_authenticate(user=user)
+
+    client.get(MATRIX_URL)
+    key = _cache_key('matrix', team='', category='', search='')
+    assert cache.get(key) is not None
+
+    csv_bytes = b'name,category\nImported,TestCat'
+    file = SimpleUploadedFile('skills.csv', csv_bytes, content_type='text/csv')
+    client.post('/api/skills/import-csv/', {'file': file}, format='multipart')
+
+    assert cache.get(key) is None
+
+
+def test_cache_invalidated_on_employee_csv_import(user, setup_data):
+    from django.core.files.uploadedfile import SimpleUploadedFile
+
+    client = APIClient()
+    client.force_authenticate(user=user)
+
+    client.get(MATRIX_URL)
+    key = _cache_key('matrix', team='', category='', search='')
+    assert cache.get(key) is not None
+
+    csv_bytes = b'first_name,last_name,email\nNew,Person,new@test.com'
+    file = SimpleUploadedFile('emps.csv', csv_bytes, content_type='text/csv')
+    client.post('/api/employees/import-csv/', {'file': file}, format='multipart')
+
+    assert cache.get(key) is None

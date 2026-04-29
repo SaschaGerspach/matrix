@@ -113,3 +113,43 @@ def test_eager_task_returns_result_directly(admin_user):
 
     assert result.successful()
     assert result.result['created'] == 1
+
+
+def test_task_status_requires_admin(admin_user):
+    non_admin = get_user_model().objects.create_user(username='regular', password='pw12345!')
+    client = APIClient()
+    client.force_authenticate(user=non_admin)
+    response = client.get('/api/tasks/some-id/status/')
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_task_status_rejects_anonymous():
+    client = APIClient()
+    response = client.get('/api/tasks/some-id/status/')
+    assert response.status_code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN)
+
+
+def test_employee_csv_rejects_oversized_file(admin_user):
+    from django.core.files.uploadedfile import SimpleUploadedFile
+
+    client = APIClient()
+    client.force_authenticate(user=admin_user)
+    large_content = b'first_name,last_name,email\n' + b'A,B,a@b.com\n' * 500_000
+    file = SimpleUploadedFile('big.csv', large_content, content_type='text/csv')
+
+    response = client.post('/api/employees/import-csv/', {'file': file}, format='multipart')
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert 'too large' in response.data['detail'].lower()
+
+
+def test_skill_csv_rejects_oversized_file(admin_user):
+    from django.core.files.uploadedfile import SimpleUploadedFile
+
+    client = APIClient()
+    client.force_authenticate(user=admin_user)
+    large_content = b'name,category\n' + b'Skill,Cat\n' * 600_000
+    file = SimpleUploadedFile('big.csv', large_content, content_type='text/csv')
+
+    response = client.post('/api/skills/import-csv/', {'file': file}, format='multipart')
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert 'too large' in response.data['detail'].lower()
