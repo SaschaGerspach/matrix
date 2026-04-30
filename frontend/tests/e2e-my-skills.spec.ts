@@ -15,7 +15,7 @@ test.describe('My Skills E2E', () => {
   });
 
   test('should show skills for dev user', async ({ devPage: page }) => {
-    await expect(page.getByText('Python')).toBeVisible();
-    await expect(page.getByText('Kubernetes')).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'Python' })).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'Kubernetes' })).toBeVisible();
   });
 });

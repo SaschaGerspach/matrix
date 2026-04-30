@@ -2,7 +2,8 @@ from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 
 from employees.models import Employee
-from skills.models import Skill, SkillAssignment, SkillCategory
+from skill_proposals.models import SkillProposal
+from skills.models import Skill, SkillAssignment, SkillCategory, SkillRequirement
 from teams.models import Department, Team
 
 
@@ -65,5 +66,15 @@ class Command(BaseCommand):
                     skill=skill,
                     defaults={'level': level, 'status': skill_status},
                 )
+
+        SkillRequirement.objects.get_or_create(
+            team=team, skill=k8s, defaults={'required_level': 4},
+        )
+
+        SkillProposal.objects.get_or_create(
+            proposed_by=dev_emp,
+            skill_name='Terraform',
+            defaults={'category': devops, 'reason': 'We need IaC skills', 'status': 'pending'},
+        )
 
         self.stdout.write(self.style.SUCCESS('E2E seed data created'))
