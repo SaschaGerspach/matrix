@@ -109,3 +109,24 @@ def test_already_confirmed_returns_400(admin_client, pending_assignment):
     pending_assignment.save()
     r = admin_client.post(confirm_url(pending_assignment.id))
     assert r.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_unauthenticated_cannot_confirm(pending_assignment):
+    c = APIClient()
+    r = c.post(confirm_url(pending_assignment.id))
+    assert r.status_code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN)
+
+
+def test_user_without_employee_cannot_confirm(db, pending_assignment):
+    user = User.objects.create_user(username='noemployee', password='pw!')
+    c = APIClient()
+    c.force_authenticate(user=user)
+    r = c.post(confirm_url(pending_assignment.id))
+    assert r.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_lead_cannot_confirm_non_member(lead_client, team_with_lead, skill):
+    outsider = Employee.objects.create(first_name='Z', last_name='Z', email='z@x.com')
+    sa = SkillAssignment.objects.create(employee=outsider, skill=skill, level=2)
+    r = lead_client.post(confirm_url(sa.id))
+    assert r.status_code == status.HTTP_403_FORBIDDEN

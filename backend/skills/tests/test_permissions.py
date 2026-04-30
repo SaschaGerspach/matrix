@@ -107,3 +107,37 @@ def test_admin_can_delete(admin_client, skill):
     sa = SkillAssignment.objects.create(employee=emp, skill=skill, level=2)
     r = admin_client.delete(f'{URL}{sa.id}/')
     assert r.status_code == status.HTTP_204_NO_CONTENT
+
+
+def test_unauthenticated_cannot_list():
+    c = APIClient()
+    r = c.get(URL)
+    assert r.status_code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN)
+
+
+def test_unauthenticated_cannot_create(skill):
+    c = APIClient()
+    emp = Employee.objects.create(first_name='X', last_name='Y', email='xy2@x.com')
+    r = c.post(URL, {'employee': emp.id, 'skill': skill.id, 'level': 2}, format='json')
+    assert r.status_code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN)
+
+
+def test_user_without_employee_cannot_create(db, skill):
+    user = User.objects.create_user(username='nolink', password='pw!')
+    c = APIClient()
+    c.force_authenticate(user=user)
+    emp = Employee.objects.create(first_name='X', last_name='Y', email='xy3@x.com')
+    r = c.post(URL, {'employee': emp.id, 'skill': skill.id, 'level': 2}, format='json')
+    assert r.status_code in (status.HTTP_400_BAD_REQUEST, status.HTTP_403_FORBIDDEN)
+
+
+def test_lead_can_update_team_member(lead_client, team_with_lead, employee, skill):
+    sa = SkillAssignment.objects.create(employee=employee, skill=skill, level=2)
+    r = lead_client.patch(f'{URL}{sa.id}/', {'level': 4}, format='json')
+    assert r.status_code == status.HTTP_200_OK
+
+
+def test_lead_cannot_delete_team_member(lead_client, team_with_lead, employee, skill):
+    sa = SkillAssignment.objects.create(employee=employee, skill=skill, level=2)
+    r = lead_client.delete(f'{URL}{sa.id}/')
+    assert r.status_code == status.HTTP_403_FORBIDDEN
