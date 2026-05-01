@@ -10,6 +10,7 @@ class CookieJWTAuthentication(JWTAuthentication):
             return None
         validated_token = self.get_validated_token(raw_token)
         user = self.get_user(validated_token)
+        # JWT in cookies is vulnerable to CSRF just like session cookies.
         self._enforce_csrf(request)
         return user, validated_token
 

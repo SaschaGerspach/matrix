@@ -20,6 +20,8 @@ def _register_cache_key(key):
 
 
 def invalidate_analytics_cache():
+    # Redis supports wildcard deletion; LocMemCache does not,
+    # so we fall back to a manually maintained key registry.
     if hasattr(cache, 'delete_pattern'):
         cache.delete_pattern(f'{CACHE_KEYS_PREFIX}*')
     else:

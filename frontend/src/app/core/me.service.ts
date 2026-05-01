@@ -18,6 +18,8 @@ export interface MeProfile {
 @Injectable({ providedIn: 'root' })
 export class MeService {
   private readonly http = inject(HttpClient);
+  // Manual cache so logout can invalidate via clearCache();
+  // shareReplay alone would cache forever.
   private profile$: Observable<MeProfile> | null = null;
 
   getProfile(): Observable<MeProfile> {

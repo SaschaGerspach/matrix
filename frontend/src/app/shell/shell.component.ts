@@ -52,6 +52,7 @@ export class ShellComponent implements OnInit, OnDestroy {
 
     this.notificationService.connectWebSocket();
 
+    // Polling fallback in case the WebSocket silently drops.
     this.pollTimer = setInterval(() => this.notificationService.loadUnreadCount(), 60_000);
   }
 

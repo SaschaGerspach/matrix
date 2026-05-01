@@ -15,6 +15,7 @@ class DevelopmentPlanViewSet(AuditMixin, viewsets.ModelViewSet):
     audit_entity_type = 'development_plan'
 
     def _visible_employee_ids(self):
+        # Returns None for admins (= no filter), or a set of allowed IDs.
         user = self.request.user
         if user.is_staff:
             return None

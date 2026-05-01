@@ -5,6 +5,8 @@ import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from
 
 import { AuthService } from './auth.service';
 
+// Module-level state so concurrent 401s share a single refresh request
+// instead of each triggering its own.
 let isRefreshing = false;
 const refreshSubject = new BehaviorSubject<boolean>(false);
 

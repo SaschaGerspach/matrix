@@ -26,6 +26,8 @@ class SkillTrendsView(APIView):
                 status=http_status.HTTP_403_FORBIDDEN,
             )
 
+        # Only level-changing actions; 'confirmed' and 'deleted' don't
+        # represent progression and would distort the trend line.
         entries = SkillAssignmentHistory.objects.filter(
             employee_id=employee_id,
             action__in=['created', 'updated'],

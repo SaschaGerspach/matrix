@@ -1,5 +1,7 @@
 import os
 
+# Must be set before importing settings — settings.py reads these at module level
+# and would fail (SECRET_KEY) or enable SECURE_SSL_REDIRECT (DEBUG=False) without them.
 os.environ.setdefault('SECRET_KEY', 'e2e-test-secret-key')
 os.environ.setdefault('DEBUG', 'True')
 

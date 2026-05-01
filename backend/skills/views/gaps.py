@@ -98,6 +98,7 @@ class SkillRecommendationsView(APIView):
                     'current_level': actual,
                     'required_level': req.required_level,
                     'gap': req.required_level - actual,
+                    # Thresholds relative to the 1–5 skill scale.
                     'priority': 'high' if req.required_level - actual >= 3 else
                                 'medium' if req.required_level - actual >= 2 else 'low',
                 })

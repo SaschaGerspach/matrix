@@ -142,6 +142,8 @@ export class EmployeeProfileComponent implements OnInit {
       labels: sortedDates,
       datasets: trends.map((t, i) => {
         const dateLevel = new Map(t.points.map((p) => [p.date.split('T')[0], p.level]));
+        // Forward-fill: carry last known level into dates with no change,
+        // so the chart shows "held steady" instead of gaps.
         const data: (number | null)[] = [];
         let lastLevel: number | null = null;
         for (const d of sortedDates) {
