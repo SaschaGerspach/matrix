@@ -26,8 +26,13 @@ test.describe('My Skills', () => {
     await page.route('**/api/skills/', (route) => route.fulfill({ json: [] }));
     await page.route('**/api/skill-categories/**', (route) => route.fulfill({ json: [] }));
     await page.route('**/api/skill-categories/', (route) => route.fulfill({ json: [] }));
+    await page.route('**/api/skill-recommendations/**', (route) => route.fulfill({ json: [] }));
+    await page.route('**/api/skill-recommendations/', (route) => route.fulfill({ json: [] }));
+    await page.route('**/api/notifications/**', (route) =>
+      route.fulfill({ json: { count: 0, next: null, previous: null, results: [] } }),
+    );
     await page.addInitScript(() => {
-      localStorage.setItem('matrix.authToken', 'fake-token');
+      localStorage.setItem('matrix.loggedIn', '1');
     });
 
     await page.goto('/my-skills');

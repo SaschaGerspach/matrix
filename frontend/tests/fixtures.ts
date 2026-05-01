@@ -68,13 +68,33 @@ async function mockApi(page: Page) {
   await page.route('**/api/kpi/', (route) => route.fulfill({ json: [] }));
   await page.route('**/api/role-templates/**', (route) => route.fulfill({ json: [] }));
   await page.route('**/api/role-templates/', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/skill-recommendations/**', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/skill-recommendations/', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/skill-proposals/**', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/skill-proposals/', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/audit-log/**', (route) =>
+    route.fulfill({ json: { count: 0, next: null, previous: null, results: [] } }),
+  );
+  await page.route('**/api/audit-log/', (route) =>
+    route.fulfill({ json: { count: 0, next: null, previous: null, results: [] } }),
+  );
+  await page.route('**/api/skill-level-descriptions/**', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/skill-level-descriptions/', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/certificates/**', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/certificates/', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/development-plans/**', (route) =>
+    route.fulfill({ json: { count: 0, next: null, previous: null, results: [] } }),
+  );
+  await page.route('**/api/development-plans/', (route) =>
+    route.fulfill({ json: { count: 0, next: null, previous: null, results: [] } }),
+  );
 }
 
 export const test = base.extend<{ authedPage: Page }>({
   authedPage: async ({ page }, use) => {
     await mockApi(page);
     await page.addInitScript(() => {
-      localStorage.setItem('matrix.authToken', 'fake-token');
+      localStorage.setItem('matrix.loggedIn', '1');
     });
     await use(page);
   },
