@@ -1,3 +1,7 @@
+import os
+
+os.environ.setdefault('SECRET_KEY', 'e2e-test-secret-key')
+
 from .settings import *  # noqa: F401, F403
 
 DEBUG = True
