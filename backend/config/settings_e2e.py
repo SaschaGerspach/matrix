@@ -1,11 +1,12 @@
 import os
 
 os.environ.setdefault('SECRET_KEY', 'e2e-test-secret-key')
+os.environ.setdefault('DEBUG', 'True')
 
 from .settings import *  # noqa: F401, F403
 
-DEBUG = True
 SECRET_KEY = 'e2e-test-secret-key'
+SECURE_SSL_REDIRECT = False
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 CORS_ALLOWED_ORIGINS = ['http://localhost:4200']
