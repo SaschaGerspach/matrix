@@ -4,13 +4,22 @@ from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
 
 def _load_prod_settings():
-    spec = importlib.util.spec_from_file_location(
-        'config.settings_prod_check',
-        str(__import__('pathlib').Path(__file__).resolve().parent.parent / 'settings.py'),
-    )
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
+    import os
+    orig = os.environ.get('DEBUG')
+    os.environ['DEBUG'] = '0'
+    try:
+        spec = importlib.util.spec_from_file_location(
+            'config.settings_prod_check',
+            str(__import__('pathlib').Path(__file__).resolve().parent.parent / 'settings.py'),
+        )
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+    finally:
+        if orig is None:
+            os.environ.pop('DEBUG', None)
+        else:
+            os.environ['DEBUG'] = orig
 
 
 _prod = _load_prod_settings()
