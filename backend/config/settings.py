@@ -241,9 +241,9 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.AnonRateThrottle',
     ),
     'DEFAULT_THROTTLE_RATES': {
-        'user': '100/hour',
-        'anon': '20/hour',
-        'auth': '5/minute',
+        'user': '10000/hour' if DEBUG else '100/hour',
+        'anon': '1000/hour' if DEBUG else '20/hour',
+        'auth': '60/minute' if DEBUG else '5/minute',
     },
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
