@@ -23,6 +23,6 @@ export class ThemeService {
   }
 
   private apply(): void {
-    document.documentElement.style.colorScheme = this.isDark() ? 'dark' : 'light';
+    document.documentElement.classList.toggle('dark-theme', this.isDark());
   }
 }

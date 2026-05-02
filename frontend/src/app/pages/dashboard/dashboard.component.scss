@@ -21,7 +21,7 @@
 
 .matrix-wrapper {
   overflow-x: auto;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid light-dark(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.12));
   border-radius: 4px;
 }
 
@@ -30,17 +30,17 @@
   position: sticky;
   top: 0;
   z-index: 1;
-  background: #f5f5f5;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.12);
+  background: light-dark(#f5f5f5, #3a3a3a);
+  color: light-dark(inherit, #e0e0e0);
+  border-bottom: 2px solid light-dark(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.2));
 }
 
 .matrix-header-cell {
   font-weight: 500;
   font-size: 0.8125rem;
   padding: 12px 8px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  word-break: break-word;
+  line-height: 1.2;
 }
 
 .matrix-viewport {
@@ -49,10 +49,10 @@
 
 .matrix-row {
   display: grid;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.06));
 
   &:hover {
-    background: rgba(0, 0, 0, 0.02);
+    background: light-dark(rgba(0, 0, 0, 0.02), rgba(255, 255, 255, 0.04));
   }
 }
 
@@ -74,7 +74,7 @@
 }
 
 .employee-link {
-  color: #3f51b5;
+  color: light-dark(#3f51b5, #90caf9);
   cursor: pointer;
   text-decoration: none;
 
@@ -105,7 +105,7 @@
 .level-5 { background-color: #2e7d32; }
 
 .level-empty {
-  color: #ccc;
+  color: light-dark(#ccc, #555);
 }
 
 .level-display {
@@ -131,25 +131,9 @@
   height: 28px;
   font-size: 14px;
   text-align: center;
-  border: 1px solid #ccc;
+  border: 1px solid light-dark(#ccc, #555);
   border-radius: 4px;
-  background: #fff;
+  background: light-dark(#fff, #333);
+  color: inherit;
   cursor: pointer;
 }
-
-.heatmap-cell {
-  padding: 0 !important;
-}
-
-.heatmap-display {
-  display: block;
-  width: 100%;
-  min-height: 48px;
-  cursor: default;
-}
-
-.heatmap-1 { background-color: #ffcdd2; }
-.heatmap-2 { background-color: #ffe0b2; }
-.heatmap-3 { background-color: #fff9c4; }
-.heatmap-4 { background-color: #c8e6c9; }
-.heatmap-5 { background-color: #1b5e20; color: #fff; }

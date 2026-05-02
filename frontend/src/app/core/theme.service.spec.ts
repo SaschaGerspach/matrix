@@ -10,14 +10,14 @@ function createService(): ThemeService {
 describe('ThemeService', () => {
   afterEach(() => {
     localStorage.clear();
-    document.documentElement.style.colorScheme = '';
+    document.documentElement.classList.remove('dark-theme');
   });
 
   it('respects explicit light preference from localStorage', () => {
     localStorage.setItem('matrix.theme', 'light');
     const service = createService();
     expect(service.isDark()).toBeFalse();
-    expect(document.documentElement.style.colorScheme).toBe('light');
+    expect(document.documentElement.classList.contains('dark-theme')).toBeFalse();
   });
 
   it('toggles theme', () => {
@@ -39,18 +39,19 @@ describe('ThemeService', () => {
     expect(localStorage.getItem('matrix.theme')).toBe('light');
   });
 
-  it('sets color-scheme on document', () => {
+  it('toggles dark-theme class on document', () => {
     localStorage.setItem('matrix.theme', 'light');
     const service = createService();
     service.toggle();
-    expect(document.documentElement.style.colorScheme).toBe('dark');
+    expect(document.documentElement.classList.contains('dark-theme')).toBeTrue();
     service.toggle();
-    expect(document.documentElement.style.colorScheme).toBe('light');
+    expect(document.documentElement.classList.contains('dark-theme')).toBeFalse();
   });
 
   it('restores dark mode from localStorage', () => {
     localStorage.setItem('matrix.theme', 'dark');
     const service = createService();
     expect(service.isDark()).toBeTrue();
+    expect(document.documentElement.classList.contains('dark-theme')).toBeTrue();
   });
 });

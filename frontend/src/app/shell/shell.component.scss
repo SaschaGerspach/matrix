@@ -20,7 +20,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 16px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid light-dark(#eee, #444);
 }
 
 .notif-message {
@@ -32,14 +32,14 @@
 .notif-time {
   display: block;
   font-size: 11px;
-  color: #999;
+  color: light-dark(#999, #888);
   margin-top: 2px;
 }
 
 .notif-empty {
   padding: 16px;
   text-align: center;
-  color: #999;
+  color: light-dark(#999, #888);
 }
 
 :host ::ng-deep .notification-menu {
@@ -47,5 +47,5 @@
 }
 
 .unread {
-  background-color: #e8eaf6;
+  background-color: light-dark(#e8eaf6, #2a2d3a);
 }
