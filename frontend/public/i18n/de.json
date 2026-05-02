@@ -71,7 +71,6 @@
   },
   "DASHBOARD": {
     "TITLE": "Skill-Matrix",
-    "HEATMAP": "Heatmap",
     "EXPORT_CSV": "CSV exportieren",
     "EXPORT_PDF": "PDF exportieren",
     "SEARCH": "Suche",

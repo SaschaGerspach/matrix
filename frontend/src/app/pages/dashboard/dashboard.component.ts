@@ -7,12 +7,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { Router } from '@angular/router';
 
 import { TranslateModule } from '@ngx-translate/core';
+import { Subject, catchError, EMPTY, switchMap } from 'rxjs';
 
 import { SkillAnalyticsService } from '../../core/skill-analytics.service';
 import { SkillAssignmentService } from '../../core/skill-assignment.service';
@@ -31,7 +31,6 @@ import { Team, TeamService } from '../../core/team.service';
     MatInputModule,
     MatProgressSpinnerModule,
     MatSelectModule,
-    MatSlideToggleModule,
     MatTooltipModule,
     ScrollingModule,
     TranslateModule,
@@ -54,7 +53,6 @@ export class DashboardComponent implements OnInit {
   readonly categories = signal<SkillCategory[]>([]);
   readonly loading = signal(false);
   readonly canEdit = signal(false);
-  heatmapMode = false;
 
   readonly levels = [1, 2, 3, 4, 5];
   editingCell: { employeeId: number; skillId: number } | null = null;
@@ -65,10 +63,11 @@ export class DashboardComponent implements OnInit {
 
   private assignmentMap = new Map<string, MatrixAssignment>();
   private descriptionMap = new Map<string, string>();
+  private readonly loadTrigger$ = new Subject<void>();
 
   readonly gridColumns = computed(() => {
     const skillCount = this.skills().length;
-    return `180px repeat(${skillCount}, minmax(80px, 1fr))`;
+    return `180px repeat(${skillCount}, minmax(100px, 1fr))`;
   });
 
   ngOnInit(): void {
@@ -84,27 +83,37 @@ export class DashboardComponent implements OnInit {
         }
       }
     });
+
+    this.loadTrigger$.pipe(
+      switchMap(() => {
+        this.loading.set(true);
+        return this.analyticsService.skillMatrix({
+          team: this.selectedTeam,
+          category: this.selectedCategory,
+          search: this.searchTerm || undefined,
+        }).pipe(
+          catchError(() => {
+            this.loading.set(false);
+            return EMPTY;
+          }),
+        );
+      }),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe((data) => {
+      this.employees.set(data.employees);
+      this.skills.set(data.skills);
+      this.assignmentMap.clear();
+      for (const a of data.assignments) {
+        this.assignmentMap.set(`${a.employee}_${a.skill}`, a);
+      }
+      this.loading.set(false);
+    });
+
     this.loadMatrix();
   }
 
   loadMatrix(): void {
-    this.loading.set(true);
-    this.analyticsService.skillMatrix({
-      team: this.selectedTeam,
-      category: this.selectedCategory,
-      search: this.searchTerm || undefined,
-    }).subscribe({
-      next: (data) => {
-        this.employees.set(data.employees);
-        this.skills.set(data.skills);
-        this.assignmentMap.clear();
-        for (const a of data.assignments) {
-          this.assignmentMap.set(`${a.employee}_${a.skill}`, a);
-        }
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false),
-    });
+    this.loadTrigger$.next();
   }
 
   applyFilters(): void {

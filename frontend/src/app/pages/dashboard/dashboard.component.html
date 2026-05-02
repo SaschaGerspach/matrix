@@ -1,7 +1,6 @@
 <div class="header">
   <h2>{{ 'DASHBOARD.TITLE' | translate }}</h2>
   <div class="header-actions">
-    <mat-slide-toggle [(ngModel)]="heatmapMode">{{ 'DASHBOARD.HEATMAP' | translate }}</mat-slide-toggle>
     <button mat-raised-button color="primary" (click)="exportCsv()">{{ 'DASHBOARD.EXPORT_CSV' | translate }}</button>
     <button mat-raised-button (click)="exportPdf()">{{ 'DASHBOARD.EXPORT_PDF' | translate }}</button>
   </div>
@@ -57,15 +56,8 @@
         @for (skill of skills(); track skill.id) {
           @let level = getLevel(row.id, skill.id);
           @let tooltip = getLevelTooltip(skill.id, level);
-          <div class="matrix-cell level-cell"
-               [class.heatmap-cell]="heatmapMode"
-               [class]="heatmapMode && level ? 'matrix-cell level-cell heatmap-cell heatmap-' + level : 'matrix-cell level-cell'">
-            @if (heatmapMode) {
-              <span [matTooltip]="(level ?? '–') + (tooltip ? ': ' + tooltip : '')"
-                    class="heatmap-display"
-                    (click)="startEdit(row.id, skill.id)">
-              </span>
-            } @else if (canEdit() && isEditing(row.id, skill.id)) {
+          <div class="matrix-cell level-cell">
+            @if (canEdit() && isEditing(row.id, skill.id)) {
               <select class="inline-level-select"
                       (change)="setLevel(row.id, skill.id, +$any($event.target).value)"
                       (blur)="cancelEdit()">

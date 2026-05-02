@@ -28,7 +28,7 @@ const EN = {
     EMPTY_SKILLS: 'No skills assigned yet.', NOT_FOUND: 'Employee not found.',
   },
   DASHBOARD: {
-    TITLE: 'Skill Matrix', HEATMAP: 'Heatmap', EXPORT_CSV: 'Export CSV', EXPORT_PDF: 'Export PDF',
+    TITLE: 'Skill Matrix', EXPORT_CSV: 'Export CSV', EXPORT_PDF: 'Export PDF',
     SEARCH: 'Search', SEARCH_PLACEHOLDER: 'Employee name...', TEAM: 'Team', CATEGORY: 'Category',
     CLEAR: 'Clear', EMPTY: 'No employees found.',
   },
