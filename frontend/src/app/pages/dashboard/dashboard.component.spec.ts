@@ -72,7 +72,7 @@ describe('DashboardComponent', () => {
     fixture.detectChanges();
     flushInitRequests(http);
 
-    expect(component.gridColumns()).toBe('180px repeat(2, minmax(80px, 1fr))');
+    expect(component.gridColumns()).toBe('180px repeat(2, minmax(100px, 1fr))');
   });
 
   it('returns level for existing assignment', () => {
