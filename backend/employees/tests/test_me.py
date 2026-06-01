@@ -43,7 +43,7 @@ def test_returns_team_lead_flag(user_with_employee):
 
 
 def test_returns_admin_flag(db):
-    user = User.objects.create_user(username='admin', password='pw!', is_staff=True)
+    user = User.objects.create_user(username='admin', password='pw!', is_superuser=True)
     Employee.objects.create(first_name='X', last_name='Y', email='xy@x.com', user=user)
     c = APIClient()
     c.force_authenticate(user=user)
@@ -51,12 +51,34 @@ def test_returns_admin_flag(db):
     assert r.data['is_admin'] is True
 
 
-def test_returns_404_if_no_employee_linked(db):
+def test_staff_without_superuser_is_not_admin(db):
+    user = User.objects.create_user(username='staffonly', password='pw!', is_staff=True)
+    Employee.objects.create(first_name='S', last_name='O', email='so@x.com', user=user)
+    c = APIClient()
+    c.force_authenticate(user=user)
+    r = c.get(URL)
+    assert r.data['is_admin'] is False
+
+
+def test_returns_flags_without_employee_linked(db):
     user = User.objects.create_user(username='nolink', password='pw!')
     c = APIClient()
     c.force_authenticate(user=user)
     r = c.get(URL)
-    assert r.status_code == status.HTTP_404_NOT_FOUND
+    assert r.status_code == status.HTTP_200_OK
+    assert r.data['id'] is None
+    assert r.data['is_admin'] is False
+    assert r.data['is_team_lead'] is False
+
+
+def test_superuser_without_employee_is_admin(db):
+    user = User.objects.create_user(username='rootnolink', password='pw!', is_superuser=True)
+    c = APIClient()
+    c.force_authenticate(user=user)
+    r = c.get(URL)
+    assert r.status_code == status.HTTP_200_OK
+    assert r.data['id'] is None
+    assert r.data['is_admin'] is True
 
 
 def test_unauthenticated_rejected():

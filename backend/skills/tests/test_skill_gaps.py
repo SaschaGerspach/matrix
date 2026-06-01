@@ -95,7 +95,7 @@ def test_non_lead_gets_empty(db, skill):
 
 
 def test_admin_sees_all_gaps(db, skill):
-    admin_user = User.objects.create_user(username='admin', password='pw!', is_staff=True)
+    admin_user = User.objects.create_user(username='admin', password='pw!', is_superuser=True)
     Employee.objects.create(first_name='Admin', last_name='A', email='admin@x.com', user=admin_user)
 
     dept = Department.objects.create(name='Sales')
@@ -114,7 +114,7 @@ def test_admin_sees_all_gaps(db, skill):
 
 
 def test_admin_without_employee_sees_all_gaps(db, skill):
-    admin_user = User.objects.create_user(username='admin2', password='pw!', is_staff=True)
+    admin_user = User.objects.create_user(username='admin2', password='pw!', is_superuser=True)
 
     dept = Department.objects.create(name='Sales')
     team = Team.objects.create(name='Frontend', department=dept)

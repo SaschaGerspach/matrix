@@ -19,7 +19,7 @@ class CertificateViewSet(AuditMixin, viewsets.ModelViewSet):
     def get_queryset(self):
         qs = Certificate.objects.select_related('employee', 'skill')
         user = self.request.user
-        if not user.is_staff:
+        if not user.is_superuser:
             employee = get_employee(user)
             if employee is None:
                 return qs.none()

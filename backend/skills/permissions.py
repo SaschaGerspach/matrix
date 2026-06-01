@@ -10,7 +10,7 @@ class SkillAssignmentPermission(BasePermission):
             return False
         if request.method in SAFE_METHODS:
             return True
-        if request.user.is_staff:
+        if request.user.is_superuser:
             return True
         if request.method == 'DELETE':
             return False
@@ -20,7 +20,7 @@ class SkillAssignmentPermission(BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
             return True
-        if request.user.is_staff:
+        if request.user.is_superuser:
             return True
         if request.method == 'DELETE':
             return False
@@ -36,12 +36,12 @@ class CanConfirmSkillAssignment(BasePermission):
     def has_permission(self, request, view):
         if not (request.user and request.user.is_authenticated):
             return False
-        if request.user.is_staff:
+        if request.user.is_superuser:
             return True
         return is_team_lead(request.user)
 
     def has_object_permission(self, request, view, obj):
-        if request.user.is_staff:
+        if request.user.is_superuser:
             return True
         employee = get_employee(request.user)
         if employee is None:

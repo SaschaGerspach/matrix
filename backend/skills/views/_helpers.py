@@ -6,7 +6,7 @@ from ..models import Skill, SkillAssignment
 
 
 def can_view_employee_data(user, target_employee_id):
-    if user.is_staff:
+    if user.is_superuser:
         return True
     employee = get_employee(user)
     if employee is None:

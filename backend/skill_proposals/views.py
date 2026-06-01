@@ -26,14 +26,14 @@ class SkillProposalViewSet(AuditMixin, viewsets.ModelViewSet):
         status_filter = self.request.query_params.get('status')
         if status_filter:
             qs = qs.filter(status=status_filter)
-        if not self.request.user.is_staff and not is_team_lead(self.request.user):
+        if not self.request.user.is_superuser and not is_team_lead(self.request.user):
             employee = get_employee(self.request.user)
             qs = qs.filter(proposed_by=employee) if employee else qs.none()
         return qs
 
     @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
-        if not request.user.is_staff and not is_team_lead(request.user):
+        if not request.user.is_superuser and not is_team_lead(request.user):
             return Response(status=status.HTTP_403_FORBIDDEN)
         review_note = str(request.data.get('review_note', ''))[:2000]
         with transaction.atomic():
@@ -66,7 +66,7 @@ class SkillProposalViewSet(AuditMixin, viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def reject(self, request, pk=None):
-        if not request.user.is_staff and not is_team_lead(request.user):
+        if not request.user.is_superuser and not is_team_lead(request.user):
             return Response(status=status.HTTP_403_FORBIDDEN)
         review_note = str(request.data.get('review_note', ''))[:2000]
         with transaction.atomic():

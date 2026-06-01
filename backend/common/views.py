@@ -1,18 +1,19 @@
 from celery.result import AsyncResult
 from django.db import connection
 from rest_framework import viewsets
-from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import AuditLog
+from .permissions import IsSuperUser
 from .serializers import AuditLogSerializer
 
 
 class AuditLogViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = AuditLog.objects.select_related('user')
     serializer_class = AuditLogSerializer
-    permission_classes = (IsAdminUser,)
+    permission_classes = (IsSuperUser,)
 
 
 class HealthCheckView(APIView):
@@ -43,7 +44,7 @@ class HealthCheckView(APIView):
 
 
 class TaskStatusView(APIView):
-    permission_classes = (IsAdminUser,)
+    permission_classes = (IsSuperUser,)
 
     def get(self, request, task_id):
         result = AsyncResult(task_id)

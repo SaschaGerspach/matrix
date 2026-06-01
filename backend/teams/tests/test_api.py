@@ -13,7 +13,7 @@ User = get_user_model()
 
 @pytest.fixture
 def admin_user(db):
-    return User.objects.create_user(username='admin', password='pw!', is_staff=True)
+    return User.objects.create_user(username='admin', password='pw!', is_superuser=True)
 
 
 @pytest.fixture

@@ -11,7 +11,7 @@ AUDIT_URL = '/api/audit-log/'
 
 @pytest.fixture
 def admin_client(db):
-    user = User.objects.create_user(username='admin', password='pw!', is_staff=True)
+    user = User.objects.create_user(username='admin', password='pw!', is_superuser=True)
     c = APIClient()
     c.force_authenticate(user=user)
     return c

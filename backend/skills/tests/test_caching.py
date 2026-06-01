@@ -26,7 +26,7 @@ def clear_cache():
 
 @pytest.fixture
 def user(db):
-    return get_user_model().objects.create_user(username='cacheuser', password='pw12345!', is_staff=True)
+    return get_user_model().objects.create_user(username='cacheuser', password='pw12345!', is_superuser=True)
 
 
 @pytest.fixture

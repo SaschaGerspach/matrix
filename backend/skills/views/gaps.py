@@ -16,7 +16,7 @@ class SkillGapsView(APIView):
     def get(self, request):
         employee = get_employee(request.user)
 
-        if request.user.is_staff:
+        if request.user.is_superuser:
             teams = Team.objects.prefetch_related('members').all()
         elif employee is not None and is_team_lead(request.user):
             teams = employee.led_teams.prefetch_related('members').all()

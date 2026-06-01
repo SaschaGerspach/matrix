@@ -11,7 +11,7 @@ class SkillProposalPermission(BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
             return True
-        if request.user.is_staff:
+        if request.user.is_superuser:
             return True
         if is_team_lead(request.user):
             return True

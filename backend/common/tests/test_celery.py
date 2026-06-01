@@ -14,7 +14,7 @@ pytestmark = pytest.mark.django_db
 @pytest.fixture
 def admin_user(db):
     return get_user_model().objects.create_user(
-        username='celery_admin', password='pw12345!', is_staff=True,
+        username='celery_admin', password='pw12345!', is_superuser=True,
     )
 
 

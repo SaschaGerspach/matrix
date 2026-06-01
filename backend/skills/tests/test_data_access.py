@@ -31,7 +31,7 @@ def setup(db):
     team.team_leads.add(lead)
     team.members.add(lead)
 
-    admin_user = User.objects.create_user(username='admin', password='pw!', is_staff=True)
+    admin_user = User.objects.create_user(username='admin', password='pw!', is_superuser=True)
     Employee.objects.create(first_name='Admin', last_name='A', email='admin@x.com', user=admin_user)
 
     SkillAssignmentHistory.objects.create(

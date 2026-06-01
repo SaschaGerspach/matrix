@@ -10,14 +10,14 @@ class CertificatePermission(BasePermission):
             return False
         if request.method in SAFE_METHODS:
             return True
-        if request.user.is_staff:
+        if request.user.is_superuser:
             return True
         return get_employee(request.user) is not None
 
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
             return True
-        if request.user.is_staff:
+        if request.user.is_superuser:
             return True
         employee = get_employee(request.user)
         if employee is None:

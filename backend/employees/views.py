@@ -151,9 +151,17 @@ class MeView(APIView):
     def get(self, request):
         employee = get_employee(request.user)
         if employee is None:
-            return Response({'detail': 'No employee profile linked.'}, status=404)
+            return Response({
+                'id': None,
+                'first_name': '',
+                'last_name': '',
+                'full_name': request.user.get_full_name() or request.user.get_username(),
+                'email': request.user.email,
+                'is_team_lead': is_team_lead(request.user),
+                'is_admin': request.user.is_superuser,
+            })
         serializer = EmployeeSerializer(employee)
         data = serializer.data
         data['is_team_lead'] = is_team_lead(request.user)
-        data['is_admin'] = request.user.is_staff
+        data['is_admin'] = request.user.is_superuser
         return Response(data)

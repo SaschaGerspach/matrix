@@ -164,7 +164,7 @@ class SkillAssignmentSerializer(serializers.ModelSerializer):
         if self.instance is not None and self.instance.employee_id != value.id:
             raise serializers.ValidationError('Employee cannot be changed after creation.')
         request = self.context['request']
-        if request.user.is_staff:
+        if request.user.is_superuser:
             return value
         employee = get_employee(request.user)
         if employee is None:

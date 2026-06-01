@@ -88,7 +88,7 @@ def test_confirm_logs_history(setup):
 
 def test_delete_logs_history(setup):
     user, employee, _, _, skill = setup
-    admin_user = User.objects.create_user(username='admin', password='pw!', is_staff=True)
+    admin_user = User.objects.create_user(username='admin', password='pw!', is_superuser=True)
     Employee.objects.create(first_name='Admin', last_name='A', email='admin@x.com', user=admin_user)
     assignment = SkillAssignment.objects.create(employee=employee, skill=skill, level=2)
     c = APIClient()

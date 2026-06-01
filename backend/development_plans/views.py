@@ -17,7 +17,7 @@ class DevelopmentPlanViewSet(AuditMixin, viewsets.ModelViewSet):
     def _visible_employee_ids(self):
         # Returns None for admins (= no filter), or a set of allowed IDs.
         user = self.request.user
-        if user.is_staff:
+        if user.is_superuser:
             return None
         employee = get_employee(user)
         if employee is None:
@@ -45,7 +45,7 @@ class DevelopmentGoalViewSet(AuditMixin, viewsets.ModelViewSet):
     def get_queryset(self):
         qs = DevelopmentGoal.objects.select_related('skill__category', 'plan__employee')
         user = self.request.user
-        if not user.is_staff:
+        if not user.is_superuser:
             employee = get_employee(user)
             if employee is None:
                 return qs.none()

@@ -13,7 +13,7 @@ URL = '/api/skill-level-descriptions/'
 
 @pytest.fixture
 def setup(db):
-    admin = User.objects.create_user(username='admin', password='pw!', is_staff=True)
+    admin = User.objects.create_user(username='admin', password='pw!', is_superuser=True)
     viewer = User.objects.create_user(username='viewer', password='pw!')
     cat = SkillCategory.objects.create(name='Programming')
     skill = Skill.objects.create(name='Python', category=cat)

@@ -148,7 +148,7 @@ class SkillHistoryViewSet(viewsets.ReadOnlyModelViewSet):
                 return qs.none()
             return qs.filter(employee_id=employee_id)
 
-        if self.request.user.is_staff:
+        if self.request.user.is_superuser:
             return qs
         employee = get_employee(self.request.user)
         if employee is None:
