@@ -1,22 +1,11 @@
-.proposals-toolbar {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.proposal-form-card {
-  margin-bottom: 1.5rem;
-}
-
 .proposal-form {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 0 1rem;
+}
 
-  .full-width {
-    grid-column: 1 / -1;
-  }
+.form-span {
+  grid-column: 1 / -1;
 }
 
 .form-actions {
@@ -26,18 +15,10 @@
   justify-content: flex-end;
 }
 
-table {
-  width: 100%;
+.action-approve {
+  color: light-dark(#0d5132, #a5dcc0);
 }
 
-.status-pending {
-  background-color: #fff3e0 !important;
-}
-
-.status-approved {
-  background-color: #e8f5e9 !important;
-}
-
-.status-rejected {
-  background-color: #ffebee !important;
+.action-reject {
+  color: var(--mat-sys-error);
 }

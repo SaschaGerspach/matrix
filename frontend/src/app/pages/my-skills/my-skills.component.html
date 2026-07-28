@@ -1,59 +1,87 @@
-<div class="header">
-  <h2>{{ 'MY_SKILLS.TITLE' | translate }}</h2>
-  <button mat-raised-button color="primary" (click)="openAddDialog()">{{ 'MY_SKILLS.ADD_SKILL' | translate }}</button>
-</div>
-
-@if (loading()) {
-  <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
-} @else if (data().length === 0) {
-  <p>{{ 'MY_SKILLS.EMPTY' | translate }}</p>
-} @else {
-  <table mat-table [dataSource]="data()" class="full-width">
-    <ng-container matColumnDef="skill_name">
-      <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.SKILL' | translate }}</th>
-      <td mat-cell *matCellDef="let row">{{ row.skill_name }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="category_name">
-      <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.CATEGORY' | translate }}</th>
-      <td mat-cell *matCellDef="let row">{{ row.category_name }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="level">
-      <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.LEVEL' | translate }}</th>
-      <td mat-cell *matCellDef="let row">{{ row.level }} / 5</td>
-    </ng-container>
-
-    <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.STATUS' | translate }}</th>
-      <td mat-cell *matCellDef="let row">
-        <mat-chip-set>
-          <mat-chip [highlighted]="row.status === 'confirmed'">
-            {{ row.status }}
-          </mat-chip>
-        </mat-chip-set>
-      </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-  </table>
-}
-
-@if (recommendations().length > 0) {
-  <h3 class="recommendations-title">{{ 'MY_SKILLS.RECOMMENDATIONS' | translate }}</h3>
-  <div class="recommendations-grid">
-    @for (rec of recommendations(); track rec.skill_id) {
-      <mat-card class="recommendation-card" [class]="'priority-' + rec.priority">
-        <mat-card-header>
-          <mat-icon mat-card-avatar>{{ rec.priority === 'high' ? 'priority_high' : rec.priority === 'medium' ? 'trending_up' : 'info' }}</mat-icon>
-          <mat-card-title>{{ rec.skill_name }}</mat-card-title>
-          <mat-card-subtitle>{{ rec.category_name }} &middot; {{ rec.team_name }}</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-          <p>Level {{ rec.current_level }} &rarr; {{ rec.required_level }} required (gap: {{ rec.gap }})</p>
-        </mat-card-content>
-      </mat-card>
-    }
+<div class="page">
+  <div class="page-header">
+    <div class="page-heading">
+      <h2 class="page-title">{{ 'MY_SKILLS.TITLE' | translate }}</h2>
+      @if (!loading() && data().length > 0) {
+        <p class="page-subtitle">{{ 'MY_SKILLS.SUBTITLE' | translate: { count: data().length } }}</p>
+      }
+    </div>
+    <div class="page-header-actions">
+      <button mat-flat-button color="primary" (click)="openAddDialog()">
+        <mat-icon>add</mat-icon>
+        {{ 'MY_SKILLS.ADD_SKILL' | translate }}
+      </button>
+    </div>
   </div>
-}
+
+  @if (loading()) {
+    <div class="surface-card">
+      @for (row of skeletonRows; track row) {
+        <div class="skeleton skeleton-row"></div>
+      }
+    </div>
+  } @else if (data().length === 0) {
+    <div class="empty-state">
+      <mat-icon>school</mat-icon>
+      <p class="empty-state-title">{{ 'MY_SKILLS.EMPTY_TITLE' | translate }}</p>
+      <p class="empty-state-hint">{{ 'MY_SKILLS.EMPTY' | translate }}</p>
+    </div>
+  } @else {
+    <div class="table-card">
+      <table mat-table [dataSource]="data()">
+        <ng-container matColumnDef="skill_name">
+          <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.SKILL' | translate }}</th>
+          <td mat-cell *matCellDef="let row">{{ row.skill_name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="category_name">
+          <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.CATEGORY' | translate }}</th>
+          <td mat-cell *matCellDef="let row">{{ row.category_name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="level">
+          <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.LEVEL' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="level-meter" [attr.aria-label]="row.level + ' / 5'">
+              @for (step of levelSteps; track step) {
+                <span class="level-step" [class.level-step-filled]="step <= row.level"></span>
+              }
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.STATUS' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="status-pill" [class]="'status-' + row.status">{{ row.status }}</span>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+  }
+
+  @if (recommendations().length > 0) {
+    <section>
+      <h3 class="section-title">{{ 'MY_SKILLS.RECOMMENDATIONS' | translate }}</h3>
+      <div class="recommendations-grid">
+        @for (rec of recommendations(); track rec.skill_id) {
+          <div class="recommendation-card surface-card" [class]="'priority-' + rec.priority">
+            <div class="recommendation-head">
+              <mat-icon>{{ rec.priority === 'high' ? 'priority_high' : rec.priority === 'medium' ? 'trending_up' : 'info' }}</mat-icon>
+              <div class="recommendation-heading">
+                <span class="recommendation-title">{{ rec.skill_name }}</span>
+                <span class="recommendation-meta">{{ rec.category_name }} &middot; {{ rec.team_name }}</span>
+              </div>
+            </div>
+            <p class="recommendation-gap tabular-nums">
+              {{ 'MY_SKILLS.GAP_SUMMARY' | translate: { current: rec.current_level, required: rec.required_level, gap: rec.gap } }}
+            </p>
+          </div>
+        }
+      </div>
+    </section>
+  }
+</div>

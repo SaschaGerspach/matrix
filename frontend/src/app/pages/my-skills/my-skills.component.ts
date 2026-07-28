@@ -1,11 +1,8 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 
-import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -17,7 +14,7 @@ import { AddSkillDialogComponent } from './add-skill-dialog.component';
 @Component({
   selector: 'app-my-skills',
   standalone: true,
-  imports: [MatButtonModule, MatCardModule, MatChipsModule, MatIconModule, MatProgressSpinnerModule, MatTableModule, TranslateModule],
+  imports: [MatButtonModule, MatIconModule, MatTableModule, TranslateModule],
   templateUrl: './my-skills.component.html',
   styleUrl: './my-skills.component.scss',
 })
@@ -30,6 +27,8 @@ export class MySkillsComponent implements OnInit {
   readonly recommendations = signal<SkillRecommendation[]>([]);
   readonly loading = signal(false);
   readonly displayedColumns = ['skill_name', 'category_name', 'level', 'status'];
+  readonly levelSteps = [1, 2, 3, 4, 5];
+  readonly skeletonRows = [1, 2, 3, 4, 5];
 
   ngOnInit(): void {
     this.loadSkills();

@@ -52,6 +52,22 @@ describe('EmployeesComponent', () => {
     expect(component.error()).toBeNull();
   });
 
+  it('renders the employee name as a link so profiles are keyboard reachable', () => {
+    fixture.detectChanges();
+
+    http.expectOne((r) => r.url === `${environment.apiUrl}/employees/`).flush({
+      count: 1, next: null, previous: null,
+      results: [
+        { id: 7, first_name: 'Ada', last_name: 'Lovelace', full_name: 'Ada Lovelace', email: 'a@x.com', user: null },
+      ],
+    });
+    fixture.detectChanges();
+
+    const link = fixture.nativeElement.querySelector('.profile-link') as HTMLAnchorElement | null;
+    expect(link).toBeTruthy();
+    expect(link!.getAttribute('href')).toBe('/employees/7');
+  });
+
   it('sets an error message when loading fails', () => {
     fixture.detectChanges();
 

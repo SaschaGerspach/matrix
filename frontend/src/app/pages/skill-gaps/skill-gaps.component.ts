@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 
 import { TranslateModule } from '@ngx-translate/core';
@@ -10,7 +10,7 @@ import { SkillGap } from '../../core/skill.models';
 @Component({
   selector: 'app-skill-gaps',
   standalone: true,
-  imports: [MatProgressSpinnerModule, MatTableModule, TranslateModule],
+  imports: [MatIconModule, MatTableModule, TranslateModule],
   templateUrl: './skill-gaps.component.html',
   styleUrl: './skill-gaps.component.scss',
 })
@@ -20,6 +20,7 @@ export class SkillGapsComponent implements OnInit {
   readonly data = signal<SkillGap[]>([]);
   readonly loading = signal(false);
   readonly displayedColumns = ['employee_name', 'team_name', 'skill_name', 'category_name', 'required_level', 'actual_level', 'gap'];
+  readonly skeletonRows = [1, 2, 3, 4, 5];
 
   ngOnInit(): void {
     this.loadGaps();

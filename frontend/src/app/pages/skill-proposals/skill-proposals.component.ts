@@ -2,8 +2,6 @@ import { DatePipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -25,8 +23,6 @@ import { ToastService } from '../../core/toast.service';
     DatePipe,
     FormsModule,
     MatButtonModule,
-    MatCardModule,
-    MatChipsModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,

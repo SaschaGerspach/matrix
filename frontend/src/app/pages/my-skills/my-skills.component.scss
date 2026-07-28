@@ -1,16 +1,19 @@
-.header {
-  display: flex;
-  justify-content: space-between;
+// A five-step meter reads faster in a scanned column than "3 / 5" does.
+.level-meter {
+  display: inline-flex;
+  gap: 3px;
   align-items: center;
-  margin-bottom: 1rem;
 }
 
-.full-width {
-  width: 100%;
+.level-step {
+  width: 14px;
+  height: 6px;
+  border-radius: 2px;
+  background: var(--mat-sys-surface-container-highest);
 }
 
-.recommendations-title {
-  margin-top: 2rem;
+.level-step-filled {
+  background: var(--mat-sys-primary);
 }
 
 .recommendations-grid {
@@ -20,19 +23,59 @@
 }
 
 .recommendation-card {
-  mat-icon {
-    font-size: 24px;
-  }
+  border-left-width: 4px;
+  border-left-style: solid;
+  transition: border-color var(--motion-fast) var(--motion-ease);
+}
+
+.recommendation-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.recommendation-heading {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.recommendation-title {
+  font: var(--mat-sys-title-small);
+  font-weight: 600;
+}
+
+.recommendation-meta {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.recommendation-gap {
+  margin: 0.75rem 0 0;
+  font-size: 0.875rem;
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .priority-high {
-  border-left: 4px solid #ef5350;
+  border-left-color: var(--mat-sys-error);
+
+  .recommendation-head .mat-icon {
+    color: var(--mat-sys-error);
+  }
 }
 
 .priority-medium {
-  border-left: 4px solid #ff9800;
+  border-left-color: light-dark(#ba7517, #ef9f27);
+
+  .recommendation-head .mat-icon {
+    color: light-dark(#ba7517, #ef9f27);
+  }
 }
 
 .priority-low {
-  border-left: 4px solid #66bb6a;
+  border-left-color: var(--mat-sys-outline);
+
+  .recommendation-head .mat-icon {
+    color: var(--mat-sys-outline);
+  }
 }

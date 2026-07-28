@@ -1,7 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 
 import { TranslateModule } from '@ngx-translate/core';
@@ -13,9 +12,8 @@ import { ToastService } from '../../core/toast.service';
 @Component({
   selector: 'app-team-review',
   standalone: true,
-  imports: [MatButtonModule, MatChipsModule, MatProgressSpinnerModule, MatTableModule, TranslateModule],
+  imports: [MatButtonModule, MatIconModule, MatTableModule, TranslateModule],
   templateUrl: './team-review.component.html',
-  styleUrl: './team-review.component.scss',
 })
 export class TeamReviewComponent implements OnInit {
   private readonly skillService = inject(SkillAssignmentService);
@@ -24,6 +22,7 @@ export class TeamReviewComponent implements OnInit {
   readonly data = signal<TeamAssignment[]>([]);
   readonly loading = signal(false);
   readonly displayedColumns = ['employee_name', 'skill_name', 'category_name', 'level', 'status', 'actions'];
+  readonly skeletonRows = [1, 2, 3, 4];
 
   ngOnInit(): void {
     this.loadAssignments();

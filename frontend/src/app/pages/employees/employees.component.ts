@@ -1,10 +1,10 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 
 import { TranslateModule } from '@ngx-translate/core';
@@ -14,7 +14,7 @@ import { Employee, EmployeeService } from '../../core/employee.service';
 @Component({
   selector: 'app-employees',
   standalone: true,
-  imports: [FormsModule, MatFormFieldModule, MatInputModule, MatPaginatorModule, MatProgressSpinnerModule, MatTableModule, TranslateModule],
+  imports: [FormsModule, MatFormFieldModule, MatIconModule, MatInputModule, MatPaginatorModule, MatTableModule, RouterLink, TranslateModule],
   templateUrl: './employees.component.html',
   styleUrl: './employees.component.scss',
 })
@@ -27,6 +27,7 @@ export class EmployeesComponent implements OnInit {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly displayedColumns = ['first_name', 'last_name', 'email'];
+  readonly skeletonRows = [1, 2, 3, 4, 5, 6];
   readonly pageSize = 25;
   searchTerm = '';
 
