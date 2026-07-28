@@ -83,6 +83,12 @@ export class DashboardComponent implements OnInit {
         () => this.syncHeaderScroll(element.scrollLeft),
       );
       onCleanup(() => sub.unsubscribe());
+
+      // Measured after layout, because the vertical scrollbar only exists once
+      // the rows are rendered.
+      requestAnimationFrame(() => {
+        this.applyHeaderGutter(element.offsetWidth - element.clientWidth);
+      });
     });
   }
 
@@ -90,6 +96,17 @@ export class DashboardComponent implements OnInit {
     const header = this.matrixHeader()?.nativeElement;
     if (header) {
       header.scrollLeft = scrollLeft;
+    }
+  }
+
+  // The viewport loses width to its vertical scrollbar, the header does not.
+  // Left alone the header lays its columns out over a wider box and runs out of
+  // scroll distance sooner, so the last stretch of a sideways scroll moves the
+  // levels while the skill names already stand still.
+  applyHeaderGutter(gutter: number): void {
+    const header = this.matrixHeader()?.nativeElement;
+    if (header) {
+      header.style.width = gutter > 0 ? `calc(100% - ${gutter}px)` : '';
     }
   }
 

@@ -166,6 +166,46 @@ describe('DashboardComponent', () => {
     flush();
   }));
 
+  it('reserves header width for the viewport scrollbar only when there is one', fakeAsync(() => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+    renderMatrixRows();
+
+    const header = fixture.nativeElement.querySelector('.matrix-header') as HTMLElement;
+
+    component.applyHeaderGutter(15);
+    expect(header.style.width).toBe('calc(100% - 15px)');
+
+    component.applyHeaderGutter(0);
+    expect(header.style.width).toBe('');
+    flush();
+  }));
+
+  it('gives header and rows the same scroll distance', fakeAsync(() => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+
+    // Enough rows to force a vertical scrollbar in the viewport, which is what
+    // shrinks the rows' usable width relative to the header.
+    component.employees.set(
+      Array.from({ length: 40 }, (_, i) => ({ id: i + 1, full_name: `Person ${i + 1}` })),
+    );
+    renderMatrixRows();
+
+    const el = fixture.nativeElement as HTMLElement;
+    (el.querySelector('.matrix-wrapper') as HTMLElement).style.width = '150px';
+    fixture.detectChanges();
+
+    const header = el.querySelector('.matrix-header') as HTMLElement;
+    const viewport = el.querySelector('.matrix-viewport') as HTMLElement;
+    component.applyHeaderGutter(viewport.offsetWidth - viewport.clientWidth);
+    fixture.detectChanges();
+
+    expect(header.scrollWidth - header.clientWidth)
+      .toBe(viewport.scrollWidth - viewport.clientWidth);
+    flush();
+  }));
+
   it('exposes grid semantics including counts that survive virtual scrolling', fakeAsync(() => {
     fixture.detectChanges();
     flushInitRequests(http);
