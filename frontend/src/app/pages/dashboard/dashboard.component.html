@@ -61,7 +61,7 @@
          [attr.aria-label]="'DASHBOARD.TITLE' | translate"
          [attr.aria-rowcount]="employees().length + 1"
          [attr.aria-colcount]="skills().length + 1">
-      <div class="matrix-header" role="row" aria-rowindex="1" [style.grid-template-columns]="gridColumns()">
+      <div class="matrix-header" #matrixHeader role="row" aria-rowindex="1" [style.grid-template-columns]="gridColumns()">
         <div class="matrix-cell matrix-header-cell matrix-employee-cell" role="columnheader" aria-colindex="1">
           {{ 'TABLE.EMPLOYEE' | translate }}
         </div>

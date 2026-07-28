@@ -6,8 +6,13 @@
   border-radius: 12px;
 }
 
+// The rows live inside the virtual scroll viewport, so the header cannot share
+// their scroll container. Hiding the overflow makes it its own scrollport, which
+// the component keeps in step with the viewport and lets the employee column
+// stay pinned here the same way it does in the rows.
 .matrix-header {
   display: grid;
+  overflow: hidden;
   background: var(--mat-sys-surface-container);
   border-bottom: 1px solid var(--mat-sys-outline-variant);
 }

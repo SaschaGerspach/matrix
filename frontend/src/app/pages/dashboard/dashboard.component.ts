@@ -63,16 +63,34 @@ export class DashboardComponent implements OnInit {
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly viewport = viewChild<CdkVirtualScrollViewport>('matrixViewport');
+  private readonly matrixHeader = viewChild<ElementRef<HTMLElement>>('matrixHeader');
 
   constructor() {
-    // The CDK inserts two plain divs between the grid and its rows, which breaks
-    // the required grid > row relationship. Marking them presentational lets the
-    // rows read as direct children of the grid.
-    effect(() => {
-      this.viewport()?.elementRef.nativeElement
-        .querySelector('.cdk-virtual-scroll-content-wrapper')
+    effect((onCleanup) => {
+      const viewport = this.viewport();
+      if (!viewport) return;
+
+      // The CDK inserts two plain divs between the grid and its rows, which
+      // breaks the required grid > row relationship. Marking them presentational
+      // lets the rows read as direct children of the grid.
+      const element = viewport.elementRef.nativeElement;
+      element.querySelector('.cdk-virtual-scroll-content-wrapper')
         ?.setAttribute('role', 'presentation');
+
+      // elementScrolled runs outside the Angular zone, so following the header
+      // along does not trigger change detection on every scroll frame.
+      const sub = viewport.elementScrolled().subscribe(
+        () => this.syncHeaderScroll(element.scrollLeft),
+      );
+      onCleanup(() => sub.unsubscribe());
     });
+  }
+
+  syncHeaderScroll(scrollLeft: number): void {
+    const header = this.matrixHeader()?.nativeElement;
+    if (header) {
+      header.scrollLeft = scrollLeft;
+    }
   }
 
   selectedTeam: number | undefined;

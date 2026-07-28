@@ -143,6 +143,29 @@ describe('DashboardComponent', () => {
     expect(link!.getAttribute('href')).toBe('/employees/1');
   }));
 
+  it('keeps the header aligned with the rows when scrolling sideways', fakeAsync(() => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+    renderMatrixRows();
+
+    const el = fixture.nativeElement as HTMLElement;
+    const header = el.querySelector('.matrix-header') as HTMLElement;
+    const viewport = el.querySelector('.matrix-viewport') as HTMLElement;
+
+    // Force the grid narrower than its columns, otherwise there is nothing to
+    // scroll and the assertion would pass without proving anything.
+    (el.querySelector('.matrix-wrapper') as HTMLElement).style.width = '150px';
+    fixture.detectChanges();
+    expect(header.scrollWidth).toBeGreaterThan(header.clientWidth);
+
+    viewport.scrollLeft = 80;
+    viewport.dispatchEvent(new Event('scroll'));
+    tick(100);
+
+    expect(header.scrollLeft).toBe(viewport.scrollLeft);
+    flush();
+  }));
+
   it('exposes grid semantics including counts that survive virtual scrolling', fakeAsync(() => {
     fixture.detectChanges();
     flushInitRequests(http);
