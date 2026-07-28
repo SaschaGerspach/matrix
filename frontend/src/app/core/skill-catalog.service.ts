@@ -18,6 +18,10 @@ export class SkillCatalogService {
     return this.http.post<Skill>(`${environment.apiUrl}/skills/`, { name, category });
   }
 
+  updateSkill(id: number, data: { name?: string; category?: number }): Observable<Skill> {
+    return this.http.patch<Skill>(`${environment.apiUrl}/skills/${id}/`, data);
+  }
+
   deleteSkill(id: number): Observable<unknown> {
     return this.http.delete(`${environment.apiUrl}/skills/${id}/`);
   }

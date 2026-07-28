@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -20,6 +21,14 @@ import { ToastService } from '../../core/toast.service';
 
 import { AdminImportComponent } from './admin-import.component';
 import { AdminRoleTemplatesComponent } from './admin-role-templates.component';
+
+const ACCENT_SLOTS = 6;
+
+// Derived from the id so a group keeps its colour when categories are renamed,
+// reordered or filtered away.
+function accentSlot(id: number): number {
+  return (id % ACCENT_SLOTS) + 1;
+}
 
 @Component({
   selector: 'app-admin',
@@ -34,6 +43,7 @@ import { AdminRoleTemplatesComponent } from './admin-role-templates.component';
     MatSelectModule,
     MatTableModule,
     MatTabsModule,
+    MatTooltipModule,
     TranslateModule,
     AdminImportComponent,
     AdminRoleTemplatesComponent,
@@ -65,6 +75,47 @@ export class AdminComponent implements OnInit {
   newDescLevel: number | undefined;
   newDescText = '';
 
+  editingSkill: { id: number; name: string; category: number } | null = null;
+  showAddForm = false;
+  showAddReqForm = false;
+
+  readonly searchTerm = signal('');
+  readonly reqSearchTerm = signal('');
+
+  readonly groupedSkills = computed(() => {
+    const cats = this.categories();
+    let skills = this.skills();
+    const term = this.searchTerm().toLowerCase();
+    if (term) {
+      skills = skills.filter((s) => s.name.toLowerCase().includes(term));
+    }
+    return cats
+      .map((cat) => ({
+        category: cat,
+        accent: accentSlot(cat.id),
+        skills: skills.filter((s) => s.category === cat.id),
+      }))
+      .filter((g) => g.skills.length > 0)
+      .sort((a, b) => a.category.name.localeCompare(b.category.name));
+  });
+
+  readonly groupedRequirements = computed(() => {
+    const teams = this.teams();
+    let reqs = this.requirements();
+    const term = this.reqSearchTerm().toLowerCase();
+    if (term) {
+      reqs = reqs.filter((r) => r.skill_name.toLowerCase().includes(term));
+    }
+    return teams
+      .map((team) => ({
+        team,
+        accent: accentSlot(team.id),
+        requirements: reqs.filter((r) => r.team === team.id),
+      }))
+      .filter((g) => g.requirements.length > 0)
+      .sort((a, b) => a.team.name.localeCompare(b.team.name));
+  });
+
   ngOnInit(): void {
     this.loadAll();
   }
@@ -76,6 +127,14 @@ export class AdminComponent implements OnInit {
     this.catalogService.listRequirements().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((r) => this.requirements.set(r));
     this.catalogService.listLevelDescriptions().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((d) => this.levelDescriptions.set(d));
     this.auditService.list().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((res) => this.auditLog.set(res.results));
+  }
+
+  onSearchInput(value: string): void {
+    this.searchTerm.set(value);
+  }
+
+  onReqSearchInput(value: string): void {
+    this.reqSearchTerm.set(value);
   }
 
   addCategory(): void {
@@ -103,6 +162,7 @@ export class AdminComponent implements OnInit {
       next: () => {
         this.newSkillName = '';
         this.newSkillCategory = undefined;
+        this.showAddForm = false;
         this.toast.success('TOAST.SKILL_CREATED');
         this.reloadSkills();
       },
@@ -112,8 +172,34 @@ export class AdminComponent implements OnInit {
 
   deleteSkill(id: number): void {
     this.catalogService.deleteSkill(id).subscribe({
-      next: () => { this.toast.success('TOAST.SKILL_DELETED'); this.reloadSkills(); },
+      next: () => {
+        this.toast.success('TOAST.SKILL_DELETED');
+        this.reloadSkills();
+      },
       error: () => { this.toast.error('TOAST.ERROR'); this.reloadSkills(); },
+    });
+  }
+
+  startEditSkill(skill: Skill): void {
+    this.editingSkill = { id: skill.id, name: skill.name, category: skill.category };
+  }
+
+  cancelEditSkill(): void {
+    this.editingSkill = null;
+  }
+
+  saveSkill(): void {
+    if (!this.editingSkill || !this.editingSkill.name.trim()) return;
+    this.catalogService.updateSkill(this.editingSkill.id, {
+      name: this.editingSkill.name.trim(),
+      category: this.editingSkill.category,
+    }).subscribe({
+      next: () => {
+        this.editingSkill = null;
+        this.toast.success('TOAST.SKILL_UPDATED');
+        this.reloadSkills();
+      },
+      error: () => { this.toast.error('TOAST.ERROR'); },
     });
   }
 
@@ -128,6 +214,7 @@ export class AdminComponent implements OnInit {
         this.newReqTeam = undefined;
         this.newReqSkill = undefined;
         this.newReqLevel = undefined;
+        this.showAddReqForm = false;
         this.toast.success('TOAST.REQUIREMENT_CREATED');
         this.reloadRequirements();
       },
