@@ -1,7 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { MatCardModule } from '@angular/material/card';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 
@@ -9,13 +7,17 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { SkillAnalyticsService } from '../../core/skill-analytics.service';
 import { KpiEntry, LevelDistribution } from '../../core/skill.models';
+import { CountUpDirective } from './count-up.directive';
 
-const DOUGHNUT_COLORS = ['#ef5350', '#ff9800', '#fdd835', '#66bb6a', '#2e7d32'];
+// Mirrors the matrix heat scale so a level means the same colour everywhere.
+const LEVEL_COLORS = ['#d7f0e6', '#8ed9c0', '#4cbf9d', '#1d9e75', '#0f6e56'];
+const CHART_PRIMARY = '#3b5bdb';
+const CHART_TERTIARY = '#9333a3';
 
 @Component({
   selector: 'app-kpi',
   standalone: true,
-  imports: [MatCardModule, MatProgressBarModule, MatProgressSpinnerModule, BaseChartDirective, TranslateModule],
+  imports: [CountUpDirective, MatIconModule, BaseChartDirective, TranslateModule],
   templateUrl: './kpi.component.html',
   styleUrl: './kpi.component.scss',
 })
@@ -25,6 +27,7 @@ export class KpiComponent implements OnInit {
   readonly data = signal<KpiEntry[]>([]);
   readonly distribution = signal<LevelDistribution | null>(null);
   readonly loading = signal(false);
+  readonly skeletonCards = [1, 2, 3];
 
   readonly barChartConfig = computed<ChartConfiguration<'bar'>>(() => {
     const teams = this.data();
@@ -36,12 +39,12 @@ export class KpiComponent implements OnInit {
           {
             label: 'Avg. Level',
             data: teams.map((t) => t.avg_level),
-            backgroundColor: '#3f51b5',
+            backgroundColor: CHART_PRIMARY,
           },
           {
             label: 'Coverage %',
             data: teams.map((t) => t.coverage),
-            backgroundColor: '#ff4081',
+            backgroundColor: CHART_TERTIARY,
           },
         ],
       },
@@ -64,7 +67,7 @@ export class KpiComponent implements OnInit {
         labels: levels.map((l) => `Level ${l}`),
         datasets: [{
           data: values,
-          backgroundColor: DOUGHNUT_COLORS,
+          backgroundColor: LEVEL_COLORS,
         }],
       },
       options: {

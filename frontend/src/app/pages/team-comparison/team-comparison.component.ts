@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
@@ -14,23 +14,10 @@ import { SkillAnalyticsService } from '../../core/skill-analytics.service';
 import { TeamComparisonEntry } from '../../core/skill.models';
 import { Team, TeamService } from '../../core/team.service';
 
-const COLORS = [
-  'rgba(63, 81, 181, 0.7)',
-  'rgba(233, 30, 99, 0.7)',
-  'rgba(76, 175, 80, 0.7)',
-  'rgba(255, 152, 0, 0.7)',
-  'rgba(156, 39, 176, 0.7)',
-  'rgba(0, 188, 212, 0.7)',
-];
-
-const BORDER_COLORS = [
-  'rgb(63, 81, 181)',
-  'rgb(233, 30, 99)',
-  'rgb(76, 175, 80)',
-  'rgb(255, 152, 0)',
-  'rgb(156, 39, 176)',
-  'rgb(0, 188, 212)',
-];
+// The six accent slots from styles.scss, so a team keeps its colour whether it
+// shows up in a chart here or as a grouping accent elsewhere.
+const BORDER_COLORS = ['#534ab7', '#1d9e75', '#ba7517', '#378add', '#d4537e', '#1a8ba3'];
+const COLORS = BORDER_COLORS.map((c) => `${c}b3`);
 
 @Component({
   selector: 'app-team-comparison',
@@ -41,7 +28,7 @@ const BORDER_COLORS = [
     MatButtonModule,
     MatButtonToggleModule,
     MatFormFieldModule,
-    MatProgressSpinnerModule,
+    MatIconModule,
     MatSelectModule,
     TranslateModule,
   ],

@@ -3,9 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
@@ -20,9 +18,10 @@ import { Skill, SkillHistoryEntry, SkillTrendData } from '../../core/skill.model
 import { ProfileCertificatesComponent } from './profile-certificates.component';
 import { ProfileDevPlansComponent } from './profile-dev-plans.component';
 
+// First six match the accent slots in styles.scss; the rest extend the ramp.
 const TREND_COLORS = [
-  '#3f51b5', '#e91e63', '#4caf50', '#ff9800', '#9c27b0',
-  '#00bcd4', '#795548', '#607d8b', '#f44336', '#009688',
+  '#534ab7', '#1d9e75', '#ba7517', '#378add', '#d4537e',
+  '#1a8ba3', '#795548', '#607d8b', '#c2410c', '#4d7c0f',
 ];
 
 @Component({
@@ -32,9 +31,7 @@ const TREND_COLORS = [
     BaseChartDirective,
     DatePipe,
     MatButtonModule,
-    MatCardModule,
-    MatChipsModule,
-    MatProgressSpinnerModule,
+    MatIconModule,
     MatTableModule,
     ProfileCertificatesComponent,
     ProfileDevPlansComponent,
@@ -60,6 +57,7 @@ export class EmployeeProfileComponent implements OnInit {
   readonly canEdit = signal(false);
   readonly displayedColumns = ['skill_name', 'category_name', 'level', 'status'];
   readonly historyColumns = ['timestamp', 'skill_name', 'action', 'old_level', 'new_level', 'changed_by_name'];
+  readonly skeletonRows = [1, 2, 3, 4];
 
   employeeId = 0;
 

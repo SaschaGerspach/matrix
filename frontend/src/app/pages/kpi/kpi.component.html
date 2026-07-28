@@ -1,60 +1,83 @@
-<h2>{{ 'KPI.TITLE' | translate }}</h2>
-
-@if (loading()) {
-  <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
-} @else if (data().length === 0) {
-  <p>{{ 'KPI.EMPTY' | translate }}</p>
-} @else {
-  <div class="kpi-grid">
-    @for (team of data(); track team.team_id) {
-      <mat-card class="kpi-card">
-        <mat-card-header>
-          <mat-card-title>{{ team.team_name }}</mat-card-title>
-          <mat-card-subtitle>{{ team.member_count }} {{ 'COMMON.MEMBERS' | translate }}</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="kpi-row">
-            <span class="kpi-label">{{ 'KPI.AVG_LEVEL' | translate }}</span>
-            <span class="kpi-value">{{ team.avg_level }}</span>
-          </div>
-          <div class="kpi-row">
-            <span class="kpi-label">{{ 'KPI.COVERAGE' | translate }}</span>
-            <span class="kpi-value">{{ team.coverage }}%</span>
-          </div>
-          <mat-progress-bar mode="determinate" [value]="team.coverage"></mat-progress-bar>
-          <div class="kpi-row">
-            <span class="kpi-label">{{ 'KPI.CONFIRMED' | translate }}</span>
-            <span class="kpi-value">{{ team.confirmed_ratio }}%</span>
-          </div>
-          <mat-progress-bar mode="determinate" [value]="team.confirmed_ratio" color="accent"></mat-progress-bar>
-          <div class="kpi-row">
-            <span class="kpi-label">{{ 'KPI.TOTAL_ASSIGNMENTS' | translate }}</span>
-            <span class="kpi-value">{{ team.total_assignments }}</span>
-          </div>
-        </mat-card-content>
-      </mat-card>
-    }
+<div class="page">
+  <div class="page-header">
+    <div class="page-heading">
+      <h2 class="page-title">{{ 'KPI.TITLE' | translate }}</h2>
+      @if (!loading() && data().length > 0) {
+        <p class="page-subtitle">{{ 'KPI.SUBTITLE' | translate: { count: data().length } }}</p>
+      }
+    </div>
   </div>
 
-  <div class="charts-row">
-    <div class="chart-container">
-      <h3>{{ 'KPI.TEAM_OVERVIEW' | translate }}</h3>
-      <canvas baseChart
-        [type]="barChartConfig().type"
-        [data]="barChartConfig().data"
-        [options]="barChartConfig().options">
-      </canvas>
+  @if (loading()) {
+    <div class="kpi-grid">
+      @for (card of skeletonCards; track card) {
+        <div class="skeleton kpi-skeleton"></div>
+      }
+    </div>
+  } @else if (data().length === 0) {
+    <div class="empty-state">
+      <mat-icon>insights</mat-icon>
+      <p class="empty-state-title">{{ 'KPI.EMPTY' | translate }}</p>
+      <p class="empty-state-hint">{{ 'KPI.EMPTY_HINT' | translate }}</p>
+    </div>
+  } @else {
+    <div class="kpi-grid">
+      @for (team of data(); track team.team_id) {
+        <div class="kpi-card surface-card">
+          <div class="kpi-card-head">
+            <span class="kpi-team">{{ team.team_name }}</span>
+            <span class="kpi-members">{{ team.member_count }} {{ 'COMMON.MEMBERS' | translate }}</span>
+          </div>
+
+          <div class="kpi-headline">
+            <span class="kpi-headline-value tabular-nums" [appCountUp]="team.avg_level"></span>
+            <span class="kpi-headline-label">{{ 'KPI.AVG_LEVEL' | translate }}</span>
+          </div>
+
+          <div class="kpi-bar-block">
+            <div class="kpi-row">
+              <span class="kpi-label">{{ 'KPI.COVERAGE' | translate }}</span>
+              <span class="kpi-value tabular-nums">{{ team.coverage }}%</span>
+            </div>
+            <div class="kpi-track"><span class="kpi-fill" [style.width.%]="team.coverage"></span></div>
+          </div>
+
+          <div class="kpi-bar-block">
+            <div class="kpi-row">
+              <span class="kpi-label">{{ 'KPI.CONFIRMED' | translate }}</span>
+              <span class="kpi-value tabular-nums">{{ team.confirmed_ratio }}%</span>
+            </div>
+            <div class="kpi-track"><span class="kpi-fill kpi-fill-alt" [style.width.%]="team.confirmed_ratio"></span></div>
+          </div>
+
+          <div class="kpi-row kpi-footer">
+            <span class="kpi-label">{{ 'KPI.TOTAL_ASSIGNMENTS' | translate }}</span>
+            <span class="kpi-value tabular-nums">{{ team.total_assignments }}</span>
+          </div>
+        </div>
+      }
     </div>
 
-    @if (doughnutConfig(); as config) {
-      <div class="chart-container">
-        <h3>{{ 'KPI.LEVEL_DISTRIBUTION' | translate }}</h3>
+    <div class="charts-row">
+      <div class="chart-container surface-card">
+        <h3 class="section-title">{{ 'KPI.TEAM_OVERVIEW' | translate }}</h3>
         <canvas baseChart
-          [type]="config.type"
-          [data]="config.data"
-          [options]="config.options">
+          [type]="barChartConfig().type"
+          [data]="barChartConfig().data"
+          [options]="barChartConfig().options">
         </canvas>
       </div>
-    }
-  </div>
-}
+
+      @if (doughnutConfig(); as config) {
+        <div class="chart-container surface-card">
+          <h3 class="section-title">{{ 'KPI.LEVEL_DISTRIBUTION' | translate }}</h3>
+          <canvas baseChart
+            [type]="config.type"
+            [data]="config.data"
+            [options]="config.options">
+          </canvas>
+        </div>
+      }
+    </div>
+  }
+</div>

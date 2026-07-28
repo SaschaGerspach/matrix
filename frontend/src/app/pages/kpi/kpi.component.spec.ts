@@ -97,16 +97,16 @@ describe('KpiComponent', () => {
     expect(el.textContent).toContain('Beta');
   });
 
-  it('shows spinner while loading', () => {
+  it('shows skeleton cards while loading', () => {
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.querySelector('mat-progress-spinner')).toBeTruthy();
+    expect(el.querySelectorAll('.kpi-skeleton').length).toBe(3);
 
     flushInit(http);
     fixture.detectChanges();
 
-    expect(el.querySelector('mat-progress-spinner')).toBeFalsy();
+    expect(el.querySelector('.kpi-skeleton')).toBeFalsy();
   });
 
   it('handles error gracefully', () => {
