@@ -32,4 +32,10 @@ export class TeamService {
       `${environment.apiUrl}/teams/${teamId}/`, { team_leads: leadIds },
     );
   }
+
+  setMembers(teamId: number, memberIds: number[]): Observable<Team> {
+    return this.http.patch<Team>(
+      `${environment.apiUrl}/teams/${teamId}/`, { members: memberIds },
+    );
+  }
 }

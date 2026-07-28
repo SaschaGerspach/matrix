@@ -106,9 +106,7 @@ const EN = {
     TOTAL_SKILLS: 'Total skills', CATEGORIES_COUNT: 'Categories', UNASSIGNED: 'Unassigned',
     SEARCH_SKILLS: 'Search skills...', ALL_CATEGORIES: 'All categories', ALL: 'All',
     TEAM_COVERAGE: 'Team coverage', CREATE: 'Create',
-    TAB_TEAMS: 'Teams', TEAM_LEADS: 'Leads', ADD_LEAD: 'Add a lead',
-    REMOVE_LEAD: 'Remove lead', NO_LEAD_YET: 'none assigned', NO_TEAMS: 'No teams yet.',
-    TEAM_HAS_NO_MEMBERS: 'This team has no members yet, so there is nobody to lead it.',
+    MANAGE_TEAMS: 'Manage teams',
     TEAMS_WITHOUT_LEAD: 'Some teams have no lead',
     TEAMS_WITHOUT_LEAD_HINT: 'Members of {{teams}} can have their self-assessments confirmed by an admin only.',
   },
@@ -141,6 +139,20 @@ const EN = {
     ERROR: 'An error occurred. Please try again.',
   },
   COMMON: { MEMBERS: 'members' },
+  TEAMS: {
+    TITLE: 'Teams',
+    SUBTITLE_ADMIN: 'Manage who is in each team and who leads it',
+    SUBTITLE_LEAD: 'Manage who is in the teams you lead',
+    LEADS: 'Leads', MEMBERS: 'Members', MEMBER_COUNT: '{{count}} members',
+    ADD_LEAD: 'Add a lead', REMOVE_LEAD: 'Remove lead', NO_LEAD: 'no lead assigned',
+    ADD_MEMBER: 'Add member', REMOVE_MEMBER: 'Remove from team',
+    NO_MEMBERS: 'No members yet', SEARCH_PERSON: 'Search for a person',
+    NO_MATCHES: 'Nobody found, or everyone found is already in the team.',
+    EMPTY: 'No teams to manage',
+    EMPTY_HINT_ADMIN: 'Teams are created in Django admin; once they exist you can staff them here.',
+    EMPTY_HINT_LEAD: 'You are not assigned as lead of any team yet.',
+    NO_LEAD_WARNING: '{{count}} team(s) have members but no lead.',
+  },
 };
 
 class InlineLoader implements TranslateLoader {

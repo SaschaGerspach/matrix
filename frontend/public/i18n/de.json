@@ -18,7 +18,8 @@
     "GROUP_TEAM": "Team",
     "GROUP_ANALYSIS": "Analyse",
     "GROUP_ORGANISATION": "Organisation",
-    "GROUP_ADMINISTRATION": "Administration"
+    "GROUP_ADMINISTRATION": "Administration",
+    "TEAMS": "Teams"
   },
   "NOTIFICATIONS": {
     "TITLE": "Benachrichtigungen",
@@ -177,13 +178,7 @@
     "ALL_CATEGORIES": "Alle Kategorien",
     "ALL": "Alle",
     "TEAM_COVERAGE": "Team-Abdeckung",
-    "TAB_TEAMS": "Teams",
-    "TEAM_LEADS": "Leads",
-    "ADD_LEAD": "Lead hinzufügen",
-    "REMOVE_LEAD": "Lead entfernen",
-    "NO_LEAD_YET": "keiner zugewiesen",
-    "TEAM_HAS_NO_MEMBERS": "Dieses Team hat noch keine Mitglieder, also gibt es niemanden zu leiten.",
-    "NO_TEAMS": "Noch keine Teams.",
+    "MANAGE_TEAMS": "Teams verwalten",
     "TEAMS_WITHOUT_LEAD": "Einige Teams haben keinen Lead",
     "TEAMS_WITHOUT_LEAD_HINT": "Selbsteinschätzungen von Mitgliedern in {{teams}} können nur von Admins bestätigt werden, denn das Team-Review zeigt nur Mitglieder der Teams, die du leitest. Dauerhaft hilft, einen Lead zuzuweisen.",
     "CREATE": "Erstellen"
@@ -302,9 +297,30 @@
     "PROPOSAL_SUBMITTED": "Vorschlag eingereicht.",
     "PROPOSAL_APPROVED": "Vorschlag genehmigt.",
     "PROPOSAL_REJECTED": "Vorschlag abgelehnt.",
-    "ERROR": "Ein Fehler ist aufgetreten. Bitte erneut versuchen."
+    "ERROR": "Ein Fehler ist aufgetreten. Bitte erneut versuchen.",
+    "TEAM_MEMBERS_UPDATED": "Team-Mitglieder aktualisiert."
   },
   "COMMON": {
     "MEMBERS": "Mitglieder"
+  },
+  "TEAMS": {
+    "TITLE": "Teams",
+    "SUBTITLE_ADMIN": "Verwalte, wer in welchem Team ist und wer es leitet",
+    "SUBTITLE_LEAD": "Verwalte, wer in den von dir geleiteten Teams ist",
+    "LEADS": "Leads",
+    "MEMBERS": "Mitglieder",
+    "MEMBER_COUNT": "{{count}} Mitglieder",
+    "ADD_LEAD": "Lead hinzufügen",
+    "REMOVE_LEAD": "Lead entfernen",
+    "NO_LEAD": "kein Lead zugewiesen",
+    "ADD_MEMBER": "Mitglied hinzufügen",
+    "REMOVE_MEMBER": "Aus Team entfernen",
+    "NO_MEMBERS": "Noch keine Mitglieder",
+    "SEARCH_PERSON": "Person suchen",
+    "NO_MATCHES": "Niemand gefunden, oder alle Treffer sind bereits im Team.",
+    "EMPTY": "Keine Teams zu verwalten",
+    "EMPTY_HINT_ADMIN": "Teams werden im Django-Admin angelegt; sobald sie existieren, kannst du sie hier besetzen.",
+    "EMPTY_HINT_LEAD": "Du bist noch keinem Team als Lead zugewiesen.",
+    "NO_LEAD_WARNING": "{{count}} Team(s) haben Mitglieder, aber keinen Lead. Ihre Selbsteinschätzungen kann nur ein Admin bestätigen."
   }
 }

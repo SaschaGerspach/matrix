@@ -1,0 +1,127 @@
+<div class="page">
+  <div class="page-header">
+    <div class="page-heading">
+      <h2 class="page-title">{{ 'TEAMS.TITLE' | translate }}</h2>
+      <p class="page-subtitle">
+        {{ (isAdmin() ? 'TEAMS.SUBTITLE_ADMIN' : 'TEAMS.SUBTITLE_LEAD') | translate }}
+      </p>
+    </div>
+  </div>
+
+  @if (teamsWithoutLead().length > 0) {
+    <div class="team-warning surface-card">
+      <mat-icon>report_problem</mat-icon>
+      <p>{{ 'TEAMS.NO_LEAD_WARNING' | translate: { count: teamsWithoutLead().length } }}</p>
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="surface-card">
+      <div class="skeleton skeleton-row"></div>
+      <div class="skeleton skeleton-row"></div>
+    </div>
+  } @else if (visibleTeams().length === 0) {
+    <div class="empty-state">
+      <mat-icon>groups</mat-icon>
+      <p class="empty-state-title">{{ 'TEAMS.EMPTY' | translate }}</p>
+      <p class="empty-state-hint">
+        {{ (isAdmin() ? 'TEAMS.EMPTY_HINT_ADMIN' : 'TEAMS.EMPTY_HINT_LEAD') | translate }}
+      </p>
+    </div>
+  } @else {
+    <div class="team-list">
+      @for (team of visibleTeams(); track team.id) {
+        <section class="team-card surface-card"
+                 [class.team-card-warn]="team.team_leads.length === 0 && team.members.length > 0">
+          <header class="team-card-head">
+            <span class="team-name">{{ team.name }}</span>
+            <span class="team-count">
+              {{ 'TEAMS.MEMBER_COUNT' | translate: { count: team.member_details.length } }}
+            </span>
+          </header>
+
+          <div class="team-section">
+            <span class="team-section-label">{{ 'TEAMS.LEADS' | translate }}</span>
+            <div class="chip-row">
+              @for (lead of team.lead_details; track lead.id) {
+                <span class="person-chip person-chip-lead">
+                  {{ lead.full_name }}
+                  @if (isAdmin()) {
+                    <button mat-icon-button
+                            [matTooltip]="'TEAMS.REMOVE_LEAD' | translate"
+                            [attr.aria-label]="'TEAMS.REMOVE_LEAD' | translate"
+                            (click)="removeLead(team, lead.id)">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  }
+                </span>
+              } @empty {
+                <span class="no-lead">{{ 'TEAMS.NO_LEAD' | translate }}</span>
+              }
+            </div>
+
+            @if (isAdmin() && assignableLeads(team).length) {
+              <mat-form-field appearance="outline" class="picker">
+                <mat-label>{{ 'TEAMS.ADD_LEAD' | translate }}</mat-label>
+                <mat-select [value]="null" (selectionChange)="addLead(team, $event.value)">
+                  @for (member of assignableLeads(team); track member.id) {
+                    <mat-option [value]="member.id">{{ member.full_name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            }
+          </div>
+
+          <div class="team-section">
+            <span class="team-section-label">{{ 'TEAMS.MEMBERS' | translate }}</span>
+            <div class="chip-row">
+              @for (member of team.member_details; track member.id) {
+                <span class="person-chip">
+                  {{ member.full_name }}
+                  <button mat-icon-button
+                          [matTooltip]="'TEAMS.REMOVE_MEMBER' | translate"
+                          [attr.aria-label]="'TEAMS.REMOVE_MEMBER' | translate"
+                          (click)="removeMember(team, member.id)">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </span>
+              } @empty {
+                <span class="no-members">{{ 'TEAMS.NO_MEMBERS' | translate }}</span>
+              }
+            </div>
+
+            @if (searchingFor() === team.id) {
+              <div class="member-search">
+                <mat-form-field appearance="outline" class="picker">
+                  <mat-label>{{ 'TEAMS.SEARCH_PERSON' | translate }}</mat-label>
+                  <input matInput
+                         [ngModel]="searchTerm"
+                         (ngModelChange)="onSearch($event)"
+                         [placeholder]="'EMPLOYEES.SEARCH_PLACEHOLDER' | translate">
+                </mat-form-field>
+
+                @if (candidatesFor(team).length) {
+                  <div class="chip-row">
+                    @for (person of candidatesFor(team); track person.id) {
+                      <button class="candidate-chip" (click)="addMember(team, person.id)">
+                        <mat-icon>add</mat-icon>
+                        {{ person.first_name }} {{ person.last_name }}
+                      </button>
+                    }
+                  </div>
+                } @else if (searchTerm.trim()) {
+                  <p class="search-empty">{{ 'TEAMS.NO_MATCHES' | translate }}</p>
+                }
+              </div>
+            } @else {
+              <button mat-button class="add-member-btn" (click)="openSearch(team.id)">
+                <mat-icon>person_add</mat-icon>
+                {{ 'TEAMS.ADD_MEMBER' | translate }}
+              </button>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  }
+</div>

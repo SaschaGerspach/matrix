@@ -28,6 +28,12 @@ export const routes: Routes = [
           import('./pages/team-review/team-review.component').then((m) => m.TeamReviewComponent),
       },
       {
+        path: 'teams',
+        canActivate: [teamLeadGuard],
+        loadComponent: () =>
+          import('./pages/teams/teams.component').then((m) => m.TeamsComponent),
+      },
+      {
         path: 'dashboard',
         loadComponent: () =>
           import('./pages/dashboard/dashboard.component').then((m) => m.DashboardComponent),

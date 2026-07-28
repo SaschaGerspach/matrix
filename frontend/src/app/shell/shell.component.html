@@ -25,6 +25,10 @@
             <mat-icon>fact_check</mat-icon>
             <span>{{ 'NAV.TEAM_REVIEW' | translate }}</span>
           </a>
+          <a class="nav-item" routerLink="/teams" routerLinkActive="nav-item-active" (click)="onNavigate()">
+            <mat-icon>groups</mat-icon>
+            <span>{{ 'NAV.TEAMS' | translate }}</span>
+          </a>
           @if (isTeamLead()) {
             <a class="nav-item" routerLink="/skill-gaps" routerLinkActive="nav-item-active" (click)="onNavigate()">
               <mat-icon>report_problem</mat-icon>

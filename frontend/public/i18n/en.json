@@ -18,7 +18,8 @@
     "GROUP_TEAM": "Team",
     "GROUP_ANALYSIS": "Analysis",
     "GROUP_ORGANISATION": "Organisation",
-    "GROUP_ADMINISTRATION": "Administration"
+    "GROUP_ADMINISTRATION": "Administration",
+    "TEAMS": "Teams"
   },
   "NOTIFICATIONS": {
     "TITLE": "Notifications",
@@ -177,13 +178,7 @@
     "ALL_CATEGORIES": "All categories",
     "ALL": "All",
     "TEAM_COVERAGE": "Team coverage",
-    "TAB_TEAMS": "Teams",
-    "TEAM_LEADS": "Leads",
-    "ADD_LEAD": "Add a lead",
-    "REMOVE_LEAD": "Remove lead",
-    "NO_LEAD_YET": "none assigned",
-    "TEAM_HAS_NO_MEMBERS": "This team has no members yet, so there is nobody to lead it.",
-    "NO_TEAMS": "No teams yet.",
+    "MANAGE_TEAMS": "Manage teams",
     "TEAMS_WITHOUT_LEAD": "Some teams have no lead",
     "TEAMS_WITHOUT_LEAD_HINT": "Members of {{teams}} can have their self-assessments confirmed by an admin only, because team review lists members of teams you lead. Assign a lead to fix this permanently.",
     "CREATE": "Create"
@@ -302,9 +297,30 @@
     "PROPOSAL_SUBMITTED": "Proposal submitted.",
     "PROPOSAL_APPROVED": "Proposal approved.",
     "PROPOSAL_REJECTED": "Proposal rejected.",
-    "ERROR": "An error occurred. Please try again."
+    "ERROR": "An error occurred. Please try again.",
+    "TEAM_MEMBERS_UPDATED": "Team members updated."
   },
   "COMMON": {
     "MEMBERS": "members"
+  },
+  "TEAMS": {
+    "TITLE": "Teams",
+    "SUBTITLE_ADMIN": "Manage who is in each team and who leads it",
+    "SUBTITLE_LEAD": "Manage who is in the teams you lead",
+    "LEADS": "Leads",
+    "MEMBERS": "Members",
+    "MEMBER_COUNT": "{{count}} members",
+    "ADD_LEAD": "Add a lead",
+    "REMOVE_LEAD": "Remove lead",
+    "NO_LEAD": "no lead assigned",
+    "ADD_MEMBER": "Add member",
+    "REMOVE_MEMBER": "Remove from team",
+    "NO_MEMBERS": "No members yet",
+    "SEARCH_PERSON": "Search for a person",
+    "NO_MATCHES": "Nobody found, or everyone found is already in the team.",
+    "EMPTY": "No teams to manage",
+    "EMPTY_HINT_ADMIN": "Teams are created in Django admin; once they exist you can staff them here.",
+    "EMPTY_HINT_LEAD": "You are not assigned as lead of any team yet.",
+    "NO_LEAD_WARNING": "{{count}} team(s) have members but no lead. Their self-assessments can only be confirmed by an admin."
   }
 }

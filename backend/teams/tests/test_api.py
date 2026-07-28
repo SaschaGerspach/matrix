@@ -35,6 +35,86 @@ def regular_client(regular_user):
     return c
 
 
+@pytest.fixture
+def lead_setup(db):
+    """A lead of Core, plus an unrelated team they must not be able to touch."""
+    user = User.objects.create_user(username='lead', password='pw!')
+    lead = Employee.objects.create(first_name='Lea', last_name='D', email='lead@x.com', user=user)
+    outsider = Employee.objects.create(first_name='Otto', last_name='O', email='otto@x.com')
+    dept = Department.objects.create(name='Eng')
+    core = Team.objects.create(name='Core', department=dept)
+    core.team_leads.add(lead)
+    other = Team.objects.create(name='Other', department=dept)
+    client = APIClient()
+    client.force_authenticate(user=user)
+    return {'client': client, 'lead': lead, 'outsider': outsider, 'core': core, 'other': other}
+
+
+def test_lead_can_add_a_member_to_their_own_team(lead_setup):
+    r = lead_setup['client'].patch(
+        f"/api/teams/{lead_setup['core'].id}/",
+        {'members': [lead_setup['outsider'].id]},
+        format='json',
+    )
+
+    assert r.status_code == status.HTTP_200_OK
+    assert list(lead_setup['core'].members.all()) == [lead_setup['outsider']]
+
+
+def test_lead_cannot_touch_a_team_they_do_not_lead(lead_setup):
+    r = lead_setup['client'].patch(
+        f"/api/teams/{lead_setup['other'].id}/",
+        {'members': [lead_setup['outsider'].id]},
+        format='json',
+    )
+
+    assert r.status_code == status.HTTP_403_FORBIDDEN
+    assert lead_setup['other'].members.count() == 0
+
+
+def test_lead_cannot_make_themselves_lead_elsewhere(lead_setup):
+    """The object check passes for their own team, so the field limit must hold."""
+    r = lead_setup['client'].patch(
+        f"/api/teams/{lead_setup['core'].id}/",
+        {'team_leads': [lead_setup['outsider'].id]},
+        format='json',
+    )
+
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
+    assert list(lead_setup['core'].team_leads.all()) == [lead_setup['lead']]
+
+
+def test_lead_cannot_rename_their_team(lead_setup):
+    r = lead_setup['client'].patch(
+        f"/api/teams/{lead_setup['core'].id}/", {'name': 'Renamed'}, format='json',
+    )
+
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
+    lead_setup['core'].refresh_from_db()
+    assert lead_setup['core'].name == 'Core'
+
+
+def test_lead_cannot_create_or_delete_teams(lead_setup):
+    dept = lead_setup['core'].department
+
+    created = lead_setup['client'].post(
+        '/api/teams/', {'name': 'New', 'department': dept.id}, format='json',
+    )
+    deleted = lead_setup['client'].delete(f"/api/teams/{lead_setup['core'].id}/")
+
+    assert created.status_code == status.HTTP_403_FORBIDDEN
+    assert deleted.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_plain_member_cannot_edit_teams(regular_client, db):
+    dept = Department.objects.create(name='Eng')
+    team = Team.objects.create(name='Core', department=dept)
+
+    r = regular_client.patch(f'/api/teams/{team.id}/', {'members': []}, format='json')
+
+    assert r.status_code == status.HTTP_403_FORBIDDEN
+
+
 def test_admin_can_create_department(admin_client):
     r = admin_client.post('/api/departments/', {'name': 'Engineering'}, format='json')
     assert r.status_code == status.HTTP_201_CREATED
