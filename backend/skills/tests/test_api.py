@@ -52,6 +52,44 @@ def test_admin_can_create_skill(admin_client):
     assert r.status_code == status.HTTP_201_CREATED
 
 
+def test_duplicate_skill_name_is_rejected_regardless_of_case(admin_client, skill):
+    r = admin_client.post(
+        '/api/skills/', {'name': 'python', 'category': skill.category_id}, format='json',
+    )
+
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
+    assert 'name' in r.data
+    assert Skill.objects.filter(category=skill.category).count() == 1
+
+
+def test_same_skill_name_is_allowed_in_another_category(admin_client, skill):
+    other = SkillCategory.objects.create(name='Scripting')
+
+    r = admin_client.post(
+        '/api/skills/', {'name': 'python', 'category': other.id}, format='json',
+    )
+
+    assert r.status_code == status.HTTP_201_CREATED
+
+
+def test_renaming_onto_an_existing_skill_is_rejected(admin_client, skill):
+    other = Skill.objects.create(name='Django', category=skill.category)
+
+    r = admin_client.patch(f'/api/skills/{other.id}/', {'name': 'PYTHON'}, format='json')
+
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
+    other.refresh_from_db()
+    assert other.name == 'Django'
+
+
+def test_renaming_a_skill_to_its_own_name_in_another_case_is_allowed(admin_client, skill):
+    r = admin_client.patch(f'/api/skills/{skill.id}/', {'name': 'PYTHON'}, format='json')
+
+    assert r.status_code == status.HTTP_200_OK
+    skill.refresh_from_db()
+    assert skill.name == 'PYTHON'
+
+
 def test_regular_user_can_list_but_not_create_skills(regular_client):
     r = regular_client.get('/api/skills/')
     assert r.status_code == status.HTTP_200_OK

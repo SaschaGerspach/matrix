@@ -70,6 +70,16 @@ describe('SkillProposalsComponent', () => {
     expect(component.proposalOutcome(component.proposals()[0])).toBe('exists');
   });
 
+  it('recognises an existing skill that differs only in case', () => {
+    fixture.detectChanges();
+    flushInit(
+      [proposal({ skill_name: 'terraform' })],
+      [{ id: 9, name: 'Terraform', category: 3, level_descriptions: [] }],
+    );
+
+    expect(component.proposalOutcome(component.proposals()[0])).toBe('exists');
+  });
+
   it('treats a matching name in another category as a new skill', () => {
     fixture.detectChanges();
     flushInit([proposal()], [{ id: 9, name: 'Terraform', category: 4, level_descriptions: [] }]);

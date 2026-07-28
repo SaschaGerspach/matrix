@@ -6,6 +6,7 @@ import { provideRouter } from '@angular/router';
 import { TranslateTestingModule } from '../../core/testing/translate-testing';
 
 import { environment } from '../../../environments/environment';
+import { ToastService } from '../../core/toast.service';
 import { AdminComponent } from './admin.component';
 
 function flushInitRequests(http: HttpTestingController): void {
@@ -54,6 +55,41 @@ describe('AdminComponent', () => {
     expect(component.categories().length).toBe(1);
     expect(component.skills().length).toBe(1);
     expect(component.teams().length).toBe(1);
+  });
+
+  it('reports a duplicate skill name instead of a generic failure', () => {
+    const toast = TestBed.inject(ToastService);
+    const errorSpy = spyOn(toast, 'error');
+    fixture.detectChanges();
+    flushInitRequests(http);
+
+    component.newSkillName = 'python';
+    component.newSkillCategory = 1;
+    component.addSkill();
+
+    http.expectOne(`${environment.apiUrl}/skills/`).flush(
+      { name: ['A skill with this name already exists in this category.'] },
+      { status: 400, statusText: 'Bad Request' },
+    );
+    http.expectOne(`${environment.apiUrl}/skills/`).flush([{ id: 1, name: 'Python', category: 1 }]);
+
+    expect(errorSpy).toHaveBeenCalledWith('TOAST.SKILL_DUPLICATE');
+  });
+
+  it('still reports unexpected failures generically', () => {
+    const toast = TestBed.inject(ToastService);
+    const errorSpy = spyOn(toast, 'error');
+    fixture.detectChanges();
+    flushInitRequests(http);
+
+    component.newSkillName = 'Rust';
+    component.newSkillCategory = 1;
+    component.addSkill();
+
+    http.expectOne(`${environment.apiUrl}/skills/`).flush(null, { status: 500, statusText: 'Server Error' });
+    http.expectOne(`${environment.apiUrl}/skills/`).flush([{ id: 1, name: 'Python', category: 1 }]);
+
+    expect(errorSpy).toHaveBeenCalledWith('TOAST.ERROR');
   });
 
   it('adds a category', () => {

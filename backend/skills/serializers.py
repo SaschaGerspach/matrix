@@ -34,6 +34,22 @@ class SkillSerializer(serializers.ModelSerializer):
         model = Skill
         fields = ('id', 'name', 'category', 'level_descriptions')
 
+    def validate(self, attrs):
+        # The database constraint is on Lower(name), which DRF cannot derive a
+        # validator from, so without this a clashing name raises IntegrityError
+        # and surfaces as a 500 instead of a field error.
+        name = attrs.get('name', getattr(self.instance, 'name', None))
+        category = attrs.get('category', getattr(self.instance, 'category', None))
+        if name and category:
+            clashing = Skill.objects.filter(name__iexact=name, category=category)
+            if self.instance:
+                clashing = clashing.exclude(pk=self.instance.pk)
+            if clashing.exists():
+                raise serializers.ValidationError({
+                    'name': 'A skill with this name already exists in this category.',
+                })
+        return attrs
+
 
 class MySkillAssignmentSerializer(serializers.ModelSerializer):
     skill_name = serializers.CharField(source='skill.name', read_only=True)

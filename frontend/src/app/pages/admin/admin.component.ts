@@ -1,4 +1,5 @@
 import { DatePipe } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -166,8 +167,17 @@ export class AdminComponent implements OnInit {
         this.toast.success('TOAST.SKILL_CREATED');
         this.reloadSkills();
       },
-      error: () => { this.toast.error('TOAST.ERROR'); this.reloadSkills(); },
+      error: (err: HttpErrorResponse) => {
+        this.toast.error(this.isDuplicateName(err) ? 'TOAST.SKILL_DUPLICATE' : 'TOAST.ERROR');
+        this.reloadSkills();
+      },
     });
+  }
+
+  // A name clash is not worth retrying, so it must not read like a transient
+  // failure. The API reports it as a 400 with a name field error.
+  private isDuplicateName(err: HttpErrorResponse): boolean {
+    return err.status === 400 && !!err.error?.name;
   }
 
   deleteSkill(id: number): void {
@@ -199,7 +209,9 @@ export class AdminComponent implements OnInit {
         this.toast.success('TOAST.SKILL_UPDATED');
         this.reloadSkills();
       },
-      error: () => { this.toast.error('TOAST.ERROR'); },
+      error: (err: HttpErrorResponse) => {
+        this.toast.error(this.isDuplicateName(err) ? 'TOAST.SKILL_DUPLICATE' : 'TOAST.ERROR');
+      },
     });
   }
 

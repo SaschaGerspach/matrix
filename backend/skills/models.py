@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.functions import Lower
 
 
 class SkillCategory(models.Model):
@@ -29,7 +30,16 @@ class Skill(models.Model):
 
     class Meta:
         ordering = ['category__name', 'name']
-        unique_together = ('name', 'category')
+        # Compared case-insensitively: "Terraform" and "terraform" are the same
+        # skill to a person, and two entries would split the matrix into two
+        # columns that each hold half the data.
+        constraints = [
+            models.UniqueConstraint(
+                Lower('name'),
+                'category',
+                name='unique_skill_name_per_category',
+            ),
+        ]
 
     def __str__(self):
         return self.name

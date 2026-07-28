@@ -60,10 +60,17 @@ class SkillProposalViewSet(AuditMixin, viewsets.ModelViewSet):
             proposal.reviewed_at = timezone.now()
             proposal.save()
 
-            _, created = Skill.objects.get_or_create(
-                name=proposal.skill_name,
+            # Matched case-insensitively so proposing "terraform" reuses an
+            # existing "Terraform" instead of hitting the uniqueness constraint.
+            created = not Skill.objects.filter(
+                name__iexact=proposal.skill_name,
                 category=proposal.category,
-            )
+            ).exists()
+            if created:
+                Skill.objects.create(
+                    name=proposal.skill_name,
+                    category=proposal.category,
+                )
 
         if created:
             from skills.views._cache import invalidate_analytics_cache

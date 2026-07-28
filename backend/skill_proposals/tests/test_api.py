@@ -171,6 +171,18 @@ def test_approve_reuses_an_existing_catalogue_skill(admin_client, proposal, cate
     assert Skill.objects.filter(name='Rust', category=category).count() == 1
 
 
+def test_approve_reuses_a_skill_that_differs_only_in_case(admin_client, employee, category):
+    Skill.objects.create(name='Terraform', category=category)
+    p = SkillProposal.objects.create(
+        proposed_by=employee, skill_name='terraform', category=category,
+    )
+
+    r = admin_client.post(f'{URL}{p.id}/approve/', format='json')
+
+    assert r.status_code == status.HTTP_200_OK
+    assert Skill.objects.filter(category=category, name__iexact='terraform').count() == 1
+
+
 def test_unauthenticated_cannot_access(db):
     c = APIClient()
     r = c.get(URL)

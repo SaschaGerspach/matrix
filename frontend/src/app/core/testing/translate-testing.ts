@@ -116,6 +116,7 @@ const EN = {
     SKILL_CONFIRMED: 'Skill confirmed.', SKILL_ADDED: 'Skill added.',
     CATEGORY_CREATED: 'Category created.', CATEGORY_DELETED: 'Category deleted.',
     SKILL_CREATED: 'Skill created.', SKILL_UPDATED: 'Skill updated.', SKILL_DELETED: 'Skill deleted.',
+    SKILL_DUPLICATE: 'A skill with this name already exists in this category.',
     REQUIREMENT_CREATED: 'Requirement created.', REQUIREMENT_DELETED: 'Requirement deleted.',
     LEVEL_DESC_CREATED: 'Level description created.', LEVEL_DESC_DELETED: 'Level description deleted.',
     TEMPLATE_CREATED: 'Role template created.', TEMPLATE_DELETED: 'Role template deleted.',

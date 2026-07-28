@@ -74,12 +74,13 @@ export class SkillProposalsComponent implements OnInit {
     this.showForm.update((v) => !v);
   }
 
-  // What approving would actually do, so a reviewer is not guessing. Mirrors the
-  // backend's get_or_create, which matches on the exact name within a category.
+  // What approving would actually do, so a reviewer is not guessing. Matches the
+  // backend, which compares names case-insensitively within a category.
   proposalOutcome(proposal: SkillProposal): 'creates' | 'exists' | 'no-category' {
     if (!proposal.category) return 'no-category';
+    const proposed = proposal.skill_name.trim().toLowerCase();
     const exists = this.skills().some(
-      (skill) => skill.name === proposal.skill_name && skill.category === proposal.category,
+      (skill) => skill.name.toLowerCase() === proposed && skill.category === proposal.category,
     );
     return exists ? 'exists' : 'creates';
   }

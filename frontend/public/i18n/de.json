@@ -263,6 +263,7 @@
     "CATEGORY_DELETED": "Kategorie gelöscht.",
     "SKILL_CREATED": "Skill erstellt.",
     "SKILL_UPDATED": "Skill aktualisiert.",
+    "SKILL_DUPLICATE": "Ein Skill mit diesem Namen existiert in dieser Kategorie bereits.",
     "SKILL_DELETED": "Skill gelöscht.",
     "REQUIREMENT_CREATED": "Anforderung erstellt.",
     "REQUIREMENT_DELETED": "Anforderung gelöscht.",
