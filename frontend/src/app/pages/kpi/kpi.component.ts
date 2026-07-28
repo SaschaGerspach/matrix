@@ -1,5 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 
@@ -17,7 +19,7 @@ const CHART_TERTIARY = '#9333a3';
 @Component({
   selector: 'app-kpi',
   standalone: true,
-  imports: [CountUpDirective, MatIconModule, BaseChartDirective, TranslateModule],
+  imports: [CountUpDirective, MatButtonModule, MatIconModule, RouterLink, BaseChartDirective, TranslateModule],
   templateUrl: './kpi.component.html',
   styleUrl: './kpi.component.scss',
 })
@@ -28,6 +30,19 @@ export class KpiComponent implements OnInit {
   readonly distribution = signal<LevelDistribution | null>(null);
   readonly loading = signal(false);
   readonly skeletonCards = [1, 2, 3];
+  private readonly expanded = signal(new Set<number>());
+
+  isExpanded(teamId: number): boolean {
+    return this.expanded().has(teamId);
+  }
+
+  toggleDetails(teamId: number): void {
+    this.expanded.update((open) => {
+      const next = new Set(open);
+      if (!next.delete(teamId)) next.add(teamId);
+      return next;
+    });
+  }
 
   readonly barChartConfig = computed<ChartConfiguration<'bar'>>(() => {
     const teams = this.data();

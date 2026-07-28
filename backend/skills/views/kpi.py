@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 
 from common.permissions import IsAdminOrTeamLead
 
-from ..models import Skill, SkillAssignment
+from ..models import Skill, SkillAssignment, SkillRequirement
 from ._cache import CACHE_TTL, _cache_key, _register_cache_key
 
 
@@ -22,6 +22,10 @@ class KpiView(APIView):
         teams = list(Team.objects.prefetch_related('members').all())
         total_skills = Skill.objects.count()
 
+        requirements_by_team: dict = {}
+        for req in SkillRequirement.objects.select_related('skill'):
+            requirements_by_team.setdefault(req.team_id, []).append(req)
+
         all_member_ids = set()
         team_member_ids = {}
         for team in teams:
@@ -37,39 +41,59 @@ class KpiView(APIView):
         result = []
         for team in teams:
             members = team_member_ids[team.id]
-            member_count = len(members)
-            if member_count == 0:
-                result.append({
-                    'team_id': team.id, 'team_name': team.name,
-                    'member_count': 0, 'avg_level': 0, 'coverage': 0,
-                    'total_assignments': 0, 'confirmed_ratio': 0,
-                })
-                continue
-
             team_assignments = [a for mid in members for a in emp_assignments.get(mid, [])]
             total_assignments = len(team_assignments)
-            if total_assignments == 0:
-                result.append({
-                    'team_id': team.id, 'team_name': team.name,
-                    'member_count': member_count, 'avg_level': 0, 'coverage': 0,
-                    'total_assignments': 0, 'confirmed_ratio': 0,
-                })
-                continue
 
-            confirmed_count = sum(1 for a in team_assignments if a.status == SkillAssignment.Status.CONFIRMED)
-            avg_level = round(sum(a.level for a in team_assignments) / total_assignments, 2)
-            unique_skills = len({a.skill_id for a in team_assignments})
-            coverage = round(unique_skills / total_skills * 100, 1) if total_skills else 0
+            # Highest level per person and skill, so a requirement counts as met
+            # even when someone has been reassessed more than once.
+            best_level: dict = {}
+            for a in team_assignments:
+                cell = (a.employee_id, a.skill_id)
+                if a.level > best_level.get(cell, 0):
+                    best_level[cell] = a.level
 
-            result.append({
+            requirements = [
+                {
+                    'skill_id': req.skill_id,
+                    'skill_name': req.skill.name,
+                    'required_level': req.required_level,
+                    'met_count': sum(
+                        1 for mid in members
+                        if best_level.get((mid, req.skill_id), 0) >= req.required_level
+                    ),
+                }
+                for req in requirements_by_team.get(team.id, [])
+            ]
+            requirements.sort(key=lambda r: r['skill_name'])
+
+            confirmed_count = sum(
+                1 for a in team_assignments if a.status == SkillAssignment.Status.CONFIRMED
+            )
+            entry = {
                 'team_id': team.id,
                 'team_name': team.name,
-                'member_count': member_count,
-                'avg_level': avg_level,
-                'coverage': coverage,
+                'member_count': len(members),
+                'members': [
+                    {'id': m.id, 'full_name': str(m)}
+                    for m in sorted(team.members.all(), key=str)
+                ],
+                'requirements': requirements,
+                'pending_count': total_assignments - confirmed_count,
                 'total_assignments': total_assignments,
-                'confirmed_ratio': round(confirmed_count / total_assignments * 100, 1),
-            })
+                'avg_level': 0,
+                'coverage': 0,
+                'confirmed_ratio': 0,
+            }
+            if total_assignments:
+                unique_skills = len({a.skill_id for a in team_assignments})
+                entry['avg_level'] = round(
+                    sum(a.level for a in team_assignments) / total_assignments, 2,
+                )
+                entry['coverage'] = (
+                    round(unique_skills / total_skills * 100, 1) if total_skills else 0
+                )
+                entry['confirmed_ratio'] = round(confirmed_count / total_assignments * 100, 1)
+            result.append(entry)
 
         _register_cache_key(key)
         cache.set(key, result, CACHE_TTL)

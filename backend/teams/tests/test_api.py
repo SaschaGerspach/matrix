@@ -76,6 +76,33 @@ def test_admin_can_update_team(admin_client):
     assert r.data['name'] == 'Platform'
 
 
+def test_team_list_carries_member_and_lead_names(admin_client):
+    dept = Department.objects.create(name='Eng')
+    alice = Employee.objects.create(first_name='Alice', last_name='A', email='a@x.com')
+    team = Team.objects.create(name='Core', department=dept)
+    team.members.add(alice)
+    team.team_leads.add(alice)
+
+    r = admin_client.get('/api/teams/')
+
+    assert r.data[0]['member_details'] == [{'id': alice.id, 'full_name': 'Alice A'}]
+    assert r.data[0]['lead_details'] == [{'id': alice.id, 'full_name': 'Alice A'}]
+
+
+def test_admin_can_assign_a_team_lead(admin_client):
+    dept = Department.objects.create(name='Eng')
+    alice = Employee.objects.create(first_name='Alice', last_name='A', email='a@x.com')
+    team = Team.objects.create(name='Core', department=dept)
+    team.members.add(alice)
+
+    r = admin_client.patch(
+        f'/api/teams/{team.id}/', {'team_leads': [alice.id]}, format='json',
+    )
+
+    assert r.status_code == status.HTTP_200_OK
+    assert list(team.team_leads.all()) == [alice]
+
+
 def test_admin_can_delete_team(admin_client):
     dept = Department.objects.create(name='Eng')
     team = Team.objects.create(name='Core', department=dept)

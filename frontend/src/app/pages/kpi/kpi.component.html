@@ -54,6 +54,54 @@
             <span class="kpi-label">{{ 'KPI.TOTAL_ASSIGNMENTS' | translate }}</span>
             <span class="kpi-value tabular-nums">{{ team.total_assignments }}</span>
           </div>
+
+          @if (team.pending_count > 0) {
+            <div class="kpi-row">
+              <span class="kpi-label">{{ 'KPI.PENDING' | translate }}</span>
+              <span class="kpi-value kpi-value-pending tabular-nums">{{ team.pending_count }}</span>
+            </div>
+          }
+
+          <button mat-button class="kpi-toggle" (click)="toggleDetails(team.team_id)">
+            <mat-icon>{{ isExpanded(team.team_id) ? 'expand_less' : 'expand_more' }}</mat-icon>
+            {{ (isExpanded(team.team_id) ? 'KPI.HIDE_DETAILS' : 'KPI.SHOW_DETAILS') | translate }}
+          </button>
+
+          @if (isExpanded(team.team_id)) {
+            <div class="kpi-details">
+              <h4 class="kpi-details-title">{{ 'KPI.REQUIRED_SKILLS' | translate }}</h4>
+              @if (team.requirements.length) {
+                <ul class="requirement-list">
+                  @for (req of team.requirements; track req.skill_id) {
+                    <li class="requirement-row"
+                        [class.requirement-unmet]="req.met_count === 0"
+                        [class.requirement-full]="req.met_count === team.member_count">
+                      <span class="requirement-name">{{ req.skill_name }}</span>
+                      <span class="requirement-target heat-badge" [attr.data-heat]="req.required_level">
+                        {{ req.required_level }}
+                      </span>
+                      <span class="requirement-met tabular-nums">
+                        {{ 'KPI.MET_BY' | translate: { met: req.met_count, total: team.member_count } }}
+                      </span>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="kpi-details-empty">{{ 'KPI.NO_REQUIREMENTS' | translate }}</p>
+              }
+
+              <h4 class="kpi-details-title">{{ 'KPI.MEMBERS' | translate }}</h4>
+              @if (team.members.length) {
+                <div class="member-list">
+                  @for (member of team.members; track member.id) {
+                    <a class="member-chip" [routerLink]="['/employees', member.id]">{{ member.full_name }}</a>
+                  }
+                </div>
+              } @else {
+                <p class="kpi-details-empty">{{ 'KPI.NO_MEMBERS' | translate }}</p>
+              }
+            </div>
+          }
         </div>
       }
     </div>

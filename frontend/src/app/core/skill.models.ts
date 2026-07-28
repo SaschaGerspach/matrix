@@ -146,6 +146,13 @@ export interface SkillHistoryEntry {
   timestamp: string;
 }
 
+export interface KpiRequirement {
+  skill_id: number;
+  skill_name: string;
+  required_level: number;
+  met_count: number;
+}
+
 export interface KpiEntry {
   team_id: number;
   team_name: string;
@@ -154,4 +161,7 @@ export interface KpiEntry {
   coverage: number;
   total_assignments: number;
   confirmed_ratio: number;
+  members: { id: number; full_name: string }[];
+  requirements: KpiRequirement[];
+  pending_count: number;
 }

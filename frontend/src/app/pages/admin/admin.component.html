@@ -202,6 +202,60 @@
     </div>
   </mat-tab>
 
+  <mat-tab [label]="'ADMIN.TAB_TEAMS' | translate">
+    <div class="tab-content">
+      <div class="team-list">
+        @for (team of teams(); track team.id) {
+          <div class="team-row surface-card" [class.team-row-warn]="team.lead_details.length === 0 && team.member_details.length > 0">
+            <div class="team-row-head">
+              <span class="team-name">{{ team.name }}</span>
+              <span class="team-members">
+                {{ team.member_details.length }} {{ 'COMMON.MEMBERS' | translate }}
+              </span>
+            </div>
+
+            <div class="team-leads">
+              <span class="team-leads-label">{{ 'ADMIN.TEAM_LEADS' | translate }}</span>
+              @for (lead of team.lead_details; track lead.id) {
+                <span class="lead-chip">
+                  {{ lead.full_name }}
+                  <button mat-icon-button
+                          [attr.aria-label]="'ADMIN.REMOVE_LEAD' | translate"
+                          [matTooltip]="'ADMIN.REMOVE_LEAD' | translate"
+                          (click)="removeLead(team, lead.id)">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </span>
+              } @empty {
+                <span class="lead-none">{{ 'ADMIN.NO_LEAD_YET' | translate }}</span>
+              }
+            </div>
+
+            @if (assignableMembers(team).length) {
+              <div class="team-add-lead">
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'ADMIN.ADD_LEAD' | translate }}</mat-label>
+                  <mat-select [value]="null" (selectionChange)="addLead(team, $event.value)">
+                    @for (member of assignableMembers(team); track member.id) {
+                      <mat-option [value]="member.id">{{ member.full_name }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            } @else if (team.member_details.length === 0) {
+              <p class="team-hint">{{ 'ADMIN.TEAM_HAS_NO_MEMBERS' | translate }}</p>
+            }
+          </div>
+        } @empty {
+          <div class="empty-state">
+            <mat-icon>groups</mat-icon>
+            <p class="empty-state-title">{{ 'ADMIN.NO_TEAMS' | translate }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </mat-tab>
+
   <mat-tab [label]="'ADMIN.TAB_ROLE_TEMPLATES' | translate">
     <div class="tab-content">
       <app-admin-role-templates [skills]="skills()" [teams]="teams()" />

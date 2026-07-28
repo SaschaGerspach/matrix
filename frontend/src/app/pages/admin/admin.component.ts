@@ -17,7 +17,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AuditLogEntry, AuditService } from '../../core/audit.service';
 import { SkillCatalogService } from '../../core/skill-catalog.service';
 import { Skill, SkillCategory, SkillLevelDescription, SkillRequirement } from '../../core/skill.models';
-import { Team, TeamService } from '../../core/team.service';
+import { Team, TeamPerson, TeamService } from '../../core/team.service';
 import { ToastService } from '../../core/toast.service';
 
 import { AdminImportComponent } from './admin-import.component';
@@ -72,6 +72,32 @@ export class AdminComponent implements OnInit {
   readonly teamNamesWithoutLead = computed(
     () => this.teamsWithoutLead().map((t) => t.name).join(', '),
   );
+
+  // Leads are picked from the team's own members, which is both the normal case
+  // and the only list of names available without paging the employee endpoint.
+  assignableMembers(team: Team): TeamPerson[] {
+    return team.member_details.filter(
+      (member) => !team.team_leads.includes(member.id),
+    );
+  }
+
+  addLead(team: Team, employeeId: number): void {
+    this.saveLeads(team, [...team.team_leads, employeeId]);
+  }
+
+  removeLead(team: Team, employeeId: number): void {
+    this.saveLeads(team, team.team_leads.filter((id) => id !== employeeId));
+  }
+
+  private saveLeads(team: Team, leadIds: number[]): void {
+    this.teamService.setLeads(team.id, leadIds).subscribe({
+      next: (updated) => {
+        this.teams.update((list) => list.map((t) => (t.id === team.id ? updated : t)));
+        this.toast.success('TOAST.TEAM_LEADS_UPDATED');
+      },
+      error: () => this.toast.error('TOAST.ERROR'),
+    });
+  }
   readonly requirements = signal<SkillRequirement[]>([]);
   readonly levelDescriptions = signal<SkillLevelDescription[]>([]);
   readonly auditLog = signal<AuditLogEntry[]>([]);

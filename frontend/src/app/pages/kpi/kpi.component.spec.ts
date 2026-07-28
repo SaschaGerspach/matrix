@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { provideRouter } from '@angular/router';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { TranslateTestingModule } from '../../core/testing/translate-testing';
 
@@ -18,6 +19,12 @@ const kpiData: KpiEntry[] = [
     coverage: 80,
     total_assignments: 6,
     confirmed_ratio: 66.7,
+    pending_count: 2,
+    members: [{ id: 1, full_name: 'Alice A' }, { id: 2, full_name: 'Bob B' }],
+    requirements: [
+      { skill_id: 1, skill_name: 'Docker', required_level: 4, met_count: 0 },
+      { skill_id: 2, skill_name: 'Python', required_level: 3, met_count: 3 },
+    ],
   },
   {
     team_id: 2,
@@ -27,6 +34,9 @@ const kpiData: KpiEntry[] = [
     coverage: 50,
     total_assignments: 2,
     confirmed_ratio: 100,
+    pending_count: 0,
+    members: [],
+    requirements: [],
   },
 ];
 
@@ -54,6 +64,7 @@ describe('KpiComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideRouter([]),
         provideNoopAnimations(),
         provideCharts(withDefaultRegisterables()),
       ],
@@ -95,6 +106,54 @@ describe('KpiComponent', () => {
     expect(el.textContent).toContain('3 members');
     expect(el.textContent).toContain('80%');
     expect(el.textContent).toContain('Beta');
+  });
+
+  it('keeps team details collapsed until asked', () => {
+    fixture.detectChanges();
+    flushInit(http);
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).not.toContain('Required skills');
+    expect(component.isExpanded(1)).toBeFalse();
+  });
+
+  it('reveals required skills and members for one team at a time', () => {
+    fixture.detectChanges();
+    flushInit(http);
+
+    component.toggleDetails(1);
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('Required skills');
+    expect(el.textContent).toContain('Docker');
+    expect(el.textContent).toContain('0 of 3');
+    expect(el.textContent).toContain('Alice A');
+    expect(component.isExpanded(2)).toBeFalse();
+  });
+
+  it('marks a requirement nobody meets', () => {
+    fixture.detectChanges();
+    flushInit(http);
+
+    component.toggleDetails(1);
+    fixture.detectChanges();
+
+    const rows = fixture.nativeElement.querySelectorAll('.requirement-row');
+    expect(rows[0].classList).toContain('requirement-unmet');
+    expect(rows[1].classList).not.toContain('requirement-unmet');
+  });
+
+  it('collapses again on a second toggle', () => {
+    fixture.detectChanges();
+    flushInit(http);
+
+    component.toggleDetails(1);
+    component.toggleDetails(1);
+    fixture.detectChanges();
+
+    expect(component.isExpanded(1)).toBeFalse();
   });
 
   it('shows skeleton cards while loading', () => {

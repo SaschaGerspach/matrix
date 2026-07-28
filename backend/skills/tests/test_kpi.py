@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from employees.models import Employee
-from skills.models import Skill, SkillAssignment, SkillCategory
+from skills.models import Skill, SkillAssignment, SkillCategory, SkillRequirement
 from teams.models import Department, Team
 
 pytestmark = pytest.mark.django_db
@@ -45,6 +45,52 @@ def test_returns_kpi(setup):
     assert alpha['coverage'] == 100.0
     assert alpha['total_assignments'] == 2
     assert alpha['confirmed_ratio'] == 50.0
+
+
+def test_kpi_lists_team_members_and_open_confirmations(setup):
+    c = APIClient()
+    c.force_authenticate(user=setup)
+
+    alpha = next(t for t in c.get(URL).data if t['team_name'] == 'Alpha')
+
+    assert [m['full_name'] for m in alpha['members']] == ['Alice A', 'Bob B']
+    assert alpha['pending_count'] == 1
+
+
+def test_kpi_reports_required_skills_and_how_many_meet_them(db):
+    user = User.objects.create_user(username='viewer', password='pw!', is_superuser=True)
+    emp1 = Employee.objects.create(first_name='Alice', last_name='A', email='a@x.com')
+    emp2 = Employee.objects.create(first_name='Bob', last_name='B', email='b@x.com')
+    dept = Department.objects.create(name='Eng')
+    team = Team.objects.create(name='Alpha', department=dept)
+    team.members.add(emp1, emp2)
+    cat = SkillCategory.objects.create(name='Programming')
+    python = Skill.objects.create(name='Python', category=cat)
+    docker = Skill.objects.create(name='Docker', category=cat)
+    SkillRequirement.objects.create(team=team, skill=python, required_level=3)
+    SkillRequirement.objects.create(team=team, skill=docker, required_level=4)
+    SkillAssignment.objects.create(employee=emp1, skill=python, level=4)
+    SkillAssignment.objects.create(employee=emp2, skill=python, level=2)
+    SkillAssignment.objects.create(employee=emp1, skill=docker, level=2)
+
+    c = APIClient()
+    c.force_authenticate(user=user)
+    alpha = next(t for t in c.get(URL).data if t['team_name'] == 'Alpha')
+
+    # Sorted by skill name, so Docker comes before Python.
+    assert [(r['skill_name'], r['required_level'], r['met_count']) for r in alpha['requirements']] == [
+        ('Docker', 4, 0),
+        ('Python', 3, 1),
+    ]
+
+
+def test_kpi_requirements_are_empty_when_none_are_defined(setup):
+    c = APIClient()
+    c.force_authenticate(user=setup)
+
+    alpha = next(t for t in c.get(URL).data if t['team_name'] == 'Alpha')
+
+    assert alpha['requirements'] == []
 
 
 def test_empty_team(db):
