@@ -1,10 +1,12 @@
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { TranslateModule } from '@ngx-translate/core';
@@ -20,7 +22,7 @@ import { ThemeService } from '../core/theme.service';
   standalone: true,
   imports: [
     DatePipe, MatBadgeModule, MatButtonModule, MatIconModule, MatMenuModule,
-    MatToolbarModule, RouterLink, RouterLinkActive, RouterOutlet, TranslateModule,
+    MatSidenavModule, RouterLink, RouterLinkActive, RouterOutlet, TranslateModule,
   ],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
@@ -37,8 +39,26 @@ export class ShellComponent implements OnInit, OnDestroy {
   readonly isAdmin = signal(false);
   readonly notifications = signal<NotificationItem[]>([]);
   readonly unreadCount = this.notificationService.unreadCount;
+  readonly isCompact = signal(false);
+  readonly navOpen = signal(true);
 
   pollTimer: ReturnType<typeof setInterval> | null = null;
+
+  constructor() {
+    inject(BreakpointObserver)
+      .observe('(max-width: 959px)')
+      .pipe(takeUntilDestroyed())
+      .subscribe(({ matches }) => {
+        this.isCompact.set(matches);
+        this.navOpen.set(!matches);
+      });
+  }
+
+  onNavigate(): void {
+    if (this.isCompact()) {
+      this.navOpen.set(false);
+    }
+  }
 
   ngOnInit(): void {
     this.langService.init();

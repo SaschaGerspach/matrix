@@ -1,26 +1,165 @@
-.nav-links {
-  margin-left: 2rem;
+:host {
+  display: block;
+  height: 100dvh;
 }
 
-.active {
-  opacity: 1;
-  text-decoration: underline;
+.shell {
+  height: 100%;
+  background: var(--mat-sys-surface);
+}
+
+// --- Sidenav ---
+
+.shell-nav {
+  width: 248px;
+  border-right: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface-container-low);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  height: 64px;
+  padding: 0 1rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  flex-shrink: 0;
+
+  .mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.brand-name {
+  font: var(--mat-sys-title-small);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-scroll {
+  padding: 0.75rem 0.5rem 1.5rem;
+}
+
+.nav-group + .nav-group {
+  margin-top: 1.25rem;
+}
+
+.nav-group-label {
+  margin: 0 0 0.25rem;
+  padding: 0 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font: var(--mat-sys-label-large);
+  text-decoration: none;
+  color: var(--mat-sys-on-surface-variant);
+  transition:
+    background var(--motion-fast) var(--motion-ease),
+    color var(--motion-fast) var(--motion-ease);
+
+  .mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface);
+  }
+}
+
+.nav-item-active {
+  background: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+  font-weight: 600;
+
+  &:hover {
+    background: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 60%;
+    border-radius: 0 3px 3px 0;
+    background: var(--mat-sys-primary);
+  }
+}
+
+// --- Topbar ---
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  height: 64px;
+  padding: 0 1rem 0 0.5rem;
+  background: var(--mat-sys-surface);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.topbar-title {
+  font: var(--mat-sys-title-small);
+  font-weight: 600;
+  margin-left: 0.25rem;
 }
 
 .spacer {
   flex: 1 1 auto;
 }
 
+.sign-out {
+  margin-left: 0.25rem;
+}
+
 .content {
+  display: block;
   padding: 1.5rem;
 }
+
+// --- Notification menu ---
 
 .notif-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 8px 16px;
-  border-bottom: 1px solid light-dark(#eee, #444);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
 }
 
 .notif-message {
@@ -32,14 +171,14 @@
 .notif-time {
   display: block;
   font-size: 11px;
-  color: light-dark(#999, #888);
+  color: var(--mat-sys-on-surface-variant);
   margin-top: 2px;
 }
 
 .notif-empty {
   padding: 16px;
   text-align: center;
-  color: light-dark(#999, #888);
+  color: var(--mat-sys-on-surface-variant);
 }
 
 :host ::ng-deep .notification-menu {
@@ -47,5 +186,5 @@
 }
 
 .unread {
-  background-color: light-dark(#e8eaf6, #2a2d3a);
+  background-color: var(--mat-sys-secondary-container);
 }

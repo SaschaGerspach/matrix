@@ -86,6 +86,30 @@ describe('ShellComponent', () => {
     expect(el.textContent).toContain('Admin');
   });
 
+  it('groups navigation by area', () => {
+    component.isTeamLead.set(true);
+    component.isAdmin.set(true);
+    fixture.detectChanges();
+    const labels = Array.from(
+      fixture.nativeElement.querySelectorAll('.nav-group-label') as NodeListOf<HTMLElement>,
+    ).map((el) => el.textContent?.trim());
+    expect(labels).toEqual(['Personal', 'Team', 'Analysis', 'Organisation', 'Administration']);
+  });
+
+  it('closes the drawer after navigating on compact viewports', () => {
+    component.isCompact.set(true);
+    component.navOpen.set(true);
+    component.onNavigate();
+    expect(component.navOpen()).toBeFalse();
+  });
+
+  it('keeps the drawer open after navigating on wide viewports', () => {
+    component.isCompact.set(false);
+    component.navOpen.set(true);
+    component.onNavigate();
+    expect(component.navOpen()).toBeTrue();
+  });
+
   it('logs out and navigates to login', () => {
     const navigateSpy = spyOn(router, 'navigate');
     component.logout();

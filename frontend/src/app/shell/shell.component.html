@@ -1,52 +1,119 @@
-<mat-toolbar color="primary">
-  <span>{{ 'APP_NAME' | translate }}</span>
-  <nav class="nav-links">
-    <a mat-button routerLink="/my-skills" routerLinkActive="active">{{ 'NAV.MY_SKILLS' | translate }}</a>
-    @if (isTeamLead()) {
-      <a mat-button routerLink="/team-review" routerLinkActive="active">{{ 'NAV.TEAM_REVIEW' | translate }}</a>
-      <a mat-button routerLink="/skill-gaps" routerLinkActive="active">{{ 'NAV.SKILL_GAPS' | translate }}</a>
-      <a mat-button routerLink="/team-comparison" routerLinkActive="active">{{ 'NAV.TEAM_COMPARISON' | translate }}</a>
-    }
-    <a mat-button routerLink="/dashboard" routerLinkActive="active">{{ 'NAV.DASHBOARD' | translate }}</a>
-    <a mat-button routerLink="/kpi" routerLinkActive="active">{{ 'NAV.KPIS' | translate }}</a>
-    <a mat-button routerLink="/employees" routerLinkActive="active">{{ 'NAV.EMPLOYEES' | translate }}</a>
-    <a mat-button routerLink="/skill-proposals" routerLinkActive="active">{{ 'NAV.PROPOSALS' | translate }}</a>
-    @if (isAdmin()) {
-      <a mat-button routerLink="/admin" routerLinkActive="active">{{ 'NAV.ADMIN' | translate }}</a>
-    }
-  </nav>
-  <span class="spacer"></span>
-  <button mat-icon-button (click)="langService.toggle()" [title]="langService.currentLang() === 'en' ? 'Deutsch' : 'English'">
-    <mat-icon>translate</mat-icon>
-  </button>
-  <button mat-icon-button (click)="themeService.toggle()" [title]="'NAV.TOGGLE_DARK_MODE' | translate">
-    <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-  </button>
-  <button mat-icon-button [matMenuTriggerFor]="notifMenu" (menuOpened)="loadNotifications()">
-    <mat-icon [matBadge]="unreadCount()" [matBadgeHidden]="unreadCount() === 0" matBadgeColor="warn" matBadgeSize="small">notifications</mat-icon>
-  </button>
-  <mat-menu #notifMenu="matMenu" class="notification-menu">
-    <div class="notif-header" (click)="$event.stopPropagation()">
-      <strong>{{ 'NOTIFICATIONS.TITLE' | translate }}</strong>
-      @if (unreadCount() > 0) {
-        <button mat-button (click)="markAllAsRead()">{{ 'NOTIFICATIONS.MARK_ALL_READ' | translate }}</button>
+<mat-sidenav-container class="shell">
+  <mat-sidenav
+    class="shell-nav"
+    [mode]="isCompact() ? 'over' : 'side'"
+    [opened]="navOpen()"
+    (openedChange)="navOpen.set($event)">
+    <div class="brand">
+      <span class="brand-mark"><mat-icon>grid_view</mat-icon></span>
+      <span class="brand-name">{{ 'APP_NAME' | translate }}</span>
+    </div>
+
+    <div class="nav-scroll">
+      <nav class="nav-group">
+        <p class="nav-group-label">{{ 'NAV.GROUP_PERSONAL' | translate }}</p>
+        <a class="nav-item" routerLink="/my-skills" routerLinkActive="nav-item-active" (click)="onNavigate()">
+          <mat-icon>person</mat-icon>
+          <span>{{ 'NAV.MY_SKILLS' | translate }}</span>
+        </a>
+      </nav>
+
+      @if (isTeamLead()) {
+        <nav class="nav-group">
+          <p class="nav-group-label">{{ 'NAV.GROUP_TEAM' | translate }}</p>
+          <a class="nav-item" routerLink="/team-review" routerLinkActive="nav-item-active" (click)="onNavigate()">
+            <mat-icon>fact_check</mat-icon>
+            <span>{{ 'NAV.TEAM_REVIEW' | translate }}</span>
+          </a>
+          <a class="nav-item" routerLink="/skill-gaps" routerLinkActive="nav-item-active" (click)="onNavigate()">
+            <mat-icon>report_problem</mat-icon>
+            <span>{{ 'NAV.SKILL_GAPS' | translate }}</span>
+          </a>
+          <a class="nav-item" routerLink="/team-comparison" routerLinkActive="nav-item-active" (click)="onNavigate()">
+            <mat-icon>compare_arrows</mat-icon>
+            <span>{{ 'NAV.TEAM_COMPARISON' | translate }}</span>
+          </a>
+        </nav>
+      }
+
+      <nav class="nav-group">
+        <p class="nav-group-label">{{ 'NAV.GROUP_ANALYSIS' | translate }}</p>
+        <a class="nav-item" routerLink="/dashboard" routerLinkActive="nav-item-active" (click)="onNavigate()">
+          <mat-icon>grid_on</mat-icon>
+          <span>{{ 'NAV.DASHBOARD' | translate }}</span>
+        </a>
+        <a class="nav-item" routerLink="/kpi" routerLinkActive="nav-item-active" (click)="onNavigate()">
+          <mat-icon>insights</mat-icon>
+          <span>{{ 'NAV.KPIS' | translate }}</span>
+        </a>
+      </nav>
+
+      <nav class="nav-group">
+        <p class="nav-group-label">{{ 'NAV.GROUP_ORGANISATION' | translate }}</p>
+        <a class="nav-item" routerLink="/employees" routerLinkActive="nav-item-active" (click)="onNavigate()">
+          <mat-icon>people</mat-icon>
+          <span>{{ 'NAV.EMPLOYEES' | translate }}</span>
+        </a>
+        <a class="nav-item" routerLink="/skill-proposals" routerLinkActive="nav-item-active" (click)="onNavigate()">
+          <mat-icon>lightbulb</mat-icon>
+          <span>{{ 'NAV.PROPOSALS' | translate }}</span>
+        </a>
+      </nav>
+
+      @if (isAdmin()) {
+        <nav class="nav-group">
+          <p class="nav-group-label">{{ 'NAV.GROUP_ADMINISTRATION' | translate }}</p>
+          <a class="nav-item" routerLink="/admin" routerLinkActive="nav-item-active" (click)="onNavigate()">
+            <mat-icon>admin_panel_settings</mat-icon>
+            <span>{{ 'NAV.ADMIN' | translate }}</span>
+          </a>
+        </nav>
       }
     </div>
-    @for (n of notifications(); track n.id) {
-      <button mat-menu-item [class.unread]="!n.is_read" (click)="markAsRead(n)">
-        <span class="notif-message">{{ n.message }}</span>
-        <span class="notif-time">{{ n.created_at | date:'short' }}</span>
-      </button>
-    } @empty {
-      <div class="notif-empty" (click)="$event.stopPropagation()">{{ 'NOTIFICATIONS.EMPTY' | translate }}</div>
-    }
-  </mat-menu>
-  <button mat-icon-button routerLink="/settings" title="{{ 'NAV.SETTINGS' | translate }}">
-    <mat-icon>settings</mat-icon>
-  </button>
-  <button mat-button type="button" (click)="logout()">{{ 'NAV.SIGN_OUT' | translate }}</button>
-</mat-toolbar>
+  </mat-sidenav>
 
-<div class="content">
-  <router-outlet />
-</div>
+  <mat-sidenav-content class="shell-body">
+    <header class="topbar">
+      @if (isCompact()) {
+        <button mat-icon-button (click)="navOpen.set(!navOpen())" [attr.aria-label]="'NAV.MENU' | translate">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <span class="topbar-title">{{ 'APP_NAME' | translate }}</span>
+      }
+      <span class="spacer"></span>
+      <button mat-icon-button (click)="langService.toggle()" [title]="langService.currentLang() === 'en' ? 'Deutsch' : 'English'">
+        <mat-icon>translate</mat-icon>
+      </button>
+      <button mat-icon-button (click)="themeService.toggle()" [title]="'NAV.TOGGLE_DARK_MODE' | translate">
+        <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+      <button mat-icon-button [matMenuTriggerFor]="notifMenu" (menuOpened)="loadNotifications()">
+        <mat-icon [matBadge]="unreadCount()" [matBadgeHidden]="unreadCount() === 0" matBadgeColor="warn" matBadgeSize="small">notifications</mat-icon>
+      </button>
+      <mat-menu #notifMenu="matMenu" class="notification-menu">
+        <div class="notif-header">
+          <strong>{{ 'NOTIFICATIONS.TITLE' | translate }}</strong>
+          @if (unreadCount() > 0) {
+            <button mat-button (click)="$event.stopPropagation(); markAllAsRead()">{{ 'NOTIFICATIONS.MARK_ALL_READ' | translate }}</button>
+          }
+        </div>
+        @for (n of notifications(); track n.id) {
+          <button mat-menu-item [class.unread]="!n.is_read" (click)="markAsRead(n)">
+            <span class="notif-message">{{ n.message }}</span>
+            <span class="notif-time">{{ n.created_at | date:'short' }}</span>
+          </button>
+        } @empty {
+          <div class="notif-empty">{{ 'NOTIFICATIONS.EMPTY' | translate }}</div>
+        }
+      </mat-menu>
+      <button mat-icon-button routerLink="/settings" title="{{ 'NAV.SETTINGS' | translate }}">
+        <mat-icon>settings</mat-icon>
+      </button>
+      <button mat-button type="button" class="sign-out" (click)="logout()">{{ 'NAV.SIGN_OUT' | translate }}</button>
+    </header>
+
+    <main class="content">
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>
