@@ -12,7 +12,13 @@
     "SIGN_OUT": "Sign out",
     "PROPOSALS": "Proposals",
     "SETTINGS": "Settings",
-    "TOGGLE_DARK_MODE": "Toggle dark mode"
+    "TOGGLE_DARK_MODE": "Toggle dark mode",
+    "MENU": "Open navigation",
+    "GROUP_PERSONAL": "Personal",
+    "GROUP_TEAM": "Team",
+    "GROUP_ANALYSIS": "Analysis",
+    "GROUP_ORGANISATION": "Organisation",
+    "GROUP_ADMINISTRATION": "Administration"
   },
   "NOTIFICATIONS": {
     "TITLE": "Notifications",
@@ -30,6 +36,9 @@
     "TITLE": "My Skills",
     "ADD_SKILL": "Add Skill",
     "EMPTY": "No skills assigned yet. Click \"Add Skill\" to get started.",
+    "EMPTY_TITLE": "No skills yet",
+    "SUBTITLE": "{{count}} skills assessed",
+    "GAP_SUMMARY": "Level {{current}} → {{required}} required (gap: {{gap}})",
     "RECOMMENDATIONS": "Recommendations"
   },
   "ADD_SKILL_DIALOG": {
@@ -42,23 +51,33 @@
   "TEAM_REVIEW": {
     "TITLE": "Team Review",
     "EMPTY": "No pending assignments to review.",
+    "EMPTY_HINT": "New self-assessments from your team will show up here for confirmation.",
+    "SUBTITLE": "{{count}} assignments awaiting confirmation",
     "CONFIRM": "Confirm"
   },
   "SKILL_GAPS": {
     "TITLE": "Skill Gaps",
-    "EMPTY": "No skill gaps found."
+    "EMPTY": "No skill gaps found.",
+    "EMPTY_HINT": "Every team member meets the required level for their role.",
+    "SUBTITLE": "{{count}} gaps against role requirements"
   },
   "EMPLOYEES": {
     "TITLE": "Employees",
     "SEARCH": "Search",
-    "SEARCH_PLACEHOLDER": "Name or email..."
+    "SEARCH_PLACEHOLDER": "Name or email...",
+    "SUBTITLE": "{{count}} people",
+    "EMPTY": "No employees match your search.",
+    "EMPTY_HINT": "Try a different name or email fragment."
   },
   "TEAM_COMPARISON": {
     "TITLE": "Team Comparison",
     "SELECT_TEAMS": "Select teams",
     "COMPARE": "Compare",
     "BAR_CHART": "Bar Chart",
-    "RADAR_CHART": "Radar Chart"
+    "RADAR_CHART": "Radar Chart",
+    "SUBTITLE": "Compare average skill levels across teams",
+    "EMPTY_TITLE": "Nothing to compare yet",
+    "EMPTY_HINT": "Pick at least two teams and select Compare."
   },
   "EMPLOYEE_PROFILE": {
     "BACK": "Back",
@@ -80,11 +99,19 @@
     "ALL_TEAMS": "All teams",
     "ALL_CATEGORIES": "All categories",
     "CLEAR": "Clear",
-    "EMPTY": "No employees found."
+    "EMPTY": "No employees found.",
+    "SUBTITLE": "{{employees}} people across {{skills}} skills",
+    "EMPTY_HINT": "Try widening the team or category filter, or clear the search term.",
+    "LEGEND": "Level",
+    "NOT_ASSESSED": "Not assessed",
+    "CELL_LABEL": "{{employee}}, {{skill}}: level {{level}} of 5",
+    "CELL_LABEL_EMPTY": "{{employee}}, {{skill}}: not assessed"
   },
   "KPI": {
     "TITLE": "Team KPIs",
     "EMPTY": "No team data available.",
+    "EMPTY_HINT": "KPIs appear once teams have skill assignments recorded.",
+    "SUBTITLE": "{{count}} teams",
     "AVG_LEVEL": "Avg. Level",
     "COVERAGE": "Skill Coverage",
     "CONFIRMED": "Confirmed",
@@ -114,6 +141,7 @@
     "APPLY_TO_TEAM": "Apply Template to Team",
     "TEMPLATE": "Template",
     "ADD_SKILL": "Add Skill",
+    "ADD_REQUIREMENT": "Add Requirement",
     "APPLY": "Apply",
     "SKILLS_COUNT": "Skills",
     "TAB_IMPORT": "Import",
@@ -129,7 +157,15 @@
     "AUDIT_EMPTY": "No audit entries yet.",
     "AUDIT_USER": "User",
     "AUDIT_ENTITY": "Entity",
-    "AUDIT_DETAIL": "Detail"
+    "AUDIT_DETAIL": "Detail",
+    "TOTAL_SKILLS": "Total skills",
+    "CATEGORIES_COUNT": "Categories",
+    "UNASSIGNED": "Unassigned",
+    "SEARCH_SKILLS": "Search skills...",
+    "ALL_CATEGORIES": "All categories",
+    "ALL": "All",
+    "TEAM_COVERAGE": "Team coverage",
+    "CREATE": "Create"
   },
   "TABLE": {
     "NAME": "Name",
@@ -162,7 +198,8 @@
     "SAVE_PASSWORD": "Save",
     "WRONG_PASSWORD": "Current password is incorrect.",
     "PASSWORDS_MISMATCH": "Passwords do not match.",
-    "LANGUAGE": "Language"
+    "LANGUAGE": "Language",
+    "SUBTITLE": "Manage your account and interface preferences"
   },
   "PROPOSALS": {
     "TITLE": "Skill Proposals",
@@ -175,7 +212,9 @@
     "PENDING": "Pending",
     "APPROVED": "Approved",
     "REJECTED": "Rejected",
-    "EMPTY": "No proposals yet."
+    "EMPTY": "No proposals yet.",
+    "EMPTY_HINT": "Propose a skill that is missing from the catalogue and an admin will review it.",
+    "SUBTITLE": "{{count}} proposals"
   },
   "DEV_PLANS": {
     "TITLE": "Development Plans",
@@ -217,6 +256,7 @@
     "CATEGORY_CREATED": "Category created.",
     "CATEGORY_DELETED": "Category deleted.",
     "SKILL_CREATED": "Skill created.",
+    "SKILL_UPDATED": "Skill updated.",
     "SKILL_DELETED": "Skill deleted.",
     "REQUIREMENT_CREATED": "Requirement created.",
     "REQUIREMENT_DELETED": "Requirement deleted.",

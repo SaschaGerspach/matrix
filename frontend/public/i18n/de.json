@@ -12,7 +12,13 @@
     "SIGN_OUT": "Abmelden",
     "PROPOSALS": "Vorschläge",
     "SETTINGS": "Einstellungen",
-    "TOGGLE_DARK_MODE": "Dunkelmodus umschalten"
+    "TOGGLE_DARK_MODE": "Dunkelmodus umschalten",
+    "MENU": "Navigation öffnen",
+    "GROUP_PERSONAL": "Persönlich",
+    "GROUP_TEAM": "Team",
+    "GROUP_ANALYSIS": "Analyse",
+    "GROUP_ORGANISATION": "Organisation",
+    "GROUP_ADMINISTRATION": "Administration"
   },
   "NOTIFICATIONS": {
     "TITLE": "Benachrichtigungen",
@@ -30,6 +36,9 @@
     "TITLE": "Meine Skills",
     "ADD_SKILL": "Skill hinzufügen",
     "EMPTY": "Noch keine Skills zugewiesen. Klicke auf \"Skill hinzufügen\", um zu starten.",
+    "EMPTY_TITLE": "Noch keine Skills",
+    "SUBTITLE": "{{count}} Skills bewertet",
+    "GAP_SUMMARY": "Level {{current}} → {{required}} gefordert (Lücke: {{gap}})",
     "RECOMMENDATIONS": "Empfehlungen"
   },
   "ADD_SKILL_DIALOG": {
@@ -42,23 +51,33 @@
   "TEAM_REVIEW": {
     "TITLE": "Team-Review",
     "EMPTY": "Keine offenen Zuweisungen zur Überprüfung.",
+    "EMPTY_HINT": "Neue Selbsteinschätzungen aus deinem Team erscheinen hier zur Bestätigung.",
+    "SUBTITLE": "{{count}} Zuweisungen warten auf Bestätigung",
     "CONFIRM": "Bestätigen"
   },
   "SKILL_GAPS": {
     "TITLE": "Skill-Lücken",
-    "EMPTY": "Keine Skill-Lücken gefunden."
+    "EMPTY": "Keine Skill-Lücken gefunden.",
+    "EMPTY_HINT": "Alle Teammitglieder erreichen das für ihre Rolle geforderte Level.",
+    "SUBTITLE": "{{count}} Lücken gegenüber den Rollenanforderungen"
   },
   "EMPLOYEES": {
     "TITLE": "Mitarbeiter",
     "SEARCH": "Suche",
-    "SEARCH_PLACEHOLDER": "Name oder E-Mail..."
+    "SEARCH_PLACEHOLDER": "Name oder E-Mail...",
+    "SUBTITLE": "{{count}} Personen",
+    "EMPTY": "Keine Mitarbeiter passen zur Suche.",
+    "EMPTY_HINT": "Versuche einen anderen Namen oder E-Mail-Teil."
   },
   "TEAM_COMPARISON": {
     "TITLE": "Team-Vergleich",
     "SELECT_TEAMS": "Teams auswählen",
     "COMPARE": "Vergleichen",
     "BAR_CHART": "Balkendiagramm",
-    "RADAR_CHART": "Netzdiagramm"
+    "RADAR_CHART": "Netzdiagramm",
+    "SUBTITLE": "Durchschnittliche Skill-Level über Teams hinweg vergleichen",
+    "EMPTY_TITLE": "Noch nichts zu vergleichen",
+    "EMPTY_HINT": "Wähle mindestens zwei Teams und klicke auf Vergleichen."
   },
   "EMPLOYEE_PROFILE": {
     "BACK": "Zurück",
@@ -80,11 +99,19 @@
     "ALL_TEAMS": "Alle Teams",
     "ALL_CATEGORIES": "Alle Kategorien",
     "CLEAR": "Zurücksetzen",
-    "EMPTY": "Keine Mitarbeiter gefunden."
+    "EMPTY": "Keine Mitarbeiter gefunden.",
+    "SUBTITLE": "{{employees}} Personen über {{skills}} Skills",
+    "EMPTY_HINT": "Erweitere den Team- oder Kategoriefilter oder setze den Suchbegriff zurück.",
+    "LEGEND": "Level",
+    "NOT_ASSESSED": "Nicht bewertet",
+    "CELL_LABEL": "{{employee}}, {{skill}}: Level {{level}} von 5",
+    "CELL_LABEL_EMPTY": "{{employee}}, {{skill}}: nicht bewertet"
   },
   "KPI": {
     "TITLE": "Team-KPIs",
     "EMPTY": "Keine Teamdaten verfügbar.",
+    "EMPTY_HINT": "KPIs erscheinen, sobald Teams Skill-Zuweisungen haben.",
+    "SUBTITLE": "{{count}} Teams",
     "AVG_LEVEL": "Ø Level",
     "COVERAGE": "Skill-Abdeckung",
     "CONFIRMED": "Bestätigt",
@@ -114,6 +141,7 @@
     "APPLY_TO_TEAM": "Vorlage auf Team anwenden",
     "TEMPLATE": "Vorlage",
     "ADD_SKILL": "Skill hinzufügen",
+    "ADD_REQUIREMENT": "Anforderung hinzufügen",
     "APPLY": "Anwenden",
     "SKILLS_COUNT": "Skills",
     "TAB_IMPORT": "Import",
@@ -129,7 +157,15 @@
     "AUDIT_EMPTY": "Noch keine Einträge.",
     "AUDIT_USER": "Benutzer",
     "AUDIT_ENTITY": "Entität",
-    "AUDIT_DETAIL": "Detail"
+    "AUDIT_DETAIL": "Detail",
+    "TOTAL_SKILLS": "Skills gesamt",
+    "CATEGORIES_COUNT": "Kategorien",
+    "UNASSIGNED": "Nicht zugewiesen",
+    "SEARCH_SKILLS": "Skills suchen...",
+    "ALL_CATEGORIES": "Alle Kategorien",
+    "ALL": "Alle",
+    "TEAM_COVERAGE": "Team-Abdeckung",
+    "CREATE": "Erstellen"
   },
   "TABLE": {
     "NAME": "Name",
@@ -162,7 +198,8 @@
     "SAVE_PASSWORD": "Speichern",
     "WRONG_PASSWORD": "Aktuelles Passwort ist falsch.",
     "PASSWORDS_MISMATCH": "Passwörter stimmen nicht überein.",
-    "LANGUAGE": "Sprache"
+    "LANGUAGE": "Sprache",
+    "SUBTITLE": "Konto und Oberflächen-Einstellungen verwalten"
   },
   "PROPOSALS": {
     "TITLE": "Skill-Vorschläge",
@@ -175,7 +212,9 @@
     "PENDING": "Ausstehend",
     "APPROVED": "Genehmigt",
     "REJECTED": "Abgelehnt",
-    "EMPTY": "Noch keine Vorschläge."
+    "EMPTY": "Noch keine Vorschläge.",
+    "EMPTY_HINT": "Schlage einen Skill vor, der im Katalog fehlt – ein Admin prüft ihn.",
+    "SUBTITLE": "{{count}} Vorschläge"
   },
   "DEV_PLANS": {
     "TITLE": "Entwicklungspläne",
@@ -217,6 +256,7 @@
     "CATEGORY_CREATED": "Kategorie erstellt.",
     "CATEGORY_DELETED": "Kategorie gelöscht.",
     "SKILL_CREATED": "Skill erstellt.",
+    "SKILL_UPDATED": "Skill aktualisiert.",
     "SKILL_DELETED": "Skill gelöscht.",
     "REQUIREMENT_CREATED": "Anforderung erstellt.",
     "REQUIREMENT_DELETED": "Anforderung gelöscht.",
