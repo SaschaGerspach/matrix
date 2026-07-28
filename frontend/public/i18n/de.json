@@ -299,7 +299,8 @@
     "PROPOSAL_REJECTED": "Vorschlag abgelehnt.",
     "ERROR": "Ein Fehler ist aufgetreten. Bitte erneut versuchen.",
     "TEAM_MEMBERS_UPDATED": "Team-Mitglieder aktualisiert.",
-    "TEAM_CREATED": "Team erstellt."
+    "TEAM_CREATED": "Team erstellt.",
+    "DEPARTMENT_CREATED": "Abteilung erstellt."
   },
   "COMMON": {
     "MEMBERS": "Mitglieder"
@@ -327,6 +328,15 @@
     "NAME": "Teamname",
     "DEPARTMENT": "Abteilung",
     "NO_DEPARTMENTS": "Es gibt noch keine Abteilungen, daher lässt sich kein Team anlegen. Abteilungen werden im Django-Admin verwaltet.",
-    "LEAD_JOINS_TEAM": "Ein Lead wird zugleich Mitglied des Teams – sonst hätte er niemanden zu prüfen."
+    "LEAD_JOINS_TEAM": "Ein Lead wird zugleich Mitglied des Teams – sonst hätte er niemanden zu prüfen.",
+    "DEPARTMENTS": "Abteilungen",
+    "DEPARTMENT_NAME": "Abteilungsname",
+    "PARENT_DEPARTMENT": "Teil von",
+    "NO_PARENT": "Oberste Ebene",
+    "ADD_DEPARTMENT": "Neue Abteilung",
+    "PART_OF": "Teil von {{parent}}",
+    "TEAM_COUNT": "{{count}} Teams",
+    "NO_DEPARTMENTS_YET": "Noch keine Abteilungen.",
+    "DEPARTMENT_DELETE_HINT": "Eine Abteilung zu löschen würde ihre Teams mitlöschen – das bleibt daher im Django-Admin."
   }
 }

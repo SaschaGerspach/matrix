@@ -129,6 +129,49 @@ describe('TeamsComponent', () => {
     expect(component.showCreateForm()).toBeFalse();
   });
 
+  it('creates a department and offers it for the next team', () => {
+    fixture.detectChanges();
+    flushInit([], { ...meLead, is_admin: true });
+
+    component.newDepartmentName = ' Operations ';
+    component.newDepartmentParent = 1;
+    component.createDepartment();
+
+    const req = http.expectOne(`${environment.apiUrl}/departments/`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ name: 'Operations', parent: 1 });
+    req.flush({ id: 4, name: 'Operations', parent: 1 });
+
+    expect(component.departments().map((d) => d.name)).toEqual(['Engineering', 'Operations']);
+    expect(component.showDepartmentForm()).toBeFalse();
+  });
+
+  it('counts the teams in each department and names its parent', () => {
+    fixture.detectChanges();
+    flushInit(
+      [team({ id: 1, department: 1 }), team({ id: 2, department: 1 })],
+      { ...meLead, is_admin: true },
+    );
+    component.departments.update((list) => [...list, { id: 2, name: 'Ops', parent: 1 }]);
+
+    const summary = component.departmentSummary();
+    expect(summary[0].teamCount).toBe(2);
+    expect(summary[0].parentName).toBeNull();
+    expect(summary[1].teamCount).toBe(0);
+    expect(summary[1].parentName).toBe('Engineering');
+  });
+
+  it('refuses to create a department without a name', () => {
+    fixture.detectChanges();
+    flushInit([], { ...meLead, is_admin: true });
+
+    component.newDepartmentName = '   ';
+    component.createDepartment();
+
+    // afterEach verifies no request went out.
+    expect(component.departments().length).toBe(1);
+  });
+
   it('refuses to create a team without a department', () => {
     fixture.detectChanges();
     flushInit([], { ...meLead, is_admin: true });

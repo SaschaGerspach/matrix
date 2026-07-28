@@ -155,6 +155,11 @@ const EN = {
     CREATE: 'New team', NAME: 'Team name', DEPARTMENT: 'Department',
     NO_DEPARTMENTS: 'No departments exist yet, so a team cannot be created.',
     LEAD_JOINS_TEAM: 'A lead is added to the team as well.',
+    DEPARTMENTS: 'Departments', DEPARTMENT_NAME: 'Department name',
+    PARENT_DEPARTMENT: 'Part of', NO_PARENT: 'Top level',
+    ADD_DEPARTMENT: 'New department', PART_OF: 'part of {{parent}}',
+    TEAM_COUNT: '{{count}} teams', NO_DEPARTMENTS_YET: 'No departments yet.',
+    DEPARTMENT_DELETE_HINT: 'Deleting a department would delete its teams along with it.',
   },
 };
 

@@ -299,7 +299,8 @@
     "PROPOSAL_REJECTED": "Proposal rejected.",
     "ERROR": "An error occurred. Please try again.",
     "TEAM_MEMBERS_UPDATED": "Team members updated.",
-    "TEAM_CREATED": "Team created."
+    "TEAM_CREATED": "Team created.",
+    "DEPARTMENT_CREATED": "Department created."
   },
   "COMMON": {
     "MEMBERS": "members"
@@ -327,6 +328,15 @@
     "NAME": "Team name",
     "DEPARTMENT": "Department",
     "NO_DEPARTMENTS": "No departments exist yet, so a team cannot be created. Departments are managed in Django admin.",
-    "LEAD_JOINS_TEAM": "A lead is added to the team as well, otherwise they would have nobody to review."
+    "LEAD_JOINS_TEAM": "A lead is added to the team as well, otherwise they would have nobody to review.",
+    "DEPARTMENTS": "Departments",
+    "DEPARTMENT_NAME": "Department name",
+    "PARENT_DEPARTMENT": "Part of",
+    "NO_PARENT": "Top level",
+    "ADD_DEPARTMENT": "New department",
+    "PART_OF": "part of {{parent}}",
+    "TEAM_COUNT": "{{count}} teams",
+    "NO_DEPARTMENTS_YET": "No departments yet.",
+    "DEPARTMENT_DELETE_HINT": "Deleting a department would delete its teams along with it, so that stays in Django admin."
   }
 }

@@ -48,12 +48,26 @@ export class TeamsComponent implements OnInit {
   readonly searchResults = signal<Employee[]>([]);
   readonly searchContext = signal<{ teamId: number; mode: SearchMode } | null>(null);
   readonly showCreateForm = signal(false);
+  readonly showDepartments = signal(false);
+  readonly showDepartmentForm = signal(false);
 
   private myEmployeeId = 0;
   private readonly search$ = new Subject<string>();
   searchTerm = '';
   newTeamName = '';
   newTeamDepartment: number | undefined;
+  newDepartmentName = '';
+  newDepartmentParent: number | null = null;
+
+  // Departments cascade to their teams on delete, so this is only ever shown as
+  // context for the create form, never as something to remove.
+  readonly departmentSummary = computed(() =>
+    this.departments().map((dept) => ({
+      ...dept,
+      teamCount: this.teams().filter((t) => t.department === dept.id).length,
+      parentName: this.departments().find((d) => d.id === dept.parent)?.name ?? null,
+    })),
+  );
 
   // A lead only ever manages their own teams; an admin manages all of them.
   readonly visibleTeams = computed(() => {
@@ -104,6 +118,38 @@ export class TeamsComponent implements OnInit {
         this.newTeamName = '';
         this.newTeamDepartment = undefined;
         this.toast.success('TOAST.TEAM_CREATED');
+      },
+      error: () => this.toast.error('TOAST.ERROR'),
+    });
+  }
+
+  toggleDepartments(): void {
+    this.showDepartments.update((v) => !v);
+  }
+
+  toggleDepartmentForm(): void {
+    this.showDepartmentForm.update((v) => !v);
+    this.newDepartmentName = '';
+    this.newDepartmentParent = null;
+  }
+
+  // Reached from the team form, where the department list may still be collapsed.
+  openDepartmentForm(): void {
+    this.showDepartments.set(true);
+    this.showDepartmentForm.set(true);
+    this.newDepartmentName = '';
+    this.newDepartmentParent = null;
+  }
+
+  createDepartment(): void {
+    if (!this.newDepartmentName.trim()) return;
+    this.teamService.createDepartment(this.newDepartmentName.trim(), this.newDepartmentParent).subscribe({
+      next: (created) => {
+        this.departments.update((list) => [...list, created]);
+        this.showDepartmentForm.set(false);
+        this.newDepartmentName = '';
+        this.newDepartmentParent = null;
+        this.toast.success('TOAST.DEPARTMENT_CREATED');
       },
       error: () => this.toast.error('TOAST.ERROR'),
     });

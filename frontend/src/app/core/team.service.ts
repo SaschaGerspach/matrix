@@ -41,6 +41,10 @@ export class TeamService {
     return this.http.post<Team>(`${environment.apiUrl}/teams/`, { name, department });
   }
 
+  createDepartment(name: string, parent: number | null): Observable<Department> {
+    return this.http.post<Department>(`${environment.apiUrl}/departments/`, { name, parent });
+  }
+
   setLeads(teamId: number, leadIds: number[]): Observable<Team> {
     return this.update(teamId, { team_leads: leadIds });
   }

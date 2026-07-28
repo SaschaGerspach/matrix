@@ -8,6 +8,10 @@
     </div>
     @if (isAdmin()) {
       <div class="page-header-actions">
+        <button mat-stroked-button (click)="toggleDepartments()">
+          <mat-icon>{{ showDepartments() ? 'expand_less' : 'account_tree' }}</mat-icon>
+          {{ 'TEAMS.DEPARTMENTS' | translate }}
+        </button>
         <button mat-flat-button color="primary" (click)="toggleCreateForm()">
           <mat-icon>add</mat-icon>
           {{ 'TEAMS.CREATE' | translate }}
@@ -15,6 +19,56 @@
       </div>
     }
   </div>
+
+  @if (isAdmin() && showDepartments()) {
+    <div class="surface-card">
+      <h3 class="section-title">{{ 'TEAMS.DEPARTMENTS' | translate }}</h3>
+      <ul class="dept-list">
+        @for (dept of departmentSummary(); track dept.id) {
+          <li class="dept-row">
+            <span class="dept-name">{{ dept.name }}</span>
+            @if (dept.parentName) {
+              <span class="dept-parent">{{ 'TEAMS.PART_OF' | translate: { parent: dept.parentName } }}</span>
+            }
+            <span class="dept-teams">{{ 'TEAMS.TEAM_COUNT' | translate: { count: dept.teamCount } }}</span>
+          </li>
+        } @empty {
+          <li class="dept-empty">{{ 'TEAMS.NO_DEPARTMENTS_YET' | translate }}</li>
+        }
+      </ul>
+
+      @if (showDepartmentForm()) {
+        <div class="create-fields dept-form">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'TEAMS.DEPARTMENT_NAME' | translate }}</mat-label>
+            <input matInput [(ngModel)]="newDepartmentName" (keyup.enter)="createDepartment()">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'TEAMS.PARENT_DEPARTMENT' | translate }}</mat-label>
+            <mat-select [(ngModel)]="newDepartmentParent">
+              <mat-option [value]="null">{{ 'TEAMS.NO_PARENT' | translate }}</mat-option>
+              @for (dept of departments(); track dept.id) {
+                <mat-option [value]="dept.id">{{ dept.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <div class="create-actions">
+            <button mat-button (click)="toggleDepartmentForm()">{{ 'ADD_SKILL_DIALOG.CANCEL' | translate }}</button>
+            <button mat-flat-button color="primary"
+                    [disabled]="!newDepartmentName.trim()"
+                    (click)="createDepartment()">{{ 'ADD_SKILL_DIALOG.ADD' | translate }}</button>
+          </div>
+        </div>
+      } @else {
+        <button mat-button class="add-person-btn" (click)="toggleDepartmentForm()">
+          <mat-icon>add</mat-icon>
+          {{ 'TEAMS.ADD_DEPARTMENT' | translate }}
+        </button>
+      }
+
+      <p class="dept-hint">{{ 'TEAMS.DEPARTMENT_DELETE_HINT' | translate }}</p>
+    </div>
+  }
 
   @if (showCreateForm()) {
     <div class="surface-card create-form">
@@ -42,6 +96,10 @@
       @if (departments().length === 0) {
         <p class="create-hint">{{ 'TEAMS.NO_DEPARTMENTS' | translate }}</p>
       }
+      <button mat-button class="add-person-btn" (click)="openDepartmentForm()">
+        <mat-icon>account_tree</mat-icon>
+        {{ 'TEAMS.ADD_DEPARTMENT' | translate }}
+      </button>
     </div>
   }
 

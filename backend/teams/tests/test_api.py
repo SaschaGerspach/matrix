@@ -120,6 +120,23 @@ def test_admin_can_create_department(admin_client):
     assert r.status_code == status.HTTP_201_CREATED
 
 
+def test_admin_can_nest_a_department(admin_client):
+    parent = Department.objects.create(name='Engineering')
+
+    r = admin_client.post(
+        '/api/departments/', {'name': 'Platform', 'parent': parent.id}, format='json',
+    )
+
+    assert r.status_code == status.HTTP_201_CREATED
+    assert r.data['parent'] == parent.id
+
+
+def test_lead_cannot_create_a_department(lead_setup):
+    r = lead_setup['client'].post('/api/departments/', {'name': 'Shadow'}, format='json')
+
+    assert r.status_code == status.HTTP_403_FORBIDDEN
+
+
 def test_admin_can_crud_department(admin_client):
     r = admin_client.post('/api/departments/', {'name': 'Engineering'}, format='json')
     dept_id = r.data['id']
