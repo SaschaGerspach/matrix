@@ -5,6 +5,18 @@
   </div>
 </div>
 
+@if (teamsWithoutLead().length > 0) {
+  <div class="admin-warning surface-card">
+    <mat-icon>report_problem</mat-icon>
+    <div>
+      <p class="admin-warning-title">{{ 'ADMIN.TEAMS_WITHOUT_LEAD' | translate }}</p>
+      <p class="admin-warning-body">
+        {{ 'ADMIN.TEAMS_WITHOUT_LEAD_HINT' | translate: { teams: teamNamesWithoutLead() } }}
+      </p>
+    </div>
+  </div>
+}
+
 <mat-tab-group>
   <mat-tab [label]="'ADMIN.TAB_CATEGORIES' | translate">
     <div class="tab-content">

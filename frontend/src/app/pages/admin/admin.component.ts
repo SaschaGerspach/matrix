@@ -62,6 +62,16 @@ export class AdminComponent implements OnInit {
   readonly categories = signal<SkillCategory[]>([]);
   readonly skills = signal<Skill[]>([]);
   readonly teams = signal<Team[]>([]);
+
+  // A team with members but no lead silently strands their self-assessments:
+  // the team review only ever lists members of teams you lead.
+  readonly teamsWithoutLead = computed(
+    () => this.teams().filter((t) => t.team_leads.length === 0 && t.members.length > 0),
+  );
+
+  readonly teamNamesWithoutLead = computed(
+    () => this.teamsWithoutLead().map((t) => t.name).join(', '),
+  );
   readonly requirements = signal<SkillRequirement[]>([]);
   readonly levelDescriptions = signal<SkillLevelDescription[]>([]);
   readonly auditLog = signal<AuditLogEntry[]>([]);

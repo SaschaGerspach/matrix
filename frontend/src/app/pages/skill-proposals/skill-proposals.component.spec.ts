@@ -110,20 +110,20 @@ describe('SkillProposalsComponent', () => {
     fixture.detectChanges();
     flushInit([]);
 
-    component.newSkillName = 'Terraform';
-    component.newCategory = undefined;
+    component.newSkillName.set('Terraform');
+    component.newCategory.set(undefined);
     component.submitProposal();
 
     // afterEach verifies that no request was made.
-    expect(component.newSkillName).toBe('Terraform');
+    expect(component.newSkillName()).toBe('Terraform');
   });
 
   it('submits once a category is chosen', () => {
     fixture.detectChanges();
     flushInit([]);
 
-    component.newSkillName = 'Terraform';
-    component.newCategory = 3;
+    component.newSkillName.set('Terraform');
+    component.newCategory.set(3);
     component.submitProposal();
 
     const req = http.expectOne(`${environment.apiUrl}/skill-proposals/`);
@@ -132,5 +132,50 @@ describe('SkillProposalsComponent', () => {
     http.expectOne((r) => r.url === `${environment.apiUrl}/skill-proposals/`).flush({
       count: 0, next: null, previous: null, results: [],
     });
+  });
+
+  it('lists what the chosen category already contains, sorted', () => {
+    fixture.detectChanges();
+    flushInit([], [
+      { id: 1, name: 'Kubernetes', category: 3, level_descriptions: [] },
+      { id: 2, name: 'Ansible', category: 3, level_descriptions: [] },
+      { id: 3, name: 'Angular', category: 4, level_descriptions: [] },
+    ]);
+
+    component.newCategory.set(3);
+
+    expect(component.categorySkills().map((s) => s.name)).toEqual(['Ansible', 'Kubernetes']);
+  });
+
+  it('flags a name that already exists in the chosen category', () => {
+    fixture.detectChanges();
+    flushInit([], [{ id: 1, name: 'Kubernetes', category: 3, level_descriptions: [] }]);
+
+    component.newCategory.set(3);
+    component.newSkillName.set('  kubernetes ');
+
+    expect(component.nameTaken()).toBeTrue();
+  });
+
+  it('does not flag a name that exists only in another category', () => {
+    fixture.detectChanges();
+    flushInit([], [{ id: 1, name: 'Kubernetes', category: 4, level_descriptions: [] }]);
+
+    component.newCategory.set(3);
+    component.newSkillName.set('Kubernetes');
+
+    expect(component.nameTaken()).toBeFalse();
+  });
+
+  it('refuses to submit a name that is already taken', () => {
+    fixture.detectChanges();
+    flushInit([], [{ id: 1, name: 'Kubernetes', category: 3, level_descriptions: [] }]);
+
+    component.newCategory.set(3);
+    component.newSkillName.set('Kubernetes');
+    component.submitProposal();
+
+    // afterEach verifies no create request went out.
+    expect(component.nameTaken()).toBeTrue();
   });
 });

@@ -8,6 +8,8 @@ export interface Team {
   id: number;
   name: string;
   department: number;
+  members: number[];
+  team_leads: number[];
 }
 
 @Injectable({ providedIn: 'root' })

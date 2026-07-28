@@ -53,6 +53,10 @@
     "EMPTY": "No pending assignments to review.",
     "EMPTY_HINT": "New self-assessments from your team will show up here for confirmation.",
     "SUBTITLE": "{{count}} assignments awaiting confirmation",
+    "ADMIN_FALLBACK": "You are seeing every open assessment because you are an admin. Team leads normally confirm their own members — step in where nobody else can.",
+    "NO_LEAD_WARNING": "{{count}} of these belong to a team with no lead. Nobody but an admin can confirm them; assigning a lead to the team is the lasting fix.",
+    "NO_LEAD": "no lead",
+    "NO_TEAM": "no team",
     "CONFIRM": "Confirm"
   },
   "SKILL_GAPS": {
@@ -165,6 +169,8 @@
     "ALL_CATEGORIES": "All categories",
     "ALL": "All",
     "TEAM_COVERAGE": "Team coverage",
+    "TEAMS_WITHOUT_LEAD": "Some teams have no lead",
+    "TEAMS_WITHOUT_LEAD_HINT": "Members of {{teams}} can have their self-assessments confirmed by an admin only, because team review lists members of teams you lead. Assign a lead to fix this permanently.",
     "CREATE": "Create"
   },
   "TABLE": {
@@ -216,6 +222,9 @@
     "EMPTY_HINT": "Propose a skill that is missing from the catalogue and an admin will review it.",
     "SUBTITLE": "{{count}} proposals",
     "CATEGORY_HINT": "Required — a proposal without a category cannot be approved",
+    "ALREADY_IN_CATEGORY": "Already in this category ({{count}})",
+    "CATEGORY_EMPTY": "This category has no skills yet.",
+    "NAME_TAKEN": "This skill already exists in the selected category",
     "APPROVE": "Approve",
     "REJECT": "Reject",
     "OUTCOME_CREATES": "Adds this skill to the catalogue",

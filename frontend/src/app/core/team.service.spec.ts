@@ -20,7 +20,7 @@ describe('TeamService', () => {
   afterEach(() => http.verify());
 
   it('fetches the team list', () => {
-    const teams = [{ id: 1, name: 'Alpha', department: 1 }];
+    const teams = [{ id: 1, name: 'Alpha', department: 1, members: [4], team_leads: [7] }];
     service.list().subscribe((result) => {
       expect(result).toEqual(teams);
     });

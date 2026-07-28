@@ -40,12 +40,19 @@ class TeamAssignmentsViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         employee = get_employee(self.request.user)
-        if employee is None or not is_team_lead(self.request.user):
+        # Admins act as a fallback: a team without a lead would otherwise leave
+        # its members' self-assessments with nobody able to review them.
+        if self.request.user.is_superuser:
+            qs = SkillAssignment.objects.all()
+        elif employee is None or not is_team_lead(self.request.user):
             return SkillAssignment.objects.none()
-        member_ids = get_led_member_ids(employee)
-        qs = SkillAssignment.objects.filter(
-            employee_id__in=member_ids,
-        ).select_related('skill__category', 'employee')
+        else:
+            qs = SkillAssignment.objects.filter(
+                employee_id__in=get_led_member_ids(employee),
+            )
+        qs = qs.select_related('skill__category', 'employee').prefetch_related(
+            'employee__teams__team_leads',
+        )
         if self.request.query_params.get('status'):
             qs = qs.filter(status=self.request.query_params['status'])
         return qs

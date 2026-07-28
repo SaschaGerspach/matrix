@@ -21,6 +21,9 @@ const EN = {
     EMPTY: 'No proposals yet.', SUBTITLE: '{{count}} proposals',
     APPROVE: 'Approve', REJECT: 'Reject',
     CATEGORY_HINT: 'Required — a proposal without a category cannot be approved',
+    ALREADY_IN_CATEGORY: 'Already in this category ({{count}})',
+    CATEGORY_EMPTY: 'This category has no skills yet.',
+    NAME_TAKEN: 'This skill already exists in the selected category',
     OUTCOME_CREATES: 'Adds this skill to the catalogue',
     OUTCOME_EXISTS: 'Already in the catalogue — approving changes nothing',
     OUTCOME_NO_CATEGORY: 'No category — cannot be approved',
@@ -38,6 +41,9 @@ const EN = {
     TITLE: 'Team Review', EMPTY: 'No pending assignments to review.', CONFIRM: 'Confirm',
     EMPTY_HINT: 'New self-assessments from your team will show up here for confirmation.',
     SUBTITLE: '{{count}} assignments awaiting confirmation',
+    ADMIN_FALLBACK: 'You are seeing every open assessment because you are an admin.',
+    NO_LEAD_WARNING: '{{count}} of these belong to a team with no lead.',
+    NO_LEAD: 'no lead', NO_TEAM: 'no team',
   },
   SKILL_GAPS: {
     TITLE: 'Skill Gaps', EMPTY: 'No skill gaps found.',
@@ -96,6 +102,8 @@ const EN = {
     TOTAL_SKILLS: 'Total skills', CATEGORIES_COUNT: 'Categories', UNASSIGNED: 'Unassigned',
     SEARCH_SKILLS: 'Search skills...', ALL_CATEGORIES: 'All categories', ALL: 'All',
     TEAM_COVERAGE: 'Team coverage', CREATE: 'Create',
+    TEAMS_WITHOUT_LEAD: 'Some teams have no lead',
+    TEAMS_WITHOUT_LEAD_HINT: 'Members of {{teams}} can have their self-assessments confirmed by an admin only.',
   },
   TABLE: {
     NAME: 'Name', EMPLOYEE: 'Employee', SKILL: 'Skill', CATEGORY: 'Category',

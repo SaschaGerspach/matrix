@@ -1,0 +1,56 @@
+.review-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.75rem 1rem;
+
+  p {
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  .mat-icon {
+    flex-shrink: 0;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.review-notice-warn {
+  border-color: var(--mat-sys-error);
+
+  .mat-icon {
+    color: var(--mat-sys-error);
+  }
+}
+
+.review-employee {
+  display: block;
+}
+
+.review-team {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+  margin-top: 2px;
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// Marks the rows where an admin is the only one who can act.
+.review-unowned {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--mat-sys-error);
+  font-weight: 600;
+
+  .mat-icon {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+  }
+}

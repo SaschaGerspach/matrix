@@ -17,7 +17,7 @@ function flushInitRequests(http: HttpTestingController): void {
     { id: 1, name: 'Python', category: 1 },
   ]);
   http.expectOne(`${environment.apiUrl}/teams/`).flush([
-    { id: 1, name: 'Core', department: 1 },
+    { id: 1, name: 'Core', department: 1, members: [1], team_leads: [2] },
   ]);
   http.expectOne(`${environment.apiUrl}/skill-requirements/`).flush([]);
   http.expectOne(`${environment.apiUrl}/skill-level-descriptions/`).flush([]);
@@ -55,6 +55,35 @@ describe('AdminComponent', () => {
     expect(component.categories().length).toBe(1);
     expect(component.skills().length).toBe(1);
     expect(component.teams().length).toBe(1);
+  });
+
+  it('warns about teams that have members but no lead', () => {
+    fixture.detectChanges();
+    http.expectOne(`${environment.apiUrl}/skill-categories/`).flush([{ id: 1, name: 'Programming', parent: null }]);
+    http.expectOne(`${environment.apiUrl}/skills/`).flush([{ id: 1, name: 'Python', category: 1 }]);
+    http.expectOne(`${environment.apiUrl}/teams/`).flush([
+      { id: 1, name: 'Core', department: 1, members: [1], team_leads: [2] },
+      { id: 2, name: 'Frontend', department: 1, members: [3], team_leads: [] },
+      { id: 3, name: 'Empty', department: 1, members: [], team_leads: [] },
+    ]);
+    http.expectOne(`${environment.apiUrl}/skill-requirements/`).flush([]);
+    http.expectOne(`${environment.apiUrl}/skill-level-descriptions/`).flush([]);
+    http.expectOne(`${environment.apiUrl}/audit-log/`).flush({ count: 0, next: null, previous: null, results: [] });
+    http.expectOne(`${environment.apiUrl}/role-templates/`).flush([]);
+    fixture.detectChanges();
+
+    // An empty team blocks nothing, so it must not be reported.
+    expect(component.teamsWithoutLead().map((t) => t.name)).toEqual(['Frontend']);
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Some teams have no lead');
+  });
+
+  it('stays quiet when every team with members has a lead', () => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+    fixture.detectChanges();
+
+    expect(component.teamsWithoutLead().length).toBe(0);
+    expect((fixture.nativeElement as HTMLElement).textContent).not.toContain('Some teams have no lead');
   });
 
   it('reports a duplicate skill name instead of a generic failure', () => {

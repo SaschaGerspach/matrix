@@ -91,6 +91,43 @@ def test_lead_does_not_see_outsider_assignments(lead_client, team_with_lead, ski
     assert len(r.data) == 0
 
 
+def test_admin_sees_assignments_from_teams_they_do_not_lead(db, team, member, skill):
+    """Without this an assessment in a lead-less team can never be reviewed."""
+    team.members.add(member)
+    SkillAssignment.objects.create(employee=member, skill=skill, level=3)
+    admin = User.objects.create_user(username='root', password='pw!', is_superuser=True)
+    c = APIClient()
+    c.force_authenticate(user=admin)
+
+    r = c.get(URL)
+
+    assert r.status_code == status.HTTP_200_OK
+    assert len(r.data) == 1
+    assert r.data[0]['employee_name'] == 'Alice A'
+
+
+def test_rows_report_team_and_whether_a_lead_exists(lead_client, team_with_lead, member, skill):
+    SkillAssignment.objects.create(employee=member, skill=skill, level=3)
+
+    r = lead_client.get(URL)
+
+    assert r.data[0]['team_names'] == ['Core']
+    assert r.data[0]['has_team_lead'] is True
+
+
+def test_rows_flag_a_member_whose_team_has_no_lead(db, team, member, skill):
+    team.members.add(member)
+    SkillAssignment.objects.create(employee=member, skill=skill, level=3)
+    admin = User.objects.create_user(username='root', password='pw!', is_superuser=True)
+    c = APIClient()
+    c.force_authenticate(user=admin)
+
+    r = c.get(URL)
+
+    assert r.data[0]['team_names'] == ['Core']
+    assert r.data[0]['has_team_lead'] is False
+
+
 def test_unauthenticated_rejected():
     c = APIClient()
     r = c.get(URL)

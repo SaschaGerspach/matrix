@@ -8,6 +8,20 @@
     </div>
   </div>
 
+  @if (isAdmin() && !isTeamLead() && data().length > 0) {
+    <div class="review-notice surface-card">
+      <mat-icon>shield_person</mat-icon>
+      <p>{{ 'TEAM_REVIEW.ADMIN_FALLBACK' | translate }}</p>
+    </div>
+  }
+
+  @if (unownedCount() > 0) {
+    <div class="review-notice review-notice-warn surface-card">
+      <mat-icon>report_problem</mat-icon>
+      <p>{{ 'TEAM_REVIEW.NO_LEAD_WARNING' | translate: { count: unownedCount() } }}</p>
+    </div>
+  }
+
   @if (loading()) {
     <div class="surface-card">
       @for (row of skeletonRows; track row) {
@@ -25,7 +39,17 @@
       <table mat-table [dataSource]="data()">
         <ng-container matColumnDef="employee_name">
           <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.EMPLOYEE' | translate }}</th>
-          <td mat-cell *matCellDef="let row">{{ row.employee_name }}</td>
+          <td mat-cell *matCellDef="let row">
+            <span class="review-employee">{{ row.employee_name }}</span>
+            <span class="review-team">
+              {{ row.team_names.length ? row.team_names.join(', ') : ('TEAM_REVIEW.NO_TEAM' | translate) }}
+              @if (!row.has_team_lead) {
+                <span class="review-unowned">
+                  <mat-icon>report_problem</mat-icon>{{ 'TEAM_REVIEW.NO_LEAD' | translate }}
+                </span>
+              }
+            </span>
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="skill_name">

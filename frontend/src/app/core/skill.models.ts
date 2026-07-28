@@ -86,6 +86,8 @@ export interface TeamAssignment {
   level: number;
   status: string;
   created_at: string;
+  team_names: string[];
+  has_team_lead: boolean;
 }
 
 export interface SkillTrendData {

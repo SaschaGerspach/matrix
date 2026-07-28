@@ -53,6 +53,10 @@
     "EMPTY": "Keine offenen Zuweisungen zur Überprüfung.",
     "EMPTY_HINT": "Neue Selbsteinschätzungen aus deinem Team erscheinen hier zur Bestätigung.",
     "SUBTITLE": "{{count}} Zuweisungen warten auf Bestätigung",
+    "ADMIN_FALLBACK": "Du siehst alle offenen Bewertungen, weil du Admin bist. Normalerweise bestätigen Team-Leads ihre eigenen Mitglieder – greif dort ein, wo es sonst niemand kann.",
+    "NO_LEAD_WARNING": "{{count}} davon gehören zu einem Team ohne Lead. Nur ein Admin kann sie bestätigen; dauerhaft hilft, dem Team einen Lead zuzuweisen.",
+    "NO_LEAD": "kein Lead",
+    "NO_TEAM": "kein Team",
     "CONFIRM": "Bestätigen"
   },
   "SKILL_GAPS": {
@@ -165,6 +169,8 @@
     "ALL_CATEGORIES": "Alle Kategorien",
     "ALL": "Alle",
     "TEAM_COVERAGE": "Team-Abdeckung",
+    "TEAMS_WITHOUT_LEAD": "Einige Teams haben keinen Lead",
+    "TEAMS_WITHOUT_LEAD_HINT": "Selbsteinschätzungen von Mitgliedern in {{teams}} können nur von Admins bestätigt werden, denn das Team-Review zeigt nur Mitglieder der Teams, die du leitest. Dauerhaft hilft, einen Lead zuzuweisen.",
     "CREATE": "Erstellen"
   },
   "TABLE": {
@@ -216,6 +222,9 @@
     "EMPTY_HINT": "Schlage einen Skill vor, der im Katalog fehlt – ein Admin prüft ihn.",
     "SUBTITLE": "{{count}} Vorschläge",
     "CATEGORY_HINT": "Pflichtfeld – ohne Kategorie kann der Vorschlag nicht genehmigt werden",
+    "ALREADY_IN_CATEGORY": "Bereits in dieser Kategorie ({{count}})",
+    "CATEGORY_EMPTY": "Diese Kategorie enthält noch keine Skills.",
+    "NAME_TAKEN": "Diesen Skill gibt es in der gewählten Kategorie schon",
     "APPROVE": "Genehmigen",
     "REJECT": "Ablehnen",
     "OUTCOME_CREATES": "Legt diesen Skill im Katalog an",

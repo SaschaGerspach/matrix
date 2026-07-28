@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -49,10 +49,28 @@ export class SkillProposalsComponent implements OnInit {
   readonly displayedColumns = ['skill_name', 'category_name', 'proposed_by_name', 'reason', 'status', 'created_at', 'actions'];
 
   private myEmployeeId = 0;
-  newSkillName = '';
-  newCategory: number | undefined;
   newReason = '';
   statusFilter = '';
+
+  // Signals so the category preview reacts while the form is being filled in.
+  readonly newSkillName = signal('');
+  readonly newCategory = signal<number | undefined>(undefined);
+
+  readonly categorySkills = computed(() => {
+    const category = this.newCategory();
+    if (!category) return [];
+    return this.skills()
+      .filter((skill) => skill.category === category)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  });
+
+  // Answers "does Flutter already exist here?" while typing, using the same
+  // case-insensitive comparison the catalogue enforces.
+  readonly nameTaken = computed(() => {
+    const typed = this.newSkillName().trim().toLowerCase();
+    if (!typed) return false;
+    return this.categorySkills().some((skill) => skill.name.toLowerCase() === typed);
+  });
 
   ngOnInit(): void {
     this.loadProposals();
@@ -86,16 +104,16 @@ export class SkillProposalsComponent implements OnInit {
   }
 
   submitProposal(): void {
-    if (!this.newSkillName.trim() || !this.newCategory) return;
+    if (!this.newSkillName().trim() || !this.newCategory() || this.nameTaken()) return;
     this.proposalService.create({
       proposed_by: this.myEmployeeId,
-      skill_name: this.newSkillName.trim(),
-      category: this.newCategory,
+      skill_name: this.newSkillName().trim(),
+      category: this.newCategory(),
       reason: this.newReason.trim(),
     }).subscribe({
       next: () => {
-        this.newSkillName = '';
-        this.newCategory = undefined;
+        this.newSkillName.set('');
+        this.newCategory.set(undefined);
         this.newReason = '';
         this.showForm.set(false);
         this.toast.success('TOAST.PROPOSAL_SUBMITTED');

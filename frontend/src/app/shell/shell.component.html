@@ -18,21 +18,23 @@
         </a>
       </nav>
 
-      @if (isTeamLead()) {
+      @if (isTeamLead() || isAdmin()) {
         <nav class="nav-group">
           <p class="nav-group-label">{{ 'NAV.GROUP_TEAM' | translate }}</p>
           <a class="nav-item" routerLink="/team-review" routerLinkActive="nav-item-active" (click)="onNavigate()">
             <mat-icon>fact_check</mat-icon>
             <span>{{ 'NAV.TEAM_REVIEW' | translate }}</span>
           </a>
-          <a class="nav-item" routerLink="/skill-gaps" routerLinkActive="nav-item-active" (click)="onNavigate()">
-            <mat-icon>report_problem</mat-icon>
-            <span>{{ 'NAV.SKILL_GAPS' | translate }}</span>
-          </a>
-          <a class="nav-item" routerLink="/team-comparison" routerLinkActive="nav-item-active" (click)="onNavigate()">
-            <mat-icon>compare_arrows</mat-icon>
-            <span>{{ 'NAV.TEAM_COMPARISON' | translate }}</span>
-          </a>
+          @if (isTeamLead()) {
+            <a class="nav-item" routerLink="/skill-gaps" routerLinkActive="nav-item-active" (click)="onNavigate()">
+              <mat-icon>report_problem</mat-icon>
+              <span>{{ 'NAV.SKILL_GAPS' | translate }}</span>
+            </a>
+            <a class="nav-item" routerLink="/team-comparison" routerLinkActive="nav-item-active" (click)="onNavigate()">
+              <mat-icon>compare_arrows</mat-icon>
+              <span>{{ 'NAV.TEAM_COMPARISON' | translate }}</span>
+            </a>
+          }
         </nav>
       }
 

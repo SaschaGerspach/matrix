@@ -32,17 +32,40 @@
       <div class="proposal-form">
         <mat-form-field appearance="outline">
           <mat-label>{{ 'PROPOSALS.SKILL_NAME' | translate }}</mat-label>
-          <input matInput [(ngModel)]="newSkillName">
+          <input matInput [ngModel]="newSkillName()" (ngModelChange)="newSkillName.set($event)">
+          @if (nameTaken()) {
+            <mat-error>{{ 'PROPOSALS.NAME_TAKEN' | translate }}</mat-error>
+          }
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>{{ 'TABLE.CATEGORY' | translate }}</mat-label>
-          <mat-select [(ngModel)]="newCategory" required>
+          <mat-select [ngModel]="newCategory()" (ngModelChange)="newCategory.set($event)" required>
             @for (c of categories(); track c.id) {
               <mat-option [value]="c.id">{{ c.name }}</mat-option>
             }
           </mat-select>
           <mat-hint>{{ 'PROPOSALS.CATEGORY_HINT' | translate }}</mat-hint>
         </mat-form-field>
+
+        @if (newCategory()) {
+          <div class="category-preview form-span">
+            <p class="category-preview-title">
+              {{ 'PROPOSALS.ALREADY_IN_CATEGORY' | translate: { count: categorySkills().length } }}
+            </p>
+            @if (categorySkills().length) {
+              <div class="category-preview-list">
+                @for (skill of categorySkills(); track skill.id) {
+                  <span class="category-preview-chip"
+                        [class.category-preview-match]="skill.name.toLowerCase() === newSkillName().trim().toLowerCase()">
+                    {{ skill.name }}
+                  </span>
+                }
+              </div>
+            } @else {
+              <p class="category-preview-empty">{{ 'PROPOSALS.CATEGORY_EMPTY' | translate }}</p>
+            }
+          </div>
+        }
         <mat-form-field appearance="outline" class="form-span">
           <mat-label>{{ 'PROPOSALS.REASON' | translate }}</mat-label>
           <textarea matInput [(ngModel)]="newReason" rows="2"></textarea>
@@ -50,7 +73,7 @@
         <div class="form-actions">
           <button mat-button (click)="toggleForm()">{{ 'CERTIFICATES.CANCEL' | translate }}</button>
           <button mat-flat-button color="primary"
-                  [disabled]="!newSkillName.trim() || !newCategory"
+                  [disabled]="!newSkillName().trim() || !newCategory() || nameTaken()"
                   (click)="submitProposal()">{{ 'PROPOSALS.SUBMIT' | translate }}</button>
         </div>
       </div>

@@ -74,6 +74,8 @@ class TeamAssignmentSerializer(serializers.ModelSerializer):
     skill_name = serializers.CharField(source='skill.name', read_only=True)
     category_name = serializers.CharField(source='skill.category.name', read_only=True)
     employee_name = serializers.CharField(source='employee.__str__', read_only=True)
+    team_names = serializers.SerializerMethodField()
+    has_team_lead = serializers.SerializerMethodField()
 
     class Meta:
         model = SkillAssignment
@@ -87,8 +89,18 @@ class TeamAssignmentSerializer(serializers.ModelSerializer):
             'level',
             'status',
             'created_at',
+            'team_names',
+            'has_team_lead',
         )
         read_only_fields = fields
+
+    def get_team_names(self, obj):
+        return [team.name for team in obj.employee.teams.all()]
+
+    # Tells an admin whether a lead already owns this, or whether nobody can
+    # review it. Reads the prefetch cache rather than querying per row.
+    def get_has_team_lead(self, obj):
+        return any(team.team_leads.all() for team in obj.employee.teams.all())
 
 
 class MatrixEmployeeSerializer(serializers.Serializer):

@@ -1,3 +1,32 @@
+.admin-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  margin-bottom: 1rem;
+  border-color: var(--mat-sys-error);
+
+  > .mat-icon {
+    flex-shrink: 0;
+    color: var(--mat-sys-error);
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.admin-warning-title {
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.admin-warning-body {
+  margin-top: 2px;
+  font-size: 0.8125rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
 .tab-content {
   padding: 1.5rem 0;
   display: flex;

@@ -73,6 +73,15 @@ describe('ShellComponent', () => {
     expect(el.textContent).toContain('Team Comparison');
   });
 
+  it('gives admins team review but not the lead-only analyses', () => {
+    component.isAdmin.set(true);
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('Team Review');
+    expect(el.textContent).not.toContain('Skill Gaps');
+    expect(el.textContent).not.toContain('Team Comparison');
+  });
+
   it('does not show Admin for non-admins', () => {
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
