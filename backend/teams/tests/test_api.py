@@ -169,6 +169,33 @@ def test_team_list_carries_member_and_lead_names(admin_client):
     assert r.data[0]['lead_details'] == [{'id': alice.id, 'full_name': 'Alice A'}]
 
 
+def test_admin_can_create_a_team_with_just_a_name_and_department(admin_client):
+    """What the app sends: an empty team that gets staffed afterwards."""
+    dept = Department.objects.create(name='Eng')
+
+    r = admin_client.post('/api/teams/', {'name': 'Platform', 'department': dept.id}, format='json')
+
+    assert r.status_code == status.HTTP_201_CREATED
+    assert r.data['member_details'] == []
+    assert r.data['lead_details'] == []
+
+
+def test_admin_can_make_an_outsider_lead_and_member_at_once(admin_client):
+    dept = Department.objects.create(name='Eng')
+    outsider = Employee.objects.create(first_name='Otto', last_name='O', email='o@x.com')
+    team = Team.objects.create(name='Core', department=dept)
+
+    r = admin_client.patch(
+        f'/api/teams/{team.id}/',
+        {'team_leads': [outsider.id], 'members': [outsider.id]},
+        format='json',
+    )
+
+    assert r.status_code == status.HTTP_200_OK
+    assert list(team.team_leads.all()) == [outsider]
+    assert list(team.members.all()) == [outsider]
+
+
 def test_admin_can_assign_a_team_lead(admin_client):
     dept = Department.objects.create(name='Eng')
     alice = Employee.objects.create(first_name='Alice', last_name='A', email='a@x.com')

@@ -298,7 +298,8 @@
     "PROPOSAL_APPROVED": "Proposal approved.",
     "PROPOSAL_REJECTED": "Proposal rejected.",
     "ERROR": "An error occurred. Please try again.",
-    "TEAM_MEMBERS_UPDATED": "Team members updated."
+    "TEAM_MEMBERS_UPDATED": "Team members updated.",
+    "TEAM_CREATED": "Team created."
   },
   "COMMON": {
     "MEMBERS": "members"
@@ -321,6 +322,11 @@
     "EMPTY": "No teams to manage",
     "EMPTY_HINT_ADMIN": "Teams are created in Django admin; once they exist you can staff them here.",
     "EMPTY_HINT_LEAD": "You are not assigned as lead of any team yet.",
-    "NO_LEAD_WARNING": "{{count}} team(s) have members but no lead. Their self-assessments can only be confirmed by an admin."
+    "NO_LEAD_WARNING": "{{count}} team(s) have members but no lead. Their self-assessments can only be confirmed by an admin.",
+    "CREATE": "New team",
+    "NAME": "Team name",
+    "DEPARTMENT": "Department",
+    "NO_DEPARTMENTS": "No departments exist yet, so a team cannot be created. Departments are managed in Django admin.",
+    "LEAD_JOINS_TEAM": "A lead is added to the team as well, otherwise they would have nobody to review."
   }
 }

@@ -298,7 +298,8 @@
     "PROPOSAL_APPROVED": "Vorschlag genehmigt.",
     "PROPOSAL_REJECTED": "Vorschlag abgelehnt.",
     "ERROR": "Ein Fehler ist aufgetreten. Bitte erneut versuchen.",
-    "TEAM_MEMBERS_UPDATED": "Team-Mitglieder aktualisiert."
+    "TEAM_MEMBERS_UPDATED": "Team-Mitglieder aktualisiert.",
+    "TEAM_CREATED": "Team erstellt."
   },
   "COMMON": {
     "MEMBERS": "Mitglieder"
@@ -321,6 +322,11 @@
     "EMPTY": "Keine Teams zu verwalten",
     "EMPTY_HINT_ADMIN": "Teams werden im Django-Admin angelegt; sobald sie existieren, kannst du sie hier besetzen.",
     "EMPTY_HINT_LEAD": "Du bist noch keinem Team als Lead zugewiesen.",
-    "NO_LEAD_WARNING": "{{count}} Team(s) haben Mitglieder, aber keinen Lead. Ihre Selbsteinschätzungen kann nur ein Admin bestätigen."
+    "NO_LEAD_WARNING": "{{count}} Team(s) haben Mitglieder, aber keinen Lead. Ihre Selbsteinschätzungen kann nur ein Admin bestätigen.",
+    "CREATE": "Neues Team",
+    "NAME": "Teamname",
+    "DEPARTMENT": "Abteilung",
+    "NO_DEPARTMENTS": "Es gibt noch keine Abteilungen, daher lässt sich kein Team anlegen. Abteilungen werden im Django-Admin verwaltet.",
+    "LEAD_JOINS_TEAM": "Ein Lead wird zugleich Mitglied des Teams – sonst hätte er niemanden zu prüfen."
   }
 }

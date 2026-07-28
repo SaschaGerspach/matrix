@@ -9,6 +9,12 @@ export interface TeamPerson {
   full_name: string;
 }
 
+export interface Department {
+  id: number;
+  name: string;
+  parent: number | null;
+}
+
 export interface Team {
   id: number;
   name: string;
@@ -27,15 +33,23 @@ export class TeamService {
     return this.http.get<Team[]>(`${environment.apiUrl}/teams/`);
   }
 
+  listDepartments(): Observable<Department[]> {
+    return this.http.get<Department[]>(`${environment.apiUrl}/departments/`);
+  }
+
+  create(name: string, department: number): Observable<Team> {
+    return this.http.post<Team>(`${environment.apiUrl}/teams/`, { name, department });
+  }
+
   setLeads(teamId: number, leadIds: number[]): Observable<Team> {
-    return this.http.patch<Team>(
-      `${environment.apiUrl}/teams/${teamId}/`, { team_leads: leadIds },
-    );
+    return this.update(teamId, { team_leads: leadIds });
   }
 
   setMembers(teamId: number, memberIds: number[]): Observable<Team> {
-    return this.http.patch<Team>(
-      `${environment.apiUrl}/teams/${teamId}/`, { members: memberIds },
-    );
+    return this.update(teamId, { members: memberIds });
+  }
+
+  update(teamId: number, patch: { members?: number[]; team_leads?: number[] }): Observable<Team> {
+    return this.http.patch<Team>(`${environment.apiUrl}/teams/${teamId}/`, patch);
   }
 }

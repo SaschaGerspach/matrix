@@ -48,6 +48,11 @@ describe('TeamsComponent', () => {
 
   function flushInit(teams: Team[], profile = meLead): void {
     http.expectOne(`${environment.apiUrl}/me/`).flush(profile);
+    if (profile.is_admin) {
+      http.expectOne(`${environment.apiUrl}/departments/`).flush([
+        { id: 1, name: 'Engineering', parent: null },
+      ]);
+    }
     http.expectOne(`${environment.apiUrl}/teams/`).flush(teams);
   }
 
@@ -75,7 +80,7 @@ describe('TeamsComponent', () => {
     fixture.detectChanges();
     flushInit([team()]);
 
-    component.addMember(component.teams()[0], 5);
+    component.addPerson(component.teams()[0], 5, 'member');
 
     const req = http.expectOne(`${environment.apiUrl}/teams/1/`);
     expect(req.request.method).toBe('PATCH');
@@ -83,6 +88,57 @@ describe('TeamsComponent', () => {
     req.flush(team({ members: [1, 5] }));
 
     expect(component.teams()[0].members).toEqual([1, 5]);
+  });
+
+  it('makes a person from outside the team its lead and a member', () => {
+    fixture.detectChanges();
+    flushInit([team({ team_leads: [], lead_details: [] })], { ...meLead, is_admin: true });
+
+    component.addPerson(component.teams()[0], 9, 'lead');
+
+    const req = http.expectOne(`${environment.apiUrl}/teams/1/`);
+    expect(req.request.body).toEqual({ team_leads: [9], members: [1, 9] });
+    req.flush(team({ team_leads: [9], members: [1, 9] }));
+  });
+
+  it('does not duplicate a member who is promoted to lead', () => {
+    fixture.detectChanges();
+    flushInit([team({ members: [1], team_leads: [], lead_details: [] })], { ...meLead, is_admin: true });
+
+    component.addPerson(component.teams()[0], 1, 'lead');
+
+    const req = http.expectOne(`${environment.apiUrl}/teams/1/`);
+    expect(req.request.body).toEqual({ team_leads: [1], members: [1] });
+    req.flush(team());
+  });
+
+  it('creates a team and shows it without a reload', () => {
+    fixture.detectChanges();
+    flushInit([], { ...meLead, is_admin: true });
+
+    component.newTeamName = ' Platform ';
+    component.newTeamDepartment = 1;
+    component.createTeam();
+
+    const req = http.expectOne(`${environment.apiUrl}/teams/`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ name: 'Platform', department: 1 });
+    req.flush(team({ id: 7, name: 'Platform', members: [], member_details: [], team_leads: [], lead_details: [] }));
+
+    expect(component.teams().map((t) => t.name)).toEqual(['Platform']);
+    expect(component.showCreateForm()).toBeFalse();
+  });
+
+  it('refuses to create a team without a department', () => {
+    fixture.detectChanges();
+    flushInit([], { ...meLead, is_admin: true });
+
+    component.newTeamName = 'Platform';
+    component.newTeamDepartment = undefined;
+    component.createTeam();
+
+    // afterEach verifies no request went out.
+    expect(component.newTeamName).toBe('Platform');
   });
 
   it('removes a member', () => {
@@ -115,7 +171,7 @@ describe('TeamsComponent', () => {
     });
 
     // Alice is already in the team, so adding her would be a no-op.
-    expect(component.candidatesFor(component.teams()[0]).map((e) => e.id)).toEqual([6]);
+    expect(component.candidatesFor(component.teams()[0], 'member').map((e) => e.id)).toEqual([6]);
   }));
 
   it('warns when a visible team has members but no lead', () => {

@@ -152,6 +152,9 @@ const EN = {
     EMPTY_HINT_ADMIN: 'Teams are created in Django admin; once they exist you can staff them here.',
     EMPTY_HINT_LEAD: 'You are not assigned as lead of any team yet.',
     NO_LEAD_WARNING: '{{count}} team(s) have members but no lead.',
+    CREATE: 'New team', NAME: 'Team name', DEPARTMENT: 'Department',
+    NO_DEPARTMENTS: 'No departments exist yet, so a team cannot be created.',
+    LEAD_JOINS_TEAM: 'A lead is added to the team as well.',
   },
 };
 

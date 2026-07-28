@@ -13,8 +13,10 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { Employee, EmployeeService } from '../../core/employee.service';
 import { MeService } from '../../core/me.service';
-import { Team, TeamPerson, TeamService } from '../../core/team.service';
+import { Department, Team, TeamService } from '../../core/team.service';
 import { ToastService } from '../../core/toast.service';
+
+type SearchMode = 'member' | 'lead';
 
 @Component({
   selector: 'app-teams',
@@ -40,14 +42,18 @@ export class TeamsComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly teams = signal<Team[]>([]);
+  readonly departments = signal<Department[]>([]);
   readonly loading = signal(true);
   readonly isAdmin = signal(false);
   readonly searchResults = signal<Employee[]>([]);
-  readonly searchingFor = signal<number | null>(null);
+  readonly searchContext = signal<{ teamId: number; mode: SearchMode } | null>(null);
+  readonly showCreateForm = signal(false);
 
   private myEmployeeId = 0;
   private readonly search$ = new Subject<string>();
   searchTerm = '';
+  newTeamName = '';
+  newTeamDepartment: number | undefined;
 
   // A lead only ever manages their own teams; an admin manages all of them.
   readonly visibleTeams = computed(() => {
@@ -63,6 +69,9 @@ export class TeamsComponent implements OnInit {
     this.meService.getProfile().subscribe((me) => {
       this.myEmployeeId = me.id;
       this.isAdmin.set(me.is_admin);
+      if (me.is_admin) {
+        this.teamService.listDepartments().subscribe((d) => this.departments.set(d));
+      }
     });
     this.teamService.list().subscribe({
       next: (teams) => {
@@ -80,8 +89,33 @@ export class TeamsComponent implements OnInit {
     ).subscribe((page) => this.searchResults.set(page.results));
   }
 
-  openSearch(teamId: number): void {
-    this.searchingFor.set(this.searchingFor() === teamId ? null : teamId);
+  toggleCreateForm(): void {
+    this.showCreateForm.update((v) => !v);
+    this.newTeamName = '';
+    this.newTeamDepartment = undefined;
+  }
+
+  createTeam(): void {
+    if (!this.newTeamName.trim() || !this.newTeamDepartment) return;
+    this.teamService.create(this.newTeamName.trim(), this.newTeamDepartment).subscribe({
+      next: (created) => {
+        this.teams.update((list) => [...list, created]);
+        this.showCreateForm.set(false);
+        this.newTeamName = '';
+        this.newTeamDepartment = undefined;
+        this.toast.success('TOAST.TEAM_CREATED');
+      },
+      error: () => this.toast.error('TOAST.ERROR'),
+    });
+  }
+
+  isSearching(teamId: number, mode: SearchMode): boolean {
+    const context = this.searchContext();
+    return context?.teamId === teamId && context.mode === mode;
+  }
+
+  openSearch(teamId: number, mode: SearchMode): void {
+    this.searchContext.set(this.isSearching(teamId, mode) ? null : { teamId, mode });
     this.searchTerm = '';
     this.searchResults.set([]);
   }
@@ -91,53 +125,46 @@ export class TeamsComponent implements OnInit {
     if (term.trim()) this.search$.next(term.trim());
   }
 
-  // People already in the team would be a no-op, so they are filtered out.
-  candidatesFor(team: Team): Employee[] {
-    return this.searchResults().filter((e) => !team.members.includes(e.id));
+  // Whoever already holds the role would be a no-op, so they are filtered out.
+  candidatesFor(team: Team, mode: SearchMode): Employee[] {
+    const taken = mode === 'lead' ? team.team_leads : team.members;
+    return this.searchResults().filter((e) => !taken.includes(e.id));
   }
 
-  addMember(team: Team, employeeId: number): void {
-    this.saveMembers(team, [...team.members, employeeId]);
-    this.searchingFor.set(null);
+  addPerson(team: Team, employeeId: number, mode: SearchMode): void {
+    if (mode === 'lead') {
+      // A lead outside the team would have no members to review, so joining
+      // the team is part of being made its lead.
+      const members = team.members.includes(employeeId)
+        ? team.members
+        : [...team.members, employeeId];
+      this.save(team, { team_leads: [...team.team_leads, employeeId], members });
+    } else {
+      this.save(team, { members: [...team.members, employeeId] });
+    }
+    this.searchContext.set(null);
   }
 
   removeMember(team: Team, employeeId: number): void {
-    this.saveMembers(team, team.members.filter((id) => id !== employeeId));
-  }
-
-  assignableLeads(team: Team): TeamPerson[] {
-    return team.member_details.filter((m) => !team.team_leads.includes(m.id));
-  }
-
-  addLead(team: Team, employeeId: number): void {
-    this.saveLeads(team, [...team.team_leads, employeeId]);
+    this.save(team, { members: team.members.filter((id) => id !== employeeId) });
   }
 
   removeLead(team: Team, employeeId: number): void {
-    this.saveLeads(team, team.team_leads.filter((id) => id !== employeeId));
+    this.save(team, { team_leads: team.team_leads.filter((id) => id !== employeeId) });
   }
 
-  private saveMembers(team: Team, memberIds: number[]): void {
-    this.teamService.setMembers(team.id, memberIds).subscribe({
+  private save(team: Team, patch: { members?: number[]; team_leads?: number[] }): void {
+    const request = patch.team_leads !== undefined
+      ? this.teamService.update(team.id, patch)
+      : this.teamService.setMembers(team.id, patch.members!);
+    request.subscribe({
       next: (updated) => {
-        this.replace(updated);
-        this.toast.success('TOAST.TEAM_MEMBERS_UPDATED');
+        this.teams.update((list) => list.map((t) => (t.id === updated.id ? updated : t)));
+        this.toast.success(
+          patch.team_leads !== undefined ? 'TOAST.TEAM_LEADS_UPDATED' : 'TOAST.TEAM_MEMBERS_UPDATED',
+        );
       },
       error: () => this.toast.error('TOAST.ERROR'),
     });
-  }
-
-  private saveLeads(team: Team, leadIds: number[]): void {
-    this.teamService.setLeads(team.id, leadIds).subscribe({
-      next: (updated) => {
-        this.replace(updated);
-        this.toast.success('TOAST.TEAM_LEADS_UPDATED');
-      },
-      error: () => this.toast.error('TOAST.ERROR'),
-    });
-  }
-
-  private replace(updated: Team): void {
-    this.teams.update((list) => list.map((t) => (t.id === updated.id ? updated : t)));
   }
 }
