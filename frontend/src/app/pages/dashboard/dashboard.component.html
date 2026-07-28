@@ -1,86 +1,135 @@
-<div class="header">
-  <h2>{{ 'DASHBOARD.TITLE' | translate }}</h2>
-  <div class="header-actions">
-    <button mat-raised-button color="primary" (click)="exportCsv()">{{ 'DASHBOARD.EXPORT_CSV' | translate }}</button>
-    <button mat-raised-button (click)="exportPdf()">{{ 'DASHBOARD.EXPORT_PDF' | translate }}</button>
-  </div>
-</div>
-
-<div class="filters">
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'DASHBOARD.SEARCH' | translate }}</mat-label>
-    <input matInput [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" [placeholder]="'DASHBOARD.SEARCH_PLACEHOLDER' | translate">
-  </mat-form-field>
-
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'DASHBOARD.TEAM' | translate }}</mat-label>
-    <mat-select [(ngModel)]="selectedTeam" (selectionChange)="applyFilters()">
-      <mat-option [value]="undefined">{{ 'DASHBOARD.ALL_TEAMS' | translate }}</mat-option>
-      @for (team of teams(); track team.id) {
-        <mat-option [value]="team.id">{{ team.name }}</mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
-
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'DASHBOARD.CATEGORY' | translate }}</mat-label>
-    <mat-select [(ngModel)]="selectedCategory" (selectionChange)="applyFilters()">
-      <mat-option [value]="undefined">{{ 'DASHBOARD.ALL_CATEGORIES' | translate }}</mat-option>
-      @for (cat of categories(); track cat.id) {
-        <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
-
-  <button mat-button (click)="clearFilters()">{{ 'DASHBOARD.CLEAR' | translate }}</button>
-</div>
-
-@if (loading()) {
-  <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
-} @else if (employees().length === 0) {
-  <p>{{ 'DASHBOARD.EMPTY' | translate }}</p>
-} @else {
-  <div class="matrix-wrapper">
-    <div class="matrix-header" [style.grid-template-columns]="gridColumns()">
-      <div class="matrix-cell matrix-header-cell">{{ 'TABLE.EMPLOYEE' | translate }}</div>
-      @for (skill of skills(); track skill.id) {
-        <div class="matrix-cell matrix-header-cell">{{ skill.name }}</div>
+<div class="page">
+  <div class="page-header">
+    <div class="page-heading">
+      <h2 class="page-title">{{ 'DASHBOARD.TITLE' | translate }}</h2>
+      @if (!loading() && employees().length > 0) {
+        <p class="page-subtitle">
+          {{ 'DASHBOARD.SUBTITLE' | translate: { employees: employees().length, skills: skills().length } }}
+        </p>
       }
     </div>
+    <div class="page-header-actions">
+      <button mat-flat-button color="primary" (click)="exportCsv()">{{ 'DASHBOARD.EXPORT_CSV' | translate }}</button>
+      <button mat-stroked-button (click)="exportPdf()">{{ 'DASHBOARD.EXPORT_PDF' | translate }}</button>
+    </div>
+  </div>
 
-    <cdk-virtual-scroll-viewport [itemSize]="48" class="matrix-viewport">
-      <div class="matrix-row" *cdkVirtualFor="let row of employees()" [style.grid-template-columns]="gridColumns()">
-        <div class="matrix-cell matrix-employee-cell">
-          <a class="employee-link" (click)="openProfile(row.id)">{{ row.full_name }}</a>
+  <div class="surface-card data-toolbar">
+    <mat-form-field appearance="outline" class="data-toolbar-grow">
+      <mat-label>{{ 'DASHBOARD.SEARCH' | translate }}</mat-label>
+      <input matInput [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" [placeholder]="'DASHBOARD.SEARCH_PLACEHOLDER' | translate">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'DASHBOARD.TEAM' | translate }}</mat-label>
+      <mat-select [(ngModel)]="selectedTeam" (selectionChange)="applyFilters()">
+        <mat-option [value]="undefined">{{ 'DASHBOARD.ALL_TEAMS' | translate }}</mat-option>
+        @for (team of teams(); track team.id) {
+          <mat-option [value]="team.id">{{ team.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'DASHBOARD.CATEGORY' | translate }}</mat-label>
+      <mat-select [(ngModel)]="selectedCategory" (selectionChange)="applyFilters()">
+        <mat-option [value]="undefined">{{ 'DASHBOARD.ALL_CATEGORIES' | translate }}</mat-option>
+        @for (cat of categories(); track cat.id) {
+          <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-button (click)="clearFilters()">{{ 'DASHBOARD.CLEAR' | translate }}</button>
+  </div>
+
+  @if (loading()) {
+    <div class="matrix-skeleton">
+      @for (row of skeletonRows; track row) {
+        <div class="skeleton skeleton-row"></div>
+      }
+    </div>
+  } @else if (employees().length === 0) {
+    <div class="empty-state">
+      <mat-icon>search_off</mat-icon>
+      <p class="empty-state-title">{{ 'DASHBOARD.EMPTY' | translate }}</p>
+      <p class="empty-state-hint">{{ 'DASHBOARD.EMPTY_HINT' | translate }}</p>
+    </div>
+  } @else {
+    <div class="matrix-wrapper"
+         role="grid"
+         [attr.aria-label]="'DASHBOARD.TITLE' | translate"
+         [attr.aria-rowcount]="employees().length + 1"
+         [attr.aria-colcount]="skills().length + 1">
+      <div class="matrix-header" role="row" aria-rowindex="1" [style.grid-template-columns]="gridColumns()">
+        <div class="matrix-cell matrix-header-cell matrix-employee-cell" role="columnheader" aria-colindex="1">
+          {{ 'TABLE.EMPLOYEE' | translate }}
         </div>
-        @for (skill of skills(); track skill.id) {
-          @let level = getLevel(row.id, skill.id);
-          @let tooltip = getLevelTooltip(skill.id, level);
-          <div class="matrix-cell level-cell">
-            @if (canEdit() && isEditing(row.id, skill.id)) {
-              <select class="inline-level-select"
-                      (change)="setLevel(row.id, skill.id, +$any($event.target).value)"
-                      (blur)="cancelEdit()">
-                <option value="0" [selected]="!level">–</option>
-                @for (l of levels; track l) {
-                  <option [value]="l" [selected]="level === l">{{ l }}</option>
-                }
-              </select>
-            } @else {
-              <span (click)="startEdit(row.id, skill.id)"
-                    [class.editable]="canEdit()"
-                    [matTooltip]="tooltip"
-                    class="level-display">
-                @if (level) {
-                  <span class="level-badge level-{{ level }}">{{ level }}</span>
-                } @else {
-                  <span class="level-empty">–</span>
-                }
-              </span>
-            }
+        @for (skill of skills(); track skill.id; let colIndex = $index) {
+          <div class="matrix-cell matrix-header-cell" role="columnheader" [attr.aria-colindex]="colIndex + 2">
+            {{ skill.name }}
           </div>
         }
       </div>
-    </cdk-virtual-scroll-viewport>
-  </div>
-}
+
+      <cdk-virtual-scroll-viewport #matrixViewport [itemSize]="48" class="matrix-viewport" role="presentation">
+        <div class="matrix-row"
+             *cdkVirtualFor="let row of employees(); let rowIndex = index"
+             role="row"
+             [attr.aria-rowindex]="rowIndex + 2"
+             [style.grid-template-columns]="gridColumns()">
+          <div class="matrix-cell matrix-employee-cell" role="rowheader" aria-colindex="1">
+            <a class="employee-link" [routerLink]="['/employees', row.id]">{{ row.full_name }}</a>
+          </div>
+          @for (skill of skills(); track skill.id; let colIndex = $index) {
+            @let level = getLevel(row.id, skill.id);
+            <div class="matrix-cell level-cell"
+                 role="gridcell"
+                 [attr.aria-colindex]="colIndex + 2"
+                 [attr.aria-readonly]="canEdit() ? null : 'true'"
+                 [attr.aria-label]="level
+                   ? ('DASHBOARD.CELL_LABEL' | translate: { employee: row.full_name, skill: skill.name, level: level })
+                   : ('DASHBOARD.CELL_LABEL_EMPTY' | translate: { employee: row.full_name, skill: skill.name })"
+                 [attr.data-heat]="level ?? 0"
+                 [attr.data-row]="rowIndex"
+                 [attr.data-col]="colIndex"
+                 [attr.tabindex]="isFocusedCell(rowIndex, colIndex) ? 0 : -1"
+                 [matTooltip]="getLevelTooltip(skill.id, level)"
+                 [class.editable]="canEdit()"
+                 (focus)="onCellFocus(rowIndex, colIndex)"
+                 (keydown)="onCellKeydown($event, rowIndex, colIndex, row.id, skill.id)"
+                 (click)="startEdit(row.id, skill.id)">
+              @if (canEdit() && isEditing(row.id, skill.id)) {
+                <select class="inline-level-select"
+                        (change)="setLevel(row.id, skill.id, +$any($event.target).value)"
+                        (keydown.escape)="cancelEdit()"
+                        (blur)="cancelEdit()">
+                  <option value="0" [selected]="!level">–</option>
+                  @for (l of levels; track l) {
+                    <option [value]="l" [selected]="level === l">{{ l }}</option>
+                  }
+                </select>
+              } @else {
+                <span class="level-value">{{ level ?? '–' }}</span>
+              }
+            </div>
+          }
+        </div>
+      </cdk-virtual-scroll-viewport>
+    </div>
+
+    <div class="legend">
+      <span class="legend-label">{{ 'DASHBOARD.LEGEND' | translate }}</span>
+      <span class="legend-item">
+        <span class="legend-swatch" data-heat="0"></span>
+        {{ 'DASHBOARD.NOT_ASSESSED' | translate }}
+      </span>
+      @for (l of levels; track l) {
+        <span class="legend-item">
+          <span class="legend-swatch" [attr.data-heat]="l"></span>
+          {{ l }}
+        </span>
+      }
+    </div>
+  }
+</div>

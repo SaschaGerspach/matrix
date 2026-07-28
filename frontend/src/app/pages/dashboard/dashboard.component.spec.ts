@@ -1,6 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { ComponentFixture, TestBed, fakeAsync, flush, tick } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { By } from '@angular/platform-browser';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { TranslateTestingModule } from '../../core/testing/translate-testing';
@@ -97,6 +99,159 @@ describe('DashboardComponent', () => {
     const el = fixture.nativeElement as HTMLElement;
     expect(el.textContent).toContain('No employees found');
   });
+
+  it('shows skeleton rows while loading', () => {
+    fixture.detectChanges();
+
+    expect(component.loading()).toBeTrue();
+    expect(fixture.nativeElement.querySelectorAll('.skeleton-row').length).toBe(8);
+
+    flushInitRequests(http);
+  });
+
+  it('renders a legend covering unassessed plus every level', () => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+    fixture.detectChanges();
+
+    const swatches = fixture.nativeElement.querySelectorAll('.legend-swatch') as NodeListOf<HTMLElement>;
+    expect(Array.from(swatches).map((s) => s.getAttribute('data-heat')))
+      .toEqual(['0', '1', '2', '3', '4', '5']);
+  });
+
+  // The virtual scroll viewport only materialises rows once it has measured
+  // itself, which needs a turn of the microtask queue in tests.
+  function renderMatrixRows(): void {
+    tick();
+    fixture.detectChanges();
+    fixture.debugElement
+      .query(By.directive(CdkVirtualScrollViewport))
+      .injector.get(CdkVirtualScrollViewport)
+      .checkViewportSize();
+    tick();
+    fixture.detectChanges();
+  }
+
+  it('renders employee names as real links so they are keyboard reachable', fakeAsync(() => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+    renderMatrixRows();
+
+    const link = fixture.nativeElement.querySelector('.employee-link') as HTMLAnchorElement | null;
+    expect(link).toBeTruthy();
+    expect(link!.tagName).toBe('A');
+    expect(link!.getAttribute('href')).toBe('/employees/1');
+  }));
+
+  it('exposes grid semantics including counts that survive virtual scrolling', fakeAsync(() => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+    renderMatrixRows();
+
+    const el = fixture.nativeElement as HTMLElement;
+    const grid = el.querySelector('[role="grid"]')!;
+    expect(grid.getAttribute('aria-rowcount')).toBe('3');
+    expect(grid.getAttribute('aria-colcount')).toBe('3');
+
+    expect(el.querySelectorAll('[role="columnheader"]').length).toBe(3);
+    expect(el.querySelector('[role="rowheader"]')).toBeTruthy();
+
+    const firstRow = el.querySelector('.matrix-row')!;
+    expect(firstRow.getAttribute('role')).toBe('row');
+    expect(firstRow.getAttribute('aria-rowindex')).toBe('2');
+  }));
+
+  it('labels each cell with employee, skill and level', fakeAsync(() => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+    renderMatrixRows();
+
+    const cell = fixture.nativeElement.querySelector('[data-row="0"][data-col="0"]') as HTMLElement;
+    expect(cell.getAttribute('aria-label')).toBe('Alice A, Python: level 4 of 5');
+
+    const empty = fixture.nativeElement.querySelector('[data-row="0"][data-col="1"]') as HTMLElement;
+    expect(empty.getAttribute('aria-label')).toBe('Alice A, Docker: not assessed');
+  }));
+
+  it('marks cells read-only for users who cannot edit', fakeAsync(() => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+    renderMatrixRows();
+
+    const cell = fixture.nativeElement.querySelector('[data-row="0"][data-col="0"]') as HTMLElement;
+    expect(cell.getAttribute('aria-readonly')).toBe('true');
+  }));
+
+  it('keeps exactly one cell in the tab order', fakeAsync(() => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+    renderMatrixRows();
+
+    const tabbable = fixture.nativeElement.querySelectorAll('[role="gridcell"][tabindex="0"]');
+    expect(tabbable.length).toBe(1);
+    expect(tabbable[0].getAttribute('data-row')).toBe('0');
+    expect(tabbable[0].getAttribute('data-col')).toBe('0');
+  }));
+
+  it('moves the focused cell with arrow keys and clamps at the edges', fakeAsync(() => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+    renderMatrixRows();
+
+    component.onCellKeydown(new KeyboardEvent('keydown', { key: 'ArrowRight' }), 0, 0, 1, 10);
+    expect(component.focusedCell()).toEqual({ row: 0, col: 1 });
+
+    component.onCellKeydown(new KeyboardEvent('keydown', { key: 'ArrowDown' }), 0, 1, 1, 11);
+    expect(component.focusedCell()).toEqual({ row: 1, col: 1 });
+
+    // Two skills and two employees, so both moves are already at the edge.
+    component.onCellKeydown(new KeyboardEvent('keydown', { key: 'ArrowRight' }), 1, 1, 2, 11);
+    component.onCellKeydown(new KeyboardEvent('keydown', { key: 'ArrowDown' }), 1, 1, 2, 11);
+    expect(component.focusedCell()).toEqual({ row: 1, col: 1 });
+
+    component.onCellKeydown(new KeyboardEvent('keydown', { key: 'Home' }), 1, 1, 2, 11);
+    expect(component.focusedCell()).toEqual({ row: 1, col: 0 });
+
+    component.onCellKeydown(new KeyboardEvent('keydown', { key: 'End' }), 1, 0, 2, 10);
+    expect(component.focusedCell()).toEqual({ row: 1, col: 1 });
+
+    flush();
+  }));
+
+  it('starts editing on Enter only when editing is allowed', fakeAsync(() => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+    renderMatrixRows();
+
+    component.onCellKeydown(new KeyboardEvent('keydown', { key: 'Enter' }), 0, 0, 1, 10);
+    expect(component.editingCell).toBeNull();
+  }));
+
+  it('starts editing on Enter for team leads', fakeAsync(() => {
+    fixture.detectChanges();
+    flushInitRequests(http, matrixResponse, { ...meProfile, is_team_lead: true });
+    renderMatrixRows();
+
+    component.onCellKeydown(new KeyboardEvent('keydown', { key: 'Enter' }), 0, 0, 1, 10);
+    expect(component.isEditing(1, 10)).toBeTrue();
+  }));
+
+  it('resets the tab stop when filters return a smaller result set', fakeAsync(() => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+    renderMatrixRows();
+
+    component.focusedCell.set({ row: 1, col: 1 });
+    component.applyFilters();
+    http.expectOne((r) => r.url === `${environment.apiUrl}/skill-matrix/`).flush({
+      employees: [{ id: 1, full_name: 'Alice A' }],
+      skills: [{ id: 10, name: 'Python', category_name: 'Programming' }],
+      assignments: [],
+    });
+
+    expect(component.focusedCell()).toEqual({ row: 0, col: 0 });
+    flush();
+  }));
 
   it('renders export buttons', () => {
     fixture.detectChanges();

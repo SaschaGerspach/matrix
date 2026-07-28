@@ -1,15 +1,15 @@
-import { Component, DestroyRef, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, DestroyRef, ElementRef, OnInit, effect, inject, signal, computed, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ScrollingModule } from '@angular/cdk/scrolling';
+import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 
 import { TranslateModule } from '@ngx-translate/core';
 import { Subject, catchError, EMPTY, switchMap } from 'rxjs';
@@ -28,10 +28,11 @@ import { Team, TeamService } from '../../core/team.service';
     FormsModule,
     MatButtonModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
-    MatProgressSpinnerModule,
     MatSelectModule,
     MatTooltipModule,
+    RouterLink,
     ScrollingModule,
     TranslateModule,
   ],
@@ -43,7 +44,6 @@ export class DashboardComponent implements OnInit {
   private readonly analyticsService = inject(SkillAnalyticsService);
   private readonly assignmentService = inject(SkillAssignmentService);
   private readonly meService = inject(MeService);
-  private readonly router = inject(Router);
   private readonly teamService = inject(TeamService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -55,7 +55,25 @@ export class DashboardComponent implements OnInit {
   readonly canEdit = signal(false);
 
   readonly levels = [1, 2, 3, 4, 5];
+  readonly skeletonRows = [1, 2, 3, 4, 5, 6, 7, 8];
   editingCell: { employeeId: number; skillId: number } | null = null;
+
+  // Roving tabindex: exactly one cell is in the tab order, arrow keys move it.
+  readonly focusedCell = signal({ row: 0, col: 0 });
+
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly viewport = viewChild<CdkVirtualScrollViewport>('matrixViewport');
+
+  constructor() {
+    // The CDK inserts two plain divs between the grid and its rows, which breaks
+    // the required grid > row relationship. Marking them presentational lets the
+    // rows read as direct children of the grid.
+    effect(() => {
+      this.viewport()?.elementRef.nativeElement
+        .querySelector('.cdk-virtual-scroll-content-wrapper')
+        ?.setAttribute('role', 'presentation');
+    });
+  }
 
   selectedTeam: number | undefined;
   selectedCategory: number | undefined;
@@ -106,6 +124,9 @@ export class DashboardComponent implements OnInit {
       for (const a of data.assignments) {
         this.assignmentMap.set(`${a.employee}_${a.skill}`, a);
       }
+      // Without this the tab stop could point at a cell the new result set no
+      // longer has, leaving the grid unreachable by keyboard.
+      this.focusedCell.set({ row: 0, col: 0 });
       this.loading.set(false);
     });
 
@@ -151,6 +172,64 @@ export class DashboardComponent implements OnInit {
     return this.editingCell?.employeeId === employeeId && this.editingCell?.skillId === skillId;
   }
 
+  isFocusedCell(row: number, col: number): boolean {
+    const focused = this.focusedCell();
+    return focused.row === row && focused.col === col;
+  }
+
+  onCellFocus(row: number, col: number): void {
+    this.focusedCell.set({ row, col });
+  }
+
+  onCellKeydown(event: KeyboardEvent, row: number, col: number, employeeId: number, skillId: number): void {
+    switch (event.key) {
+      case 'ArrowRight': this.moveFocus(row, col + 1); break;
+      case 'ArrowLeft': this.moveFocus(row, col - 1); break;
+      case 'ArrowDown': this.moveFocus(row + 1, col); break;
+      case 'ArrowUp': this.moveFocus(row - 1, col); break;
+      case 'Home': this.moveFocus(row, 0); break;
+      case 'End': this.moveFocus(row, this.skills().length - 1); break;
+      case 'Enter':
+      case ' ':
+        if (!this.canEdit()) return;
+        this.startEdit(employeeId, skillId);
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
+  }
+
+  private moveFocus(row: number, col: number): void {
+    const rowCount = this.employees().length;
+    const colCount = this.skills().length;
+    if (!rowCount || !colCount) return;
+
+    const nextRow = Math.min(Math.max(row, 0), rowCount - 1);
+    const nextCol = Math.min(Math.max(col, 0), colCount - 1);
+    this.focusedCell.set({ row: nextRow, col: nextCol });
+
+    // Rows outside the rendered window are not in the DOM, so scroll them into
+    // range first; the viewport materialises them on a later frame.
+    if (!this.cellElement(nextRow, nextCol)) {
+      this.viewport()?.scrollToIndex(nextRow);
+    }
+    requestAnimationFrame(() => {
+      const cell = this.cellElement(nextRow, nextCol);
+      if (cell) {
+        cell.focus();
+      } else {
+        requestAnimationFrame(() => this.cellElement(nextRow, nextCol)?.focus());
+      }
+    });
+  }
+
+  private cellElement(row: number, col: number): HTMLElement | null {
+    return this.host.nativeElement.querySelector<HTMLElement>(
+      `[data-row="${row}"][data-col="${col}"]`,
+    );
+  }
+
   setLevel(employeeId: number, skillId: number, level: number): void {
     this.editingCell = null;
     const key = `${employeeId}_${skillId}`;
@@ -173,10 +252,6 @@ export class DashboardComponent implements OnInit {
         error: () => this.assignmentMap.delete(key),
       });
     }
-  }
-
-  openProfile(employeeId: number): void {
-    this.router.navigate(['/employees', employeeId]);
   }
 
   exportCsv(): void {

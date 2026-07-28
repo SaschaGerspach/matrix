@@ -1,46 +1,24 @@
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.header-actions {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-}
-
-.filters {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-}
+// --- Matrix ---
 
 .matrix-wrapper {
-  overflow-x: auto;
-  border: 1px solid light-dark(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.12));
-  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
 }
 
 .matrix-header {
   display: grid;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: light-dark(#f5f5f5, #3a3a3a);
-  color: light-dark(inherit, #e0e0e0);
-  border-bottom: 2px solid light-dark(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.2));
+  background: var(--mat-sys-surface-container);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
 }
 
 .matrix-header-cell {
-  font-weight: 500;
   font-size: 0.8125rem;
+  font-weight: 600;
   padding: 12px 8px;
   word-break: break-word;
   line-height: 1.2;
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .matrix-viewport {
@@ -49,10 +27,12 @@
 
 .matrix-row {
   display: grid;
-  border-bottom: 1px solid light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.06));
+  background: var(--mat-sys-surface);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  transition: background var(--motion-fast) var(--motion-ease);
 
   &:hover {
-    background: light-dark(rgba(0, 0, 0, 0.02), rgba(255, 255, 255, 0.04));
+    background: var(--mat-sys-surface-container-high);
   }
 }
 
@@ -65,75 +45,109 @@
   box-sizing: border-box;
 }
 
+// Sticky so employee names stay readable while scrolling wide skill sets. Needs
+// an opaque background inherited from the row, otherwise cells bleed through.
 .matrix-employee-cell {
   justify-content: flex-start;
   position: sticky;
   left: 0;
+  z-index: 1;
   background: inherit;
-  z-index: 0;
+  border-right: 1px solid var(--mat-sys-outline-variant);
 }
 
 .employee-link {
-  color: light-dark(#3f51b5, #90caf9);
-  cursor: pointer;
+  color: var(--mat-sys-primary);
+  font-weight: 500;
   text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   &:hover {
     text-decoration: underline;
   }
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 }
 
 .level-cell {
-  text-align: center;
-}
-
-.level-badge {
-  display: inline-block;
-  width: 28px;
-  height: 28px;
-  line-height: 28px;
-  border-radius: 50%;
-  text-align: center;
-  font-weight: 500;
-  color: #fff;
-}
-
-.level-1 { background-color: #e1f5ee; color: #04342c; }
-.level-2 { background-color: #9fe1cb; color: #04342c; }
-.level-3 { background-color: #5dcaa5; color: #04342c; }
-.level-4 { background-color: #1d9e75; color: #ffffff; }
-.level-5 { background-color: #0f6e56; color: #ffffff; }
-
-.level-empty {
-  color: var(--mat-sys-outline);
-}
-
-.level-display {
-  display: inline-block;
-  min-width: 28px;
-  min-height: 28px;
-  line-height: 28px;
-  text-align: center;
+  position: relative;
+  font-variant-numeric: tabular-nums;
+  transition: box-shadow var(--motion-fast) var(--motion-ease);
 
   &.editable {
     cursor: pointer;
-    border-radius: 50%;
-    transition: box-shadow 0.15s;
 
     &:hover {
-      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+      box-shadow: inset 0 0 0 2px var(--mat-sys-primary);
     }
   }
+
+  // The cell itself is the grid's focus target, so the ring has to sit inside it
+  // and outrank the hover state.
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--mat-sys-primary);
+    z-index: 2;
+  }
 }
+
+.level-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
 
 .inline-level-select {
   width: 48px;
   height: 28px;
   font-size: 14px;
   text-align: center;
-  border: 1px solid light-dark(#ccc, #555);
+  border: 1px solid var(--mat-sys-outline);
   border-radius: 4px;
-  background: light-dark(#fff, #333);
-  color: inherit;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
   cursor: pointer;
+}
+
+.matrix-skeleton {
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  padding: 0.75rem;
+}
+
+// --- Legend ---
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.8125rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.legend-label {
+  font-weight: 600;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.legend-swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid var(--mat-sys-outline-variant);
 }
