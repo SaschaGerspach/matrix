@@ -37,3 +37,369 @@ body {
 .toast-error .mdc-snackbar__surface {
   background-color: #c62828 !important;
 }
+
+// --- Motion tokens ---
+
+:root {
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 320ms;
+  --motion-ease: cubic-bezier(0.2, 0, 0.2, 1);
+  --motion-ease-out: cubic-bezier(0, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-base: 0ms;
+    --motion-slow: 0ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
+
+// --- Page layout ---
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.page-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.page-title {
+  font: var(--mat-sys-headline-small);
+  margin: 0;
+}
+
+.page-subtitle {
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface-variant);
+  margin: 0;
+}
+
+.page-header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.section-title {
+  font: var(--mat-sys-title-medium);
+  margin: 0 0 0.75rem;
+}
+
+// --- Surfaces ---
+
+.surface-card {
+  background: var(--mat-sys-surface-container-low);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+}
+
+// --- Filter / action rows ---
+
+// Form fields inside a toolbar row carry a 20px subscript slot for hint and error
+// text that these rows never show, which pushes the row out of alignment.
+.data-toolbar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+.data-toolbar-grow {
+  flex: 1;
+  min-width: 200px;
+}
+
+// --- Route transitions ---
+//
+// Cross-fade only, no slide: a slide on a 600px-tall virtual-scrolled matrix
+// repaints the whole grid and stutters.
+
+::view-transition-old(root) {
+  animation: route-fade-out var(--motion-fast) var(--motion-ease) both;
+}
+
+::view-transition-new(root) {
+  animation: route-fade-in var(--motion-base) var(--motion-ease-out) both;
+}
+
+@keyframes route-fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes route-fade-in {
+  from { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+}
+
+// --- Skill level heat scale ---
+//
+// One ramp for every place a level is shown: matrix cells, legend swatches,
+// profile badges. Level 0 stays unfilled so an unassessed skill reads as a hole
+// in the grid rather than as a low rating.
+
+[data-heat="0"] {
+  background: transparent;
+  color: var(--mat-sys-outline);
+}
+
+[data-heat="1"] {
+  background: light-dark(#e8f6f1, #10312a);
+  color: light-dark(#08463a, #a9d9c9);
+}
+
+[data-heat="2"] {
+  background: light-dark(#c2e9dc, #16483c);
+  color: light-dark(#06382e, #bfe6d8);
+}
+
+[data-heat="3"] {
+  background: light-dark(#8ed9c0, #1c6350);
+  color: light-dark(#04342c, #d3f0e5);
+}
+
+[data-heat="4"] {
+  background: light-dark(#4cbf9d, #248069);
+  color: light-dark(#03291f, #e4f7f0);
+}
+
+[data-heat="5"] {
+  background: light-dark(#168f6d, #2da184);
+  color: light-dark(#ffffff, #f2fdf9);
+}
+
+.heat-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 6px;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+// --- Data tables ---
+//
+// Wraps a mat-table so every list page gets the same framed, rounded surface
+// instead of a table bleeding into the page background.
+
+.table-card {
+  background: var(--mat-sys-surface-container-low);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  overflow: hidden;
+
+  table {
+    width: 100%;
+    background: transparent;
+  }
+
+  .mat-mdc-header-row {
+    background: var(--mat-sys-surface-container);
+  }
+
+  .mat-mdc-header-cell {
+    font-weight: 600;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  .mat-mdc-row {
+    transition: background var(--motion-fast) var(--motion-ease);
+
+    &:hover {
+      background: var(--mat-sys-surface-container-high);
+    }
+  }
+
+  .mat-mdc-paginator {
+    background: transparent;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+  }
+}
+
+.clickable-row {
+  cursor: pointer;
+}
+
+// Digits in a column only line up with tabular figures; Inter defaults to
+// proportional ones, which makes level and count columns look ragged.
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+// --- Status pills ---
+
+.status-pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  background: var(--mat-sys-surface-container-highest);
+  color: var(--mat-sys-on-surface-variant);
+
+  &.status-confirmed,
+  &.status-approved {
+    background: light-dark(#e0f2e9, #16402f);
+    color: light-dark(#0d5132, #a5dcc0);
+  }
+
+  &.status-pending {
+    background: light-dark(#fdf3e0, #3f3016);
+    color: light-dark(#6b4a06, #f3d59b);
+  }
+
+  &.status-rejected {
+    background: var(--mat-sys-error-container);
+    color: var(--mat-sys-on-error-container);
+  }
+}
+
+// --- Empty states ---
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+
+  .mat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 40px;
+    color: var(--mat-sys-outline);
+  }
+}
+
+.empty-state-title {
+  font: var(--mat-sys-title-medium);
+  color: var(--mat-sys-on-surface);
+  margin: 0;
+}
+
+.empty-state-hint {
+  font: var(--mat-sys-body-medium);
+  margin: 0;
+  max-width: 40ch;
+}
+
+// --- Skeleton loading ---
+
+.skeleton {
+  border-radius: 6px;
+  background: var(--mat-sys-surface-container-highest);
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    light-dark(rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.07)),
+    transparent
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: skeleton-shimmer 1.4s var(--motion-ease) infinite;
+}
+
+.skeleton-text {
+  height: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-row {
+  height: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+@keyframes skeleton-shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+// --- Category accents ---
+//
+// Six fixed slots assigned from a record id, so grouping colours never depend on
+// a category or team being named a particular thing in English.
+
+[data-accent] {
+  --accent-surface: light-dark(#f5f5f5, #333333);
+  --accent-on-surface: light-dark(#3c3c3c, #e0e0e0);
+  --accent-dot: light-dark(#999999, #666666);
+}
+
+[data-accent="1"] {
+  --accent-surface: light-dark(#f3f2fe, #2d2a52);
+  --accent-on-surface: light-dark(#3c3489, #cecbf6);
+  --accent-dot: light-dark(#534ab7, #7f77dd);
+}
+
+[data-accent="2"] {
+  --accent-surface: light-dark(#e8f8f1, #1a3d30);
+  --accent-on-surface: light-dark(#085041, #a8e6cf);
+  --accent-dot: light-dark(#1d9e75, #5dcaa5);
+}
+
+[data-accent="3"] {
+  --accent-surface: light-dark(#fdf4e4, #3d2e10);
+  --accent-on-surface: light-dark(#633806, #f5d49a);
+  --accent-dot: light-dark(#ba7517, #ef9f27);
+}
+
+[data-accent="4"] {
+  --accent-surface: light-dark(#eaf3fc, #192f4d);
+  --accent-on-surface: light-dark(#0c447c, #b8d8f8);
+  --accent-dot: light-dark(#378add, #85b7eb);
+}
+
+[data-accent="5"] {
+  --accent-surface: light-dark(#fcedf2, #3d1a28);
+  --accent-on-surface: light-dark(#72243e, #f5c6d6);
+  --accent-dot: light-dark(#d4537e, #ed93b1);
+}
+
+[data-accent="6"] {
+  --accent-surface: light-dark(#e6f5f8, #12333c);
+  --accent-on-surface: light-dark(#0a4653, #a9dfeb);
+  --accent-dot: light-dark(#1a8ba3, #4fb8d0);
+}

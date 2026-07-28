@@ -3,7 +3,7 @@ import * as Sentry from '@sentry/angular';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, ErrorHandler, provideZoneChangeDetection } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withViewTransitions } from '@angular/router';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { TranslateModule } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -19,7 +19,7 @@ const sentryProviders = environment.sentryDsn
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes),
+    provideRouter(routes, withViewTransitions({ skipInitialTransition: true })),
     provideHttpClient(withInterceptors([authInterceptor])),
     provideAnimationsAsync(),
     provideCharts(withDefaultRegisterables()),
