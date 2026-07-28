@@ -46,6 +46,13 @@ class SkillProposalViewSet(AuditMixin, viewsets.ModelViewSet):
                     {'detail': 'Only pending proposals can be reviewed.'},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+            # Approving used to succeed here and quietly create nothing, leaving
+            # a proposal marked approved that never reached the catalogue.
+            if proposal.category is None:
+                return Response(
+                    {'detail': 'A category is required before this proposal can be approved.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             reviewer = get_employee(request.user)
             proposal.status = SkillProposal.Status.APPROVED
             proposal.reviewed_by = reviewer
@@ -53,14 +60,14 @@ class SkillProposalViewSet(AuditMixin, viewsets.ModelViewSet):
             proposal.reviewed_at = timezone.now()
             proposal.save()
 
-        if proposal.category:
             _, created = Skill.objects.get_or_create(
                 name=proposal.skill_name,
                 category=proposal.category,
             )
-            if created:
-                from skills.views._cache import invalidate_analytics_cache
-                invalidate_analytics_cache()
+
+        if created:
+            from skills.views._cache import invalidate_analytics_cache
+            invalidate_analytics_cache()
 
         return Response(SkillProposalSerializer(proposal).data)
 

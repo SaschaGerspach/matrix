@@ -15,6 +15,35 @@
   justify-content: flex-end;
 }
 
+.proposal-name {
+  display: block;
+}
+
+// Sits under the skill name so a reviewer sees the consequence next to what
+// they are judging, not in a separate column.
+.proposal-outcome {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 2px;
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+
+  .mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.outcome-warn {
+  color: light-dark(#8a5a00, #f3d59b);
+}
+
+.outcome-blocked {
+  color: var(--mat-sys-error);
+}
+
 .action-approve {
   color: light-dark(#0d5132, #a5dcc0);
 }

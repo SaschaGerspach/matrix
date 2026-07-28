@@ -17,3 +17,7 @@ class SkillProposalSerializer(serializers.ModelSerializer):
             'created_at', 'reviewed_at',
         )
         read_only_fields = ('status', 'reviewed_by', 'review_note', 'reviewed_at', 'created_at')
+        # The model keeps category nullable for proposals created before it was
+        # required, but approving one cannot create a catalogue skill, so new
+        # proposals have to carry it.
+        extra_kwargs = {'category': {'required': True, 'allow_null': False}}

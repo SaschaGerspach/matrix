@@ -214,7 +214,13 @@
     "REJECTED": "Rejected",
     "EMPTY": "No proposals yet.",
     "EMPTY_HINT": "Propose a skill that is missing from the catalogue and an admin will review it.",
-    "SUBTITLE": "{{count}} proposals"
+    "SUBTITLE": "{{count}} proposals",
+    "CATEGORY_HINT": "Required — a proposal without a category cannot be approved",
+    "APPROVE": "Approve",
+    "REJECT": "Reject",
+    "OUTCOME_CREATES": "Adds this skill to the catalogue",
+    "OUTCOME_EXISTS": "Already in the catalogue — approving changes nothing",
+    "OUTCOME_NO_CATEGORY": "No category — cannot be approved"
   },
   "DEV_PLANS": {
     "TITLE": "Development Plans",

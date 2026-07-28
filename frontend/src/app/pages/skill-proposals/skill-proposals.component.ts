@@ -7,12 +7,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { TranslateModule } from '@ngx-translate/core';
 
 import { MeService } from '../../core/me.service';
 import { SkillCatalogService } from '../../core/skill-catalog.service';
-import { SkillCategory } from '../../core/skill.models';
+import { Skill, SkillCategory } from '../../core/skill.models';
 import { SkillProposal, SkillProposalService } from '../../core/skill-proposal.service';
 import { ToastService } from '../../core/toast.service';
 
@@ -28,6 +29,7 @@ import { ToastService } from '../../core/toast.service';
     MatInputModule,
     MatSelectModule,
     MatTableModule,
+    MatTooltipModule,
     TranslateModule,
   ],
   templateUrl: './skill-proposals.component.html',
@@ -41,6 +43,7 @@ export class SkillProposalsComponent implements OnInit {
 
   readonly proposals = signal<SkillProposal[]>([]);
   readonly categories = signal<SkillCategory[]>([]);
+  readonly skills = signal<Skill[]>([]);
   readonly canReview = signal(false);
   readonly showForm = signal(false);
   readonly displayedColumns = ['skill_name', 'category_name', 'proposed_by_name', 'reason', 'status', 'created_at', 'actions'];
@@ -54,6 +57,7 @@ export class SkillProposalsComponent implements OnInit {
   ngOnInit(): void {
     this.loadProposals();
     this.skillService.listCategories().subscribe((c) => this.categories.set(c));
+    this.skillService.listSkills().subscribe((s) => this.skills.set(s));
     this.meService.getProfile().subscribe((me) => {
       this.myEmployeeId = me.id;
       this.canReview.set(me.is_admin || me.is_team_lead);
@@ -70,8 +74,18 @@ export class SkillProposalsComponent implements OnInit {
     this.showForm.update((v) => !v);
   }
 
+  // What approving would actually do, so a reviewer is not guessing. Mirrors the
+  // backend's get_or_create, which matches on the exact name within a category.
+  proposalOutcome(proposal: SkillProposal): 'creates' | 'exists' | 'no-category' {
+    if (!proposal.category) return 'no-category';
+    const exists = this.skills().some(
+      (skill) => skill.name === proposal.skill_name && skill.category === proposal.category,
+    );
+    return exists ? 'exists' : 'creates';
+  }
+
   submitProposal(): void {
-    if (!this.newSkillName.trim()) return;
+    if (!this.newSkillName.trim() || !this.newCategory) return;
     this.proposalService.create({
       proposed_by: this.myEmployeeId,
       skill_name: this.newSkillName.trim(),

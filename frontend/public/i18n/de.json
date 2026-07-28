@@ -214,7 +214,13 @@
     "REJECTED": "Abgelehnt",
     "EMPTY": "Noch keine Vorschläge.",
     "EMPTY_HINT": "Schlage einen Skill vor, der im Katalog fehlt – ein Admin prüft ihn.",
-    "SUBTITLE": "{{count}} Vorschläge"
+    "SUBTITLE": "{{count}} Vorschläge",
+    "CATEGORY_HINT": "Pflichtfeld – ohne Kategorie kann der Vorschlag nicht genehmigt werden",
+    "APPROVE": "Genehmigen",
+    "REJECT": "Ablehnen",
+    "OUTCOME_CREATES": "Legt diesen Skill im Katalog an",
+    "OUTCOME_EXISTS": "Bereits im Katalog – Genehmigen ändert nichts",
+    "OUTCOME_NO_CATEGORY": "Keine Kategorie – nicht genehmigungsfähig"
   },
   "DEV_PLANS": {
     "TITLE": "Entwicklungspläne",

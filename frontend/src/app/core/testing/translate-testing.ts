@@ -14,6 +14,17 @@ const EN = {
     GROUP_ORGANISATION: 'Organisation', GROUP_ADMINISTRATION: 'Administration',
   },
   NOTIFICATIONS: { TITLE: 'Notifications', MARK_ALL_READ: 'Mark all read', EMPTY: 'No notifications' },
+  PROPOSALS: {
+    TITLE: 'Skill Proposals', PROPOSE: 'Propose Skill', SKILL_NAME: 'Skill name',
+    REASON: 'Reason', PROPOSED_BY: 'Proposed by', SUBMIT: 'Submit', ALL: 'All',
+    PENDING: 'Pending', APPROVED: 'Approved', REJECTED: 'Rejected',
+    EMPTY: 'No proposals yet.', SUBTITLE: '{{count}} proposals',
+    APPROVE: 'Approve', REJECT: 'Reject',
+    CATEGORY_HINT: 'Required — a proposal without a category cannot be approved',
+    OUTCOME_CREATES: 'Adds this skill to the catalogue',
+    OUTCOME_EXISTS: 'Already in the catalogue — approving changes nothing',
+    OUTCOME_NO_CATEGORY: 'No category — cannot be approved',
+  },
   LOGIN: { TITLE: 'Sign in', USERNAME: 'Username', PASSWORD: 'Password', SUBMIT: 'Sign in' },
   MY_SKILLS: {
     TITLE: 'My Skills', ADD_SKILL: 'Add Skill',

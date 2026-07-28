@@ -141,12 +141,34 @@ def test_approve_creates_skill_in_catalog(admin_client, proposal, category):
     assert Skill.objects.filter(name='Rust', category=category).exists()
 
 
-def test_approve_without_category_skips_skill_creation(admin_client):
+def test_create_requires_category(emp_client, employee):
+    r = emp_client.post(URL, {
+        'proposed_by': employee.id, 'skill_name': 'Go', 'reason': 'For backend services',
+    }, format='json')
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
+    assert 'category' in r.data
+
+
+def test_approve_without_category_is_refused(admin_client):
+    """Legacy proposals predate the required category and cannot reach the catalogue."""
     emp = Employee.objects.create(first_name='A', last_name='B', email='a@b.com')
     p = SkillProposal.objects.create(proposed_by=emp, skill_name='Random')
+
     r = admin_client.post(f'{URL}{p.id}/approve/', format='json')
-    assert r.status_code == status.HTTP_200_OK
+
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
     assert not Skill.objects.filter(name='Random').exists()
+    p.refresh_from_db()
+    assert p.status == SkillProposal.Status.PENDING
+
+
+def test_approve_reuses_an_existing_catalogue_skill(admin_client, proposal, category):
+    Skill.objects.create(name='Rust', category=category)
+
+    r = admin_client.post(f'{URL}{proposal.id}/approve/', format='json')
+
+    assert r.status_code == status.HTTP_200_OK
+    assert Skill.objects.filter(name='Rust', category=category).count() == 1
 
 
 def test_unauthenticated_cannot_access(db):
