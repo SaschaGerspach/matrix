@@ -1,11 +1,14 @@
-<h2>{{ 'SETTINGS.TITLE' | translate }}</h2>
+<div class="page">
+  <div class="page-header">
+    <div class="page-heading">
+      <h2 class="page-title">{{ 'SETTINGS.TITLE' | translate }}</h2>
+      <p class="page-subtitle">{{ 'SETTINGS.SUBTITLE' | translate }}</p>
+    </div>
+  </div>
 
-<div class="settings-grid">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>{{ 'SETTINGS.CHANGE_PASSWORD' | translate }}</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
+  <div class="settings-grid">
+    <section class="surface-card">
+      <h3 class="section-title">{{ 'SETTINGS.CHANGE_PASSWORD' | translate }}</h3>
       <form (ngSubmit)="changePassword()" class="password-form">
         <mat-form-field appearance="outline">
           <mat-label>{{ 'SETTINGS.CURRENT_PASSWORD' | translate }}</mat-label>
@@ -26,26 +29,22 @@
           <p class="error">{{ passwordError() | translate }}</p>
         }
 
-        <button mat-raised-button color="primary" type="submit"
+        <button mat-flat-button color="primary" type="submit"
                 [disabled]="!currentPassword || !newPassword || !confirmPassword">
           {{ 'SETTINGS.SAVE_PASSWORD' | translate }}
         </button>
       </form>
-    </mat-card-content>
-  </mat-card>
+    </section>
 
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>{{ 'SETTINGS.LANGUAGE' | translate }}</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <mat-form-field appearance="outline">
+    <section class="surface-card">
+      <h3 class="section-title">{{ 'SETTINGS.LANGUAGE' | translate }}</h3>
+      <mat-form-field appearance="outline" class="language-field">
         <mat-label>{{ 'SETTINGS.LANGUAGE' | translate }}</mat-label>
         <mat-select [value]="langService.currentLang()" (selectionChange)="setLanguage($event.value)">
           <mat-option value="en">English</mat-option>
           <mat-option value="de">Deutsch</mat-option>
         </mat-select>
       </mat-form-field>
-    </mat-card-content>
-  </mat-card>
+    </section>
+  </div>
 </div>

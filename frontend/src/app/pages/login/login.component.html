@@ -1,39 +1,40 @@
 <div class="login-wrapper">
-  <mat-card class="login-card">
-    <mat-card-header>
-      <mat-card-title>{{ 'LOGIN.TITLE' | translate }}</mat-card-title>
-    </mat-card-header>
+  <div class="login-card surface-card">
+    <div class="login-brand">
+      <span class="brand-mark"><mat-icon>grid_view</mat-icon></span>
+      <span class="brand-name">{{ 'APP_NAME' | translate }}</span>
+    </div>
 
-    <mat-card-content>
-      <form [formGroup]="form" (ngSubmit)="submit()">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{ 'LOGIN.USERNAME' | translate }}</mat-label>
-          <input matInput formControlName="username" autocomplete="username" />
-        </mat-form-field>
+    <h1 class="login-title">{{ 'LOGIN.TITLE' | translate }}</h1>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{ 'LOGIN.PASSWORD' | translate }}</mat-label>
-          <input matInput type="password" formControlName="password" autocomplete="current-password" />
-        </mat-form-field>
+    <form [formGroup]="form" (ngSubmit)="submit()" class="login-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'LOGIN.USERNAME' | translate }}</mat-label>
+        <input matInput formControlName="username" autocomplete="username" />
+      </mat-form-field>
 
-        @if (errorMessage(); as msg) {
-          <p class="error" data-testid="login-error">{{ msg | translate }}</p>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'LOGIN.PASSWORD' | translate }}</mat-label>
+        <input matInput type="password" formControlName="password" autocomplete="current-password" />
+      </mat-form-field>
+
+      @if (errorMessage(); as msg) {
+        <p class="error" data-testid="login-error">{{ msg | translate }}</p>
+      }
+
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        class="full-width"
+        [disabled]="form.invalid || loading()"
+      >
+        @if (loading()) {
+          <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
+        } @else {
+          {{ 'LOGIN.SUBMIT' | translate }}
         }
-
-        <button
-          mat-flat-button
-          color="primary"
-          type="submit"
-          class="full-width"
-          [disabled]="form.invalid || loading()"
-        >
-          @if (loading()) {
-            <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
-          } @else {
-            {{ 'LOGIN.SUBMIT' | translate }}
-          }
-        </button>
-      </form>
-    </mat-card-content>
-  </mat-card>
+      </button>
+    </form>
+  </div>
 </div>
