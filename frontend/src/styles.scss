@@ -109,6 +109,8 @@ body {
 
 .page-title {
   font: var(--mat-sys-headline-small);
+  font-weight: 600;
+  letter-spacing: -0.01em;
   margin: 0;
 }
 
@@ -127,6 +129,7 @@ body {
 
 .section-title {
   font: var(--mat-sys-title-medium);
+  font-weight: 600;
   margin: 0 0 0.75rem;
 }
 

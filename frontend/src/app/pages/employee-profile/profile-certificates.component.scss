@@ -1,12 +1,18 @@
 .cert-card {
-  mat-card-header {
+  .card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 0.5rem;
+
+    .section-title {
+      margin: 0;
+    }
   }
 
   table {
     width: 100%;
+    background: transparent;
   }
 }
 
@@ -29,7 +35,7 @@
   margin-bottom: 0.5rem;
 
   .file-name {
-    color: #666;
+    color: var(--mat-sys-on-surface-variant);
     font-size: 0.875rem;
   }
 

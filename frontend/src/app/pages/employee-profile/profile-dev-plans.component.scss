@@ -1,19 +1,25 @@
 .dev-plan-card {
-  mat-card-header {
+  .card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 0.5rem;
+
+    .section-title {
+      margin: 0;
+    }
   }
 
   table {
     width: 100%;
+    background: transparent;
   }
 }
 
 .plan-block {
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
 
   &:last-child {
     border-bottom: none;
@@ -26,12 +32,14 @@
   justify-content: space-between;
 
   h3 {
+    font: var(--mat-sys-title-small);
+    font-weight: 600;
     margin: 0;
   }
 }
 
 .plan-notes {
-  color: #666;
+  color: var(--mat-sys-on-surface-variant);
   margin: 0.25rem 0 0.75rem;
 }
 
