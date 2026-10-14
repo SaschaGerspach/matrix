@@ -108,7 +108,13 @@
       </mat-menu>
       <button mat-icon-button class="account-button" [matMenuTriggerFor]="accountMenu"
               [attr.aria-label]="'NAV.ACCOUNT' | translate">
-        <span class="avatar">{{ initials() }}</span>
+        <span class="avatar">
+          @if (initials()) {
+            {{ initials() }}
+          } @else {
+            <mat-icon>person</mat-icon>
+          }
+        </span>
       </button>
       <mat-menu #accountMenu="matMenu" xPosition="before" class="account-menu">
         @if (me(); as profile) {

@@ -125,6 +125,13 @@ describe('ShellComponent', () => {
     expect(avatar.textContent?.trim()).toBe('AB');
   });
 
+  it('falls back to a person icon when the profile has no name', () => {
+    component.me.set({ ...meProfile, first_name: '', last_name: '' });
+    fixture.detectChanges();
+    const avatar = fixture.nativeElement.querySelector('.account-button .avatar') as HTMLElement;
+    expect(avatar.querySelector('mat-icon')?.textContent).toBe('person');
+  });
+
   it('puts settings, language, theme and sign out in the account menu', () => {
     fixture.detectChanges();
     (fixture.nativeElement.querySelector('.account-button') as HTMLButtonElement).click();
