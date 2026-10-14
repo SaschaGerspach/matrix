@@ -8,7 +8,7 @@ const EN = {
     MY_SKILLS: 'My Skills', TEAM_REVIEW: 'Team Review', SKILL_GAPS: 'Skill Gaps',
     TEAM_COMPARISON: 'Team Comparison', DASHBOARD: 'Dashboard', KPIS: 'KPIs',
     EMPLOYEES: 'Employees', ADMIN: 'Admin', SIGN_OUT: 'Sign out',
-    SETTINGS: 'Settings', TOGGLE_DARK_MODE: 'Toggle dark mode',
+    SETTINGS: 'Settings', ACCOUNT: 'Account', DARK_MODE: 'Dark mode', LIGHT_MODE: 'Light mode',
     PROPOSALS: 'Proposals', MENU: 'Open navigation',
     GROUP_PERSONAL: 'Personal', GROUP_TEAM: 'Team', GROUP_ANALYSIS: 'Analysis',
     GROUP_ORGANISATION: 'Organisation', GROUP_ADMINISTRATION: 'Administration',

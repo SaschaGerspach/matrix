@@ -137,14 +137,46 @@
   font: var(--mat-sys-title-small);
   font-weight: 600;
   margin-left: 0.25rem;
+  white-space: nowrap;
 }
 
 .spacer {
   flex: 1 1 auto;
 }
 
-.sign-out {
+.account-button {
   margin-left: 0.25rem;
+}
+
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.account-head {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 1rem 0.75rem;
+  margin-bottom: 0.25rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.account-name {
+  font: var(--mat-sys-title-small);
+  font-weight: 600;
+}
+
+.account-email {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .content {

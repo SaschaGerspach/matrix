@@ -87,12 +87,6 @@
         <span class="topbar-title">{{ 'APP_NAME' | translate }}</span>
       }
       <span class="spacer"></span>
-      <button mat-icon-button (click)="langService.toggle()" [title]="langService.currentLang() === 'en' ? 'Deutsch' : 'English'">
-        <mat-icon>translate</mat-icon>
-      </button>
-      <button mat-icon-button (click)="themeService.toggle()" [title]="'NAV.TOGGLE_DARK_MODE' | translate">
-        <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-      </button>
       <button mat-icon-button [matMenuTriggerFor]="notifMenu" (menuOpened)="loadNotifications()">
         <mat-icon [matBadge]="unreadCount()" [matBadgeHidden]="unreadCount() === 0" matBadgeColor="warn" matBadgeSize="small">notifications</mat-icon>
       </button>
@@ -112,10 +106,34 @@
           <div class="notif-empty">{{ 'NOTIFICATIONS.EMPTY' | translate }}</div>
         }
       </mat-menu>
-      <button mat-icon-button routerLink="/settings" title="{{ 'NAV.SETTINGS' | translate }}">
-        <mat-icon>settings</mat-icon>
+      <button mat-icon-button class="account-button" [matMenuTriggerFor]="accountMenu"
+              [attr.aria-label]="'NAV.ACCOUNT' | translate">
+        <span class="avatar">{{ initials() }}</span>
       </button>
-      <button mat-button type="button" class="sign-out" (click)="logout()">{{ 'NAV.SIGN_OUT' | translate }}</button>
+      <mat-menu #accountMenu="matMenu" xPosition="before" class="account-menu">
+        @if (me(); as profile) {
+          <div class="account-head">
+            <span class="account-name">{{ profile.full_name }}</span>
+            <span class="account-email">{{ profile.email }}</span>
+          </div>
+        }
+        <button mat-menu-item routerLink="/settings">
+          <mat-icon>settings</mat-icon>
+          <span>{{ 'NAV.SETTINGS' | translate }}</span>
+        </button>
+        <button mat-menu-item (click)="langService.toggle()">
+          <mat-icon>translate</mat-icon>
+          <span>{{ langService.currentLang() === 'en' ? 'Deutsch' : 'English' }}</span>
+        </button>
+        <button mat-menu-item (click)="themeService.toggle()">
+          <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+          <span>{{ (themeService.isDark() ? 'NAV.LIGHT_MODE' : 'NAV.DARK_MODE') | translate }}</span>
+        </button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>{{ 'NAV.SIGN_OUT' | translate }}</span>
+        </button>
+      </mat-menu>
     </header>
 
     <main class="content">

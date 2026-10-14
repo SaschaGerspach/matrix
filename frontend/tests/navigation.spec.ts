@@ -26,8 +26,9 @@ test.describe('Navigation', () => {
     await expect(page.getByRole('heading', { name: 'Skill Matrix' })).toBeVisible();
   });
 
-  test('sign out button exists', async ({ authedPage: page }) => {
+  test('sign out is reachable from the account menu', async ({ authedPage: page }) => {
     await page.goto('/my-skills');
-    await expect(page.getByRole('button', { name: /sign out/i })).toBeVisible();
+    await page.getByRole('button', { name: 'Account' }).click();
+    await expect(page.getByRole('menuitem', { name: /sign out/i })).toBeVisible();
   });
 });

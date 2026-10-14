@@ -1,6 +1,6 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,7 +13,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { AuthService } from '../core/auth.service';
 import { LanguageService } from '../core/language.service';
-import { MeService } from '../core/me.service';
+import { MeProfile, MeService } from '../core/me.service';
 import { NotificationItem, NotificationService } from '../core/notification.service';
 import { ThemeService } from '../core/theme.service';
 
@@ -35,8 +35,13 @@ export class ShellComponent implements OnInit, OnDestroy {
   readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
 
+  readonly me = signal<MeProfile | null>(null);
   readonly isTeamLead = signal(false);
   readonly isAdmin = signal(false);
+  readonly initials = computed(() => {
+    const profile = this.me();
+    return profile ? `${profile.first_name.charAt(0)}${profile.last_name.charAt(0)}`.toUpperCase() : '';
+  });
   readonly notifications = signal<NotificationItem[]>([]);
   readonly unreadCount = this.notificationService.unreadCount;
   readonly isCompact = signal(false);
@@ -64,6 +69,7 @@ export class ShellComponent implements OnInit, OnDestroy {
     this.langService.init();
     this.meService.getProfile().subscribe({
       next: (profile) => {
+        this.me.set(profile);
         this.isTeamLead.set(profile.is_team_lead);
         this.isAdmin.set(profile.is_admin);
       },

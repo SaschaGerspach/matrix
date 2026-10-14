@@ -119,6 +119,24 @@ describe('ShellComponent', () => {
     expect(component.navOpen()).toBeTrue();
   });
 
+  it('shows the signed-in user initials on the account button', () => {
+    fixture.detectChanges();
+    const avatar = fixture.nativeElement.querySelector('.account-button .avatar') as HTMLElement;
+    expect(avatar.textContent?.trim()).toBe('AB');
+  });
+
+  it('puts settings, language, theme and sign out in the account menu', () => {
+    fixture.detectChanges();
+    (fixture.nativeElement.querySelector('.account-button') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    const items = Array.from(
+      document.querySelectorAll('.account-menu [mat-menu-item]') as NodeListOf<HTMLElement>,
+    ).map((el) => el.textContent?.trim());
+    const themeItem = component.themeService.isDark() ? 'light_modeLight mode' : 'dark_modeDark mode';
+    expect(items).toEqual(['settingsSettings', 'translateDeutsch', themeItem, 'logoutSign out']);
+    expect(document.querySelector('.account-menu .account-email')?.textContent).toContain('a@b.com');
+  });
+
   it('logs out and navigates to login', () => {
     const navigateSpy = spyOn(router, 'navigate');
     component.logout();
