@@ -27,7 +27,6 @@ export class MySkillsComponent implements OnInit {
   readonly recommendations = signal<SkillRecommendation[]>([]);
   readonly loading = signal(false);
   readonly displayedColumns = ['skill_name', 'category_name', 'level', 'status'];
-  readonly levelSteps = [1, 2, 3, 4, 5];
   readonly skeletonRows = [1, 2, 3, 4, 5];
 
   ngOnInit(): void {

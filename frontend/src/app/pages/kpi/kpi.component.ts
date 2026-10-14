@@ -12,7 +12,7 @@ import { KpiEntry, LevelDistribution } from '../../core/skill.models';
 import { CountUpDirective } from './count-up.directive';
 
 // Mirrors the matrix heat scale so a level means the same colour everywhere.
-const LEVEL_COLORS = ['#d7f0e6', '#8ed9c0', '#4cbf9d', '#1d9e75', '#0f6e56'];
+const LEVEL_COLORS = ['#e8f6f1', '#c2e9dc', '#8ed9c0', '#4cbf9d', '#168f6d'];
 const CHART_PRIMARY = '#3b5bdb';
 const CHART_SECONDARY = '#515b8e';
 

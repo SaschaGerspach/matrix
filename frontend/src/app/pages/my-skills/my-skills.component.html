@@ -42,11 +42,7 @@
         <ng-container matColumnDef="level">
           <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.LEVEL' | translate }}</th>
           <td mat-cell *matCellDef="let row">
-            <span class="level-meter" [attr.aria-label]="row.level + ' / 5'">
-              @for (step of levelSteps; track step) {
-                <span class="level-step" [class.level-step-filled]="step <= row.level"></span>
-              }
-            </span>
+            <span class="heat-badge" [attr.data-heat]="row.level">{{ row.level }}</span>
           </td>
         </ng-container>
 

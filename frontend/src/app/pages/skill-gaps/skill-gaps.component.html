@@ -45,12 +45,12 @@
 
         <ng-container matColumnDef="required_level">
           <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.REQUIRED' | translate }}</th>
-          <td mat-cell *matCellDef="let row" class="tabular-nums">{{ row.required_level }}</td>
+          <td mat-cell *matCellDef="let row"><span class="heat-badge" [attr.data-heat]="row.required_level">{{ row.required_level }}</span></td>
         </ng-container>
 
         <ng-container matColumnDef="actual_level">
           <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.ACTUAL' | translate }}</th>
-          <td mat-cell *matCellDef="let row" class="tabular-nums">{{ row.actual_level }}</td>
+          <td mat-cell *matCellDef="let row"><span class="heat-badge" [attr.data-heat]="row.actual_level">{{ row.actual_level }}</span></td>
         </ng-container>
 
         <ng-container matColumnDef="gap">

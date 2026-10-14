@@ -49,13 +49,13 @@
             <ng-container matColumnDef="current_level">
               <th mat-header-cell *matHeaderCellDef>{{ 'DEV_PLANS.CURRENT' | translate }}</th>
               <td mat-cell *matCellDef="let g">
-                <span class="level-badge level-{{ g.current_level }}">{{ g.current_level }}</span>
+                <span class="heat-badge" [attr.data-heat]="g.current_level">{{ g.current_level }}</span>
               </td>
             </ng-container>
             <ng-container matColumnDef="target_level">
               <th mat-header-cell *matHeaderCellDef>{{ 'DEV_PLANS.TARGET' | translate }}</th>
               <td mat-cell *matCellDef="let g">
-                <span class="level-badge level-{{ g.target_level }}">{{ g.target_level }}</span>
+                <span class="heat-badge" [attr.data-heat]="g.target_level">{{ g.target_level }}</span>
               </td>
             </ng-container>
             <ng-container matColumnDef="target_date">

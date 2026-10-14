@@ -1,21 +1,3 @@
-// A five-step meter reads faster in a scanned column than "3 / 5" does.
-.level-meter {
-  display: inline-flex;
-  gap: 3px;
-  align-items: center;
-}
-
-.level-step {
-  width: 14px;
-  height: 6px;
-  border-radius: 2px;
-  background: var(--mat-sys-surface-container-highest);
-}
-
-.level-step-filled {
-  background: var(--mat-sys-primary);
-}
-
 .recommendations-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
