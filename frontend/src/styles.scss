@@ -12,6 +12,24 @@ html {
     typography: Inter,
     density: 0,
   ));
+
+  // One corner radius for every control, instead of M3's pill buttons next to
+  // square-ish fields; cards stay one step rounder at 12px.
+  @include mat.button-overrides((
+    filled-container-shape: 8px,
+    outlined-container-shape: 8px,
+    protected-container-shape: 8px,
+    text-container-shape: 8px,
+  ));
+  @include mat.form-field-overrides((
+    outlined-container-shape: 8px,
+  ));
+  @include mat.dialog-overrides((
+    container-shape: 16px,
+  ));
+  @include mat.table-overrides((
+    row-item-outline-color: var(--mat-sys-outline-variant),
+  ));
 }
 
 html.dark-theme {
@@ -130,6 +148,12 @@ body {
   gap: 1rem;
   align-items: center;
   flex-wrap: wrap;
+
+  // Filters sit above dense data; the default 56px field outweighs the rows it filters.
+  @include mat.form-field-overrides((
+    container-height: 44px,
+    container-vertical-padding: 10px,
+  ));
 
   .mat-mdc-form-field-subscript-wrapper {
     display: none;
