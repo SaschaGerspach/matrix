@@ -213,3 +213,10 @@
 .chart-container {
   min-width: 0;
 }
+
+// Without a fixed height Chart.js sizes from the card width, which made the
+// donut taller than the viewport on wide screens.
+.chart-body {
+  position: relative;
+  height: 240px;
+}

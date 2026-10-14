@@ -108,22 +108,37 @@
 
     <div class="charts-row">
       <div class="chart-container surface-card">
-        <h3 class="section-title">{{ 'KPI.TEAM_OVERVIEW' | translate }}</h3>
-        <canvas baseChart
-          [type]="barChartConfig().type"
-          [data]="barChartConfig().data"
-          [options]="barChartConfig().options">
-        </canvas>
+        <h3 class="section-title">{{ 'KPI.AVG_LEVEL' | translate }}</h3>
+        <div class="chart-body">
+          <canvas baseChart
+            [type]="avgLevelChartConfig().type"
+            [data]="avgLevelChartConfig().data"
+            [options]="avgLevelChartConfig().options">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-container surface-card">
+        <h3 class="section-title">{{ 'KPI.COVERAGE' | translate }}</h3>
+        <div class="chart-body">
+          <canvas baseChart
+            [type]="coverageChartConfig().type"
+            [data]="coverageChartConfig().data"
+            [options]="coverageChartConfig().options">
+          </canvas>
+        </div>
       </div>
 
       @if (doughnutConfig(); as config) {
         <div class="chart-container surface-card">
           <h3 class="section-title">{{ 'KPI.LEVEL_DISTRIBUTION' | translate }}</h3>
-          <canvas baseChart
-            [type]="config.type"
-            [data]="config.data"
-            [options]="config.options">
-          </canvas>
+          <div class="chart-body">
+            <canvas baseChart
+              [type]="config.type"
+              [data]="config.data"
+              [options]="config.options">
+            </canvas>
+          </div>
         </div>
       }
     </div>

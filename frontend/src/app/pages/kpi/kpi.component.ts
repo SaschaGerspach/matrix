@@ -44,31 +44,13 @@ export class KpiComponent implements OnInit {
     });
   }
 
-  readonly barChartConfig = computed<ChartConfiguration<'bar'>>(() => {
-    const teams = this.data();
-    return {
-      type: 'bar',
-      data: {
-        labels: teams.map((t) => t.team_name),
-        datasets: [
-          {
-            label: 'Avg. Level',
-            data: teams.map((t) => t.avg_level),
-            backgroundColor: CHART_PRIMARY,
-          },
-          {
-            label: 'Coverage %',
-            data: teams.map((t) => t.coverage),
-            backgroundColor: CHART_SECONDARY,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        scales: { y: { beginAtZero: true } },
-      },
-    };
-  });
+  // Average level (0-5) and coverage (%) live on different scales, so each gets
+  // its own chart; on a shared axis the level bars flatten to nothing.
+  readonly avgLevelChartConfig = computed<ChartConfiguration<'bar'>>(() =>
+    this.teamBarChart((t) => t.avg_level, CHART_PRIMARY, 5));
+
+  readonly coverageChartConfig = computed<ChartConfiguration<'bar'>>(() =>
+    this.teamBarChart((t) => t.coverage, CHART_SECONDARY, 100, '%'));
 
   readonly doughnutConfig = computed<ChartConfiguration<'doughnut'> | null>(() => {
     const dist = this.distribution();
@@ -87,12 +69,47 @@ export class KpiComponent implements OnInit {
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
+        cutout: '62%',
         plugins: {
-          legend: { position: 'right' },
+          legend: {
+            position: 'right',
+            labels: { boxWidth: 12, boxHeight: 12, padding: 12, font: { size: 13 } },
+          },
         },
       },
     };
   });
+
+  private teamBarChart(
+    value: (team: KpiEntry) => number,
+    color: string,
+    max: number,
+    unit = '',
+  ): ChartConfiguration<'bar'> {
+    const teams = this.data();
+    return {
+      type: 'bar',
+      data: {
+        labels: teams.map((t) => t.team_name),
+        datasets: [{
+          data: teams.map(value),
+          backgroundColor: color,
+          borderRadius: 4,
+          maxBarThickness: 40,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false } },
+          y: { beginAtZero: true, max, ticks: { stepSize: max / 5, callback: (v) => `${v}${unit}` } },
+        },
+      },
+    };
+  }
 
   ngOnInit(): void {
     this.loading.set(true);

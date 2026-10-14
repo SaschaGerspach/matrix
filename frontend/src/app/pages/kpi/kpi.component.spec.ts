@@ -177,15 +177,26 @@ describe('KpiComponent', () => {
     expect(component.data().length).toBe(0);
   });
 
-  it('builds bar chart config from data', () => {
+  it('builds the average level chart on a 0-5 scale', () => {
     fixture.detectChanges();
     flushInit(http);
 
-    const config = component.barChartConfig();
+    const config = component.avgLevelChartConfig();
     expect(config.data.labels).toEqual(['Alpha', 'Beta']);
-    expect(config.data.datasets.length).toBe(2);
+    expect(config.data.datasets.length).toBe(1);
     expect(config.data.datasets[0].data).toEqual([3.5, 2.0]);
-    expect(config.data.datasets[1].data).toEqual([80, 50]);
+    expect(config.options?.scales?.['y']?.max).toBe(5);
+  });
+
+  it('builds the coverage chart on a 0-100 scale', () => {
+    fixture.detectChanges();
+    flushInit(http);
+
+    const config = component.coverageChartConfig();
+    expect(config.data.labels).toEqual(['Alpha', 'Beta']);
+    expect(config.data.datasets.length).toBe(1);
+    expect(config.data.datasets[0].data).toEqual([80, 50]);
+    expect(config.options?.scales?.['y']?.max).toBe(100);
   });
 
   it('builds doughnut config from distribution data', () => {
