@@ -14,7 +14,7 @@ import { CountUpDirective } from './count-up.directive';
 // Mirrors the matrix heat scale so a level means the same colour everywhere.
 const LEVEL_COLORS = ['#d7f0e6', '#8ed9c0', '#4cbf9d', '#1d9e75', '#0f6e56'];
 const CHART_PRIMARY = '#3b5bdb';
-const CHART_TERTIARY = '#9333a3';
+const CHART_SECONDARY = '#515b8e';
 
 @Component({
   selector: 'app-kpi',
@@ -59,7 +59,7 @@ export class KpiComponent implements OnInit {
           {
             label: 'Coverage %',
             data: teams.map((t) => t.coverage),
-            backgroundColor: CHART_TERTIARY,
+            backgroundColor: CHART_SECONDARY,
           },
         ],
       },
