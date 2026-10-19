@@ -1,6 +1,8 @@
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  // auto-fit, not auto-fill: a lone team card should take the row instead of
+  // sitting in the first of several empty tracks.
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
 }
 
