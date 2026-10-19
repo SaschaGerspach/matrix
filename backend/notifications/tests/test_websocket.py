@@ -224,3 +224,32 @@ async def test_consumer_disconnect_removes_group(user, access_token):
     await consumer.disconnect(1000)
 
     consumer.channel_layer.group_discard.assert_called_once()
+
+
+# The tests above hand the consumer a ready-made scope; these go through the
+# real ASGI stack, which is where the cookie has to be parsed.
+@pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
+async def test_application_authenticates_websocket_from_login_cookie(user, access_token):
+    from channels.testing import WebsocketCommunicator
+
+    from config.asgi import application
+
+    communicator = WebsocketCommunicator(
+        application, '/ws/notifications/', headers=[(b'cookie', f'access_token={access_token}'.encode())],
+    )
+    connected, _ = await communicator.connect()
+    assert connected
+    await communicator.disconnect()
+
+
+@pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
+async def test_application_rejects_websocket_without_login_cookie():
+    from channels.testing import WebsocketCommunicator
+
+    from config.asgi import application
+
+    communicator = WebsocketCommunicator(application, '/ws/notifications/')
+    connected, _ = await communicator.connect()
+    assert not connected
