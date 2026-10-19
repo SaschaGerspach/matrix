@@ -24,7 +24,7 @@
 }
 
 .team-card-warn {
-  border-color: var(--mat-sys-error);
+  border-color: var(--attention);
 }
 
 .team-card-head {
@@ -128,7 +128,7 @@
 .no-lead {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--mat-sys-error);
+  color: var(--attention-text);
 }
 
 .no-members,

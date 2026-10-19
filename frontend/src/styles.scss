@@ -327,6 +327,8 @@ body {
 
 :root {
   --attention: light-dark(#ba7517, #ef9f27);
+  // The fill tone is too light for small text on a light surface.
+  --attention-text: light-dark(#8a5a00, #f3d59b);
 }
 
 // --- Status pills ---

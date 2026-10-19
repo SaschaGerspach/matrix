@@ -101,7 +101,7 @@
 }
 
 .kpi-value-pending {
-  color: light-dark(#8a5a00, #f3d59b);
+  color: var(--attention-text);
 }
 
 .kpi-toggle {
