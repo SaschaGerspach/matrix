@@ -298,6 +298,13 @@ body {
   }
 }
 
+// Row actions hug the right edge, like in a list, instead of floating mid-table.
+.mat-mdc-table .mat-column-actions {
+  width: 1%;
+  white-space: nowrap;
+  text-align: end;
+}
+
 .clickable-row {
   cursor: pointer;
 }
