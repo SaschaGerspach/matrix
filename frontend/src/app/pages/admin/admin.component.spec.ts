@@ -75,6 +75,15 @@ describe('AdminComponent', () => {
     expect(count?.textContent?.trim()).toBe('1 skill');
   });
 
+  it('labels audit actions and entity types, keeping unknown types as logged', () => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+
+    expect(component.auditLabel('AUDIT_ACTION', 'login_failed')).toBe('Sign-in failed');
+    expect(component.auditLabel('AUDIT_ENTITY', 'SkillCategory')).toBe('Category');
+    expect(component.auditLabel('AUDIT_ENTITY', 'Widget')).toBe('Widget');
+  });
+
   it('warns about teams that have members but no lead', () => {
     fixture.detectChanges();
     http.expectOne(`${environment.apiUrl}/skill-categories/`).flush([{ id: 1, name: 'Programming', parent: null }]);

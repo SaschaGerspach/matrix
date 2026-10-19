@@ -210,6 +210,30 @@
     "TEAMS_WITHOUT_LEAD_HINT": "Members of {{teams}} can have their self-assessments confirmed by an admin only, because team review lists members of teams you lead. Assign a lead to fix this permanently.",
     "CREATE": "Create"
   },
+  "AUDIT_ACTION": {
+    "CREATE": "Created",
+    "UPDATE": "Updated",
+    "DELETE": "Deleted",
+    "APPLY": "Applied",
+    "IMPORT": "Imported",
+    "LOGIN": "Signed in",
+    "LOGIN_FAILED": "Sign-in failed",
+    "LOCKOUT": "Locked out",
+    "LOGOUT": "Signed out"
+  },
+  "AUDIT_ENTITY": {
+    "USER": "User",
+    "EMPLOYEE": "Employee",
+    "SKILL": "Skill",
+    "SKILL_CATEGORY": "Category",
+    "SKILL_LEVEL_DESCRIPTION": "Level definition",
+    "SKILL_REQUIREMENT": "Requirement",
+    "ROLE_TEMPLATE": "Role template",
+    "CERTIFICATE": "Certificate",
+    "DEVELOPMENT_PLAN": "Development plan",
+    "DEVELOPMENT_GOAL": "Development goal",
+    "SKILL_PROPOSAL": "Skill proposal"
+  },
   "TABLE": {
     "NAME": "Name",
     "EMPLOYEE": "Employee",

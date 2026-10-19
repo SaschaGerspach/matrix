@@ -210,6 +210,30 @@
     "TEAMS_WITHOUT_LEAD_HINT": "Selbsteinschätzungen von Mitgliedern in {{teams}} können nur von Admins bestätigt werden, denn das Team-Review zeigt nur Mitglieder der Teams, die du leitest. Dauerhaft hilft, einen Lead zuzuweisen.",
     "CREATE": "Erstellen"
   },
+  "AUDIT_ACTION": {
+    "CREATE": "Angelegt",
+    "UPDATE": "Geändert",
+    "DELETE": "Gelöscht",
+    "APPLY": "Angewendet",
+    "IMPORT": "Importiert",
+    "LOGIN": "Angemeldet",
+    "LOGIN_FAILED": "Anmeldung fehlgeschlagen",
+    "LOCKOUT": "Gesperrt",
+    "LOGOUT": "Abgemeldet"
+  },
+  "AUDIT_ENTITY": {
+    "USER": "Benutzer",
+    "EMPLOYEE": "Mitarbeiter",
+    "SKILL": "Skill",
+    "SKILL_CATEGORY": "Kategorie",
+    "SKILL_LEVEL_DESCRIPTION": "Level-Definition",
+    "SKILL_REQUIREMENT": "Anforderung",
+    "ROLE_TEMPLATE": "Rollenvorlage",
+    "CERTIFICATE": "Zertifikat",
+    "DEVELOPMENT_PLAN": "Entwicklungsplan",
+    "DEVELOPMENT_GOAL": "Entwicklungsziel",
+    "SKILL_PROPOSAL": "Skill-Vorschlag"
+  },
   "TABLE": {
     "NAME": "Name",
     "EMPLOYEE": "Mitarbeiter",

@@ -119,6 +119,8 @@ const EN = {
     TEAMS_WITHOUT_LEAD: 'Some teams have no lead',
     TEAMS_WITHOUT_LEAD_HINT: 'Members of {{teams}} can have their self-assessments confirmed by an admin only.',
   },
+  AUDIT_ACTION: { LOGIN_FAILED: 'Sign-in failed', CREATE: 'Created' },
+  AUDIT_ENTITY: { SKILL_CATEGORY: 'Category', USER: 'User' },
   TABLE: {
     NAME: 'Name', EMPLOYEE: 'Employee', SKILL: 'Skill', CATEGORY: 'Category',
     LEVEL: 'Level', STATUS: 'Status', REQUIRED: 'Required', ACTUAL: 'Actual', GAP: 'Gap',

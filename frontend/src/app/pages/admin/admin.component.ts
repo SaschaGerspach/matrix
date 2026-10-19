@@ -12,7 +12,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { AuditLogEntry, AuditService } from '../../core/audit.service';
 import { CountKeyPipe } from '../../core/count-key.pipe';
@@ -61,6 +61,7 @@ export class AdminComponent implements OnInit {
   private readonly teamService = inject(TeamService);
   private readonly auditService = inject(AuditService);
   private readonly toast = inject(ToastService);
+  private readonly translate = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly categories = signal<SkillCategory[]>([]);
@@ -131,6 +132,15 @@ export class AdminComponent implements OnInit {
       .filter((g) => g.requirements.length > 0)
       .sort((a, b) => a.team.name.localeCompare(b.team.name));
   });
+
+  // The backend logs entity types in mixed spellings (SkillCategory,
+  // development_goal, User), so both columns map to one UPPER_SNAKE key; a type
+  // without a translation is shown as logged rather than as its key.
+  auditLabel(group: 'AUDIT_ACTION' | 'AUDIT_ENTITY', value: string): string {
+    const key = `${group}.${value.replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase()}`;
+    const label: string = this.translate.instant(key);
+    return label === key ? value : label;
+  }
 
   ngOnInit(): void {
     this.loadAll();

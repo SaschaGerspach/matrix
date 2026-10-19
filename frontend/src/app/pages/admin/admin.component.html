@@ -292,11 +292,11 @@
             </ng-container>
             <ng-container matColumnDef="action">
               <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.ACTION' | translate }}</th>
-              <td mat-cell *matCellDef="let row">{{ row.action }}</td>
+              <td mat-cell *matCellDef="let row">{{ auditLabel('AUDIT_ACTION', row.action) }}</td>
             </ng-container>
             <ng-container matColumnDef="entity_type">
               <th mat-header-cell *matHeaderCellDef>{{ 'ADMIN.AUDIT_ENTITY' | translate }}</th>
-              <td mat-cell *matCellDef="let row">{{ row.entity_type }}</td>
+              <td mat-cell *matCellDef="let row">{{ auditLabel('AUDIT_ENTITY', row.entity_type) }}</td>
             </ng-container>
             <ng-container matColumnDef="detail">
               <th mat-header-cell *matHeaderCellDef>{{ 'ADMIN.AUDIT_DETAIL' | translate }}</th>
