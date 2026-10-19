@@ -119,6 +119,9 @@
     "EMPTY": "Keine Teamdaten verfügbar.",
     "EMPTY_HINT": "KPIs erscheinen, sobald Teams Skill-Zuweisungen haben.",
     "SUBTITLE": "{{count}} Teams",
+    "SUBTITLE_ONE": "1 Team",
+    "MEMBER_COUNT": "{{count}} Mitglieder",
+    "MEMBER_COUNT_ONE": "1 Mitglied",
     "AVG_LEVEL": "Ø Level",
     "COVERAGE": "Skill-Abdeckung",
     "CONFIRMED": "Bestätigt",
@@ -302,9 +305,6 @@
     "TEAM_MEMBERS_UPDATED": "Team-Mitglieder aktualisiert.",
     "TEAM_CREATED": "Team erstellt.",
     "DEPARTMENT_CREATED": "Abteilung erstellt."
-  },
-  "COMMON": {
-    "MEMBERS": "Mitglieder"
   },
   "TEAMS": {
     "TITLE": "Teams",

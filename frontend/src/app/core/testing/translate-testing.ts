@@ -79,7 +79,8 @@ const EN = {
   KPI: {
     TITLE: 'Team KPIs', EMPTY: 'No team data available.',
     EMPTY_HINT: 'KPIs appear once teams have skill assignments recorded.',
-    SUBTITLE: '{{count}} teams',
+    SUBTITLE: '{{count}} teams', SUBTITLE_ONE: '1 team',
+    MEMBER_COUNT: '{{count}} members', MEMBER_COUNT_ONE: '1 member',
     AVG_LEVEL: 'Avg. Level', COVERAGE: 'Skill Coverage', CONFIRMED: 'Confirmed',
     TOTAL_ASSIGNMENTS: 'Total Assignments', PENDING: 'Awaiting confirmation',
     SHOW_DETAILS: 'Show details', HIDE_DETAILS: 'Hide details',
@@ -138,7 +139,6 @@ const EN = {
     PROPOSAL_APPROVED: 'Proposal approved.', PROPOSAL_REJECTED: 'Proposal rejected.',
     ERROR: 'An error occurred. Please try again.',
   },
-  COMMON: { MEMBERS: 'members' },
   TEAMS: {
     TITLE: 'Teams',
     SUBTITLE_ADMIN: 'Manage who is in each team and who leads it',

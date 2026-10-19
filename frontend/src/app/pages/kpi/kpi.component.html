@@ -3,7 +3,7 @@
     <div class="page-heading">
       <h2 class="page-title">{{ 'KPI.TITLE' | translate }}</h2>
       @if (!loading() && data().length > 0) {
-        <p class="page-subtitle">{{ 'KPI.SUBTITLE' | translate: { count: data().length } }}</p>
+        <p class="page-subtitle">{{ (data().length === 1 ? 'KPI.SUBTITLE_ONE' : 'KPI.SUBTITLE') | translate: { count: data().length } }}</p>
       }
     </div>
   </div>
@@ -26,7 +26,7 @@
         <div class="kpi-card surface-card">
           <div class="kpi-card-head">
             <span class="kpi-team">{{ team.team_name }}</span>
-            <span class="kpi-members">{{ team.member_count }} {{ 'COMMON.MEMBERS' | translate }}</span>
+            <span class="kpi-members">{{ (team.member_count === 1 ? 'KPI.MEMBER_COUNT_ONE' : 'KPI.MEMBER_COUNT') | translate: { count: team.member_count } }}</span>
           </div>
 
           <div class="kpi-headline">

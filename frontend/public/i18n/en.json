@@ -119,6 +119,9 @@
     "EMPTY": "No team data available.",
     "EMPTY_HINT": "KPIs appear once teams have skill assignments recorded.",
     "SUBTITLE": "{{count}} teams",
+    "SUBTITLE_ONE": "1 team",
+    "MEMBER_COUNT": "{{count}} members",
+    "MEMBER_COUNT_ONE": "1 member",
     "AVG_LEVEL": "Avg. Level",
     "COVERAGE": "Skill Coverage",
     "CONFIRMED": "Confirmed",
@@ -302,9 +305,6 @@
     "TEAM_MEMBERS_UPDATED": "Team members updated.",
     "TEAM_CREATED": "Team created.",
     "DEPARTMENT_CREATED": "Department created."
-  },
-  "COMMON": {
-    "MEMBERS": "members"
   },
   "TEAMS": {
     "TITLE": "Teams",

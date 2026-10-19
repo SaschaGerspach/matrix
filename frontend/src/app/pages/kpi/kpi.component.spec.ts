@@ -108,6 +108,17 @@ describe('KpiComponent', () => {
     expect(el.textContent).toContain('Beta');
   });
 
+  it('uses the singular for one team with one member', () => {
+    fixture.detectChanges();
+    http.expectOne(`${environment.apiUrl}/kpi/`).flush([{ ...kpiData[1], member_count: 1 }]);
+    http.expectOne(`${environment.apiUrl}/kpi/level-distribution/`).flush(distData);
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('.page-subtitle')?.textContent?.trim()).toBe('1 team');
+    expect(el.querySelector('.kpi-members')?.textContent?.trim()).toBe('1 member');
+  });
+
   it('keeps team details collapsed until asked', () => {
     fixture.detectChanges();
     flushInit(http);
