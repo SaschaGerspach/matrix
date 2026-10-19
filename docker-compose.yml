@@ -3,12 +3,12 @@ services:
     image: postgres:17-alpine
     volumes:
       - pgdata:/var/lib/postgresql/data
+    # No published ports: backend, celery and backup reach the database over the
+    # internal network, and on a VPS a published 5432 would face the internet.
     environment:
       POSTGRES_DB: matrix
       POSTGRES_USER: matrix
-      POSTGRES_PASSWORD: matrix
-    ports:
-      - "5432:5432"
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-matrix}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U matrix"]
       interval: 5s
@@ -17,8 +17,6 @@ services:
 
   redis:
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -77,7 +75,7 @@ services:
     environment:
       PGHOST: db
       PGUSER: matrix
-      PGPASSWORD: matrix
+      PGPASSWORD: ${POSTGRES_PASSWORD:-matrix}
       PGDATABASE: matrix
       BACKUP_SCHEDULE: "0 2 * * *"
       BACKUP_RETENTION_DAYS: "7"
