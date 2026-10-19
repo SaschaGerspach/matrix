@@ -1,27 +1,27 @@
-.dev-plan-card {
-  .card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
+.dev-plan-section .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
 
-    .section-title {
-      margin: 0;
-    }
+  .section-title {
+    margin: 0;
   }
+}
 
-  table {
-    width: 100%;
-    background: transparent;
-  }
+.section-empty {
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .plan-block {
   margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
+  padding-bottom: 1.5rem;
   border-bottom: 1px solid var(--mat-sys-outline-variant);
 
   &:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
     border-bottom: none;
   }
 }
@@ -48,6 +48,7 @@
   grid-template-columns: 1fr 1fr;
   gap: 0 1rem;
   margin-bottom: 1rem;
+  padding-bottom: 0.25rem;
 
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
@@ -62,11 +63,8 @@
 }
 
 .add-goal-form {
-  display: flex;
   gap: 0.5rem;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
 
   mat-form-field {
     flex: 1;

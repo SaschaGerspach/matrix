@@ -1,19 +1,17 @@
-.cert-card {
-  .card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
+.cert-section .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
 
-    .section-title {
-      margin: 0;
-    }
+  .section-title {
+    margin: 0;
   }
+}
 
-  table {
-    width: 100%;
-    background: transparent;
-  }
+.section-empty {
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .cert-form {
@@ -21,6 +19,7 @@
   grid-template-columns: 1fr 1fr;
   gap: 0 1rem;
   margin-bottom: 1rem;
+  padding-bottom: 0.25rem;
 
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
