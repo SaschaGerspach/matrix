@@ -19,10 +19,10 @@
 }
 
 .review-notice-warn {
-  border-color: var(--mat-sys-error);
+  border-color: var(--attention);
 
   .mat-icon {
-    color: var(--mat-sys-error);
+    color: var(--attention);
   }
 }
 

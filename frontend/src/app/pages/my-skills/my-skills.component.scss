@@ -38,9 +38,9 @@
 }
 
 // A gap is a growth suggestion, not an error, so even top priority stays out of
-// the error palette and only borrows the amber used for pending states.
+// the error palette.
 .priority-high .recommendation-head .mat-icon {
-  color: light-dark(#ba7517, #ef9f27);
+  color: var(--attention);
 }
 
 .priority-medium .recommendation-head .mat-icon {
@@ -73,5 +73,5 @@
 }
 
 .priority-high .level-step-need {
-  outline-color: light-dark(#ba7517, #ef9f27);
+  outline-color: var(--attention);
 }

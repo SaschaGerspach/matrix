@@ -315,6 +315,15 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+// --- Attention ---
+//
+// Amber for things that need someone to act but are not errors, such as a team
+// without a lead or a skill gap; red stays reserved for failures.
+
+:root {
+  --attention: light-dark(#ba7517, #ef9f27);
+}
+
 // --- Status pills ---
 
 .status-pill {
