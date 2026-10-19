@@ -37,16 +37,21 @@ html {
   ));
 }
 
+// The solid brand fill, identical in both themes; white on it clears 4.5:1.
+:root {
+  --brand: #3052d2;
+  --on-brand: #ffffff;
+}
+
 html.dark-theme {
   color-scheme: dark;
 
   // M3's dark primary is the pale primary-80 tone, which turns the main call to
-  // action lavender. Filled buttons keep the light-mode brand blue instead;
-  // white on it clears 4.5:1.
+  // action lavender. Filled buttons keep the brand blue instead.
   @include mat.button-overrides((
-    filled-container-color: #3052d2,
-    filled-label-text-color: #ffffff,
-    filled-state-layer-color: #ffffff,
+    filled-container-color: var(--brand),
+    filled-label-text-color: var(--on-brand),
+    filled-state-layer-color: var(--on-brand),
     filled-ripple-color: rgba(255, 255, 255, 0.12),
   ));
 
