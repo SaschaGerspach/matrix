@@ -34,8 +34,11 @@
   gap: 1rem;
 }
 
-table[mat-table] {
-  width: 100%;
+// Row actions hug the right edge, like in a list, instead of floating mid-table.
+.mat-column-actions {
+  width: 1%;
+  white-space: nowrap;
+  text-align: end;
 }
 
 .desc-field {
