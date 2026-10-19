@@ -41,6 +41,7 @@
     "EMPTY": "No skills assigned yet. Click \"Add Skill\" to get started.",
     "EMPTY_TITLE": "No skills yet",
     "SUBTITLE": "{{count}} skills assessed",
+    "SUBTITLE_ONE": "1 skill assessed",
     "GAP_SUMMARY": "Level {{current}} → {{required}} required (gap: {{gap}})",
     "RECOMMENDATIONS": "Recommendations"
   },
@@ -56,8 +57,10 @@
     "EMPTY": "No pending assignments to review.",
     "EMPTY_HINT": "New self-assessments from your team will show up here for confirmation.",
     "SUBTITLE": "{{count}} assignments awaiting confirmation",
+    "SUBTITLE_ONE": "1 assignment awaiting confirmation",
     "ADMIN_FALLBACK": "You are seeing every open assessment because you are an admin. Team leads normally confirm their own members — step in where nobody else can.",
     "NO_LEAD_WARNING": "{{count}} of these belong to a team with no lead. Nobody but an admin can confirm them; assigning a lead to the team is the lasting fix.",
+    "NO_LEAD_WARNING_ONE": "1 of these belongs to a team with no lead. Nobody but an admin can confirm it; assigning a lead to the team is the lasting fix.",
     "NO_LEAD": "no lead",
     "NO_TEAM": "no team",
     "CONFIRM": "Confirm"
@@ -66,13 +69,15 @@
     "TITLE": "Skill Gaps",
     "EMPTY": "No skill gaps found.",
     "EMPTY_HINT": "Every team member meets the required level for their role.",
-    "SUBTITLE": "{{count}} gaps against role requirements"
+    "SUBTITLE": "{{count}} gaps against role requirements",
+    "SUBTITLE_ONE": "1 gap against role requirements"
   },
   "EMPLOYEES": {
     "TITLE": "Employees",
     "SEARCH": "Search",
     "SEARCH_PLACEHOLDER": "Name or email...",
     "SUBTITLE": "{{count}} people",
+    "SUBTITLE_ONE": "1 person",
     "EMPTY": "No employees match your search.",
     "EMPTY_HINT": "Try a different name or email fragment."
   },
@@ -107,7 +112,11 @@
     "ALL_CATEGORIES": "All categories",
     "CLEAR": "Clear",
     "EMPTY": "No employees found.",
-    "SUBTITLE": "{{employees}} people across {{skills}} skills",
+    "SUBTITLE": "{{people}} across {{skills}}",
+    "PEOPLE": "{{count}} people",
+    "PEOPLE_ONE": "1 person",
+    "SKILLS": "{{count}} skills",
+    "SKILLS_ONE": "1 skill",
     "EMPTY_HINT": "Try widening the team or category filter, or clear the search term.",
     "LEGEND": "Level",
     "NOT_ASSESSED": "Not assessed",
@@ -235,6 +244,7 @@
     "EMPTY": "No proposals yet.",
     "EMPTY_HINT": "Propose a skill that is missing from the catalogue and an admin will review it.",
     "SUBTITLE": "{{count}} proposals",
+    "SUBTITLE_ONE": "1 proposal",
     "CATEGORY_HINT": "Required — a proposal without a category cannot be approved",
     "ALREADY_IN_CATEGORY": "Already in this category ({{count}})",
     "CATEGORY_EMPTY": "This category has no skills yet.",
@@ -313,6 +323,7 @@
     "LEADS": "Leads",
     "MEMBERS": "Members",
     "MEMBER_COUNT": "{{count}} members",
+    "MEMBER_COUNT_ONE": "1 member",
     "ADD_LEAD": "Add a lead",
     "REMOVE_LEAD": "Remove lead",
     "NO_LEAD": "no lead assigned",
@@ -324,7 +335,8 @@
     "EMPTY": "No teams to manage",
     "EMPTY_HINT_ADMIN": "Teams are created in Django admin; once they exist you can staff them here.",
     "EMPTY_HINT_LEAD": "You are not assigned as lead of any team yet.",
-    "NO_LEAD_WARNING": "{{count}} team(s) have members but no lead. Their self-assessments can only be confirmed by an admin.",
+    "NO_LEAD_WARNING": "{{count}} teams have members but no lead. Their self-assessments can only be confirmed by an admin.",
+    "NO_LEAD_WARNING_ONE": "1 team has members but no lead. Their self-assessments can only be confirmed by an admin.",
     "CREATE": "New team",
     "NAME": "Team name",
     "DEPARTMENT": "Department",
@@ -337,6 +349,7 @@
     "ADD_DEPARTMENT": "New department",
     "PART_OF": "part of {{parent}}",
     "TEAM_COUNT": "{{count}} teams",
+    "TEAM_COUNT_ONE": "1 team",
     "NO_DEPARTMENTS_YET": "No departments yet.",
     "DEPARTMENT_DELETE_HINT": "Deleting a department would delete its teams along with it, so that stays in Django admin."
   }

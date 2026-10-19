@@ -98,7 +98,7 @@ describe('TeamReviewComponent', () => {
 
     const el = fixture.nativeElement as HTMLElement;
     expect(el.querySelector('.review-unowned')).toBeTruthy();
-    expect(el.textContent).toContain('of these belong to a team with no lead');
+    expect(el.textContent).toContain('1 of these belongs to a team with no lead');
   });
 
   it('keeps the admin banner away from a lead reviewing their own team', () => {

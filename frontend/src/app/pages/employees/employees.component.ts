@@ -9,12 +9,13 @@ import { MatTableModule } from '@angular/material/table';
 
 import { TranslateModule } from '@ngx-translate/core';
 
+import { CountKeyPipe } from '../../core/count-key.pipe';
 import { Employee, EmployeeService } from '../../core/employee.service';
 
 @Component({
   selector: 'app-employees',
   standalone: true,
-  imports: [FormsModule, MatFormFieldModule, MatIconModule, MatInputModule, MatPaginatorModule, MatTableModule, RouterLink, TranslateModule],
+  imports: [CountKeyPipe, FormsModule, MatFormFieldModule, MatIconModule, MatInputModule, MatPaginatorModule, MatTableModule, RouterLink, TranslateModule],
   templateUrl: './employees.component.html',
   styleUrl: './employees.component.scss',
 })

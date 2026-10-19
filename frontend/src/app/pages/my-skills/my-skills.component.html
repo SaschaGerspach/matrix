@@ -3,7 +3,7 @@
     <div class="page-heading">
       <h2 class="page-title">{{ 'MY_SKILLS.TITLE' | translate }}</h2>
       @if (!loading() && data().length > 0) {
-        <p class="page-subtitle">{{ 'MY_SKILLS.SUBTITLE' | translate: { count: data().length } }}</p>
+        <p class="page-subtitle">{{ 'MY_SKILLS.SUBTITLE' | countKey: data().length | translate: { count: data().length } }}</p>
       }
     </div>
     <div class="page-header-actions">

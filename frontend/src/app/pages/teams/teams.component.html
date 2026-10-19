@@ -30,7 +30,7 @@
             @if (dept.parentName) {
               <span class="dept-parent">{{ 'TEAMS.PART_OF' | translate: { parent: dept.parentName } }}</span>
             }
-            <span class="dept-teams">{{ 'TEAMS.TEAM_COUNT' | translate: { count: dept.teamCount } }}</span>
+            <span class="dept-teams">{{ 'TEAMS.TEAM_COUNT' | countKey: dept.teamCount | translate: { count: dept.teamCount } }}</span>
           </li>
         } @empty {
           <li class="dept-empty">{{ 'TEAMS.NO_DEPARTMENTS_YET' | translate }}</li>
@@ -106,7 +106,7 @@
   @if (teamsWithoutLead().length > 0) {
     <div class="team-warning surface-card">
       <mat-icon>report_problem</mat-icon>
-      <p>{{ 'TEAMS.NO_LEAD_WARNING' | translate: { count: teamsWithoutLead().length } }}</p>
+      <p>{{ 'TEAMS.NO_LEAD_WARNING' | countKey: teamsWithoutLead().length | translate: { count: teamsWithoutLead().length } }}</p>
     </div>
   }
 
@@ -131,7 +131,7 @@
           <header class="team-card-head">
             <span class="team-name">{{ team.name }}</span>
             <span class="team-count">
-              {{ 'TEAMS.MEMBER_COUNT' | translate: { count: team.member_details.length } }}
+              {{ 'TEAMS.MEMBER_COUNT' | countKey: team.member_details.length | translate: { count: team.member_details.length } }}
             </span>
           </header>
 

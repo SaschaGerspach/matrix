@@ -70,6 +70,19 @@ describe('DashboardComponent', () => {
     expect(component.loading()).toBeFalse();
   });
 
+  it('counts people and skills in the subtitle with singular wording', () => {
+    fixture.detectChanges();
+    flushInitRequests(http, {
+      employees: [{ id: 1, full_name: 'Alice A' }],
+      skills: matrixResponse.skills,
+      assignments: [],
+    });
+    fixture.detectChanges();
+
+    const subtitle = (fixture.nativeElement as HTMLElement).querySelector('.page-subtitle');
+    expect(subtitle?.textContent?.trim()).toBe('1 person across 2 skills');
+  });
+
   it('builds grid columns from skills', () => {
     fixture.detectChanges();
     flushInitRequests(http);

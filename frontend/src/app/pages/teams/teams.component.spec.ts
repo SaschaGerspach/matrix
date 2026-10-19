@@ -227,7 +227,7 @@ describe('TeamsComponent', () => {
 
     expect(component.teamsWithoutLead().length).toBe(1);
     expect((fixture.nativeElement as HTMLElement).textContent)
-      .toContain('have members but no lead');
+      .toContain('1 team has members but no lead');
   });
 
   it('hides lead editing from a lead', () => {

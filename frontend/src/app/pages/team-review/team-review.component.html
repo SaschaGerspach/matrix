@@ -3,7 +3,7 @@
     <div class="page-heading">
       <h2 class="page-title">{{ 'TEAM_REVIEW.TITLE' | translate }}</h2>
       @if (!loading() && data().length > 0) {
-        <p class="page-subtitle">{{ 'TEAM_REVIEW.SUBTITLE' | translate: { count: data().length } }}</p>
+        <p class="page-subtitle">{{ 'TEAM_REVIEW.SUBTITLE' | countKey: data().length | translate: { count: data().length } }}</p>
       }
     </div>
   </div>
@@ -18,7 +18,7 @@
   @if (unownedCount() > 0) {
     <div class="review-notice review-notice-warn surface-card">
       <mat-icon>report_problem</mat-icon>
-      <p>{{ 'TEAM_REVIEW.NO_LEAD_WARNING' | translate: { count: unownedCount() } }}</p>
+      <p>{{ 'TEAM_REVIEW.NO_LEAD_WARNING' | countKey: unownedCount() | translate: { count: unownedCount() } }}</p>
     </div>
   }
 

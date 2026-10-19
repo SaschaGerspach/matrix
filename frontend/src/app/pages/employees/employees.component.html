@@ -3,7 +3,7 @@
     <div class="page-heading">
       <h2 class="page-title">{{ 'EMPLOYEES.TITLE' | translate }}</h2>
       @if (!loading() && !error()) {
-        <p class="page-subtitle">{{ 'EMPLOYEES.SUBTITLE' | translate: { count: totalCount() } }}</p>
+        <p class="page-subtitle">{{ 'EMPLOYEES.SUBTITLE' | countKey: totalCount() | translate: { count: totalCount() } }}</p>
       }
     </div>
   </div>

@@ -5,6 +5,7 @@ import { MatTableModule } from '@angular/material/table';
 
 import { TranslateModule } from '@ngx-translate/core';
 
+import { CountKeyPipe } from '../../core/count-key.pipe';
 import { MeService } from '../../core/me.service';
 import { SkillAssignmentService } from '../../core/skill-assignment.service';
 import { TeamAssignment } from '../../core/skill.models';
@@ -13,7 +14,7 @@ import { ToastService } from '../../core/toast.service';
 @Component({
   selector: 'app-team-review',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, MatTableModule, TranslateModule],
+  imports: [CountKeyPipe, MatButtonModule, MatIconModule, MatTableModule, TranslateModule],
   templateUrl: './team-review.component.html',
   styleUrl: './team-review.component.scss',
 })

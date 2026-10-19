@@ -11,6 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { TranslateModule } from '@ngx-translate/core';
 
+import { CountKeyPipe } from '../../core/count-key.pipe';
 import { MeService } from '../../core/me.service';
 import { SkillCatalogService } from '../../core/skill-catalog.service';
 import { Skill, SkillCategory } from '../../core/skill.models';
@@ -21,6 +22,7 @@ import { ToastService } from '../../core/toast.service';
   selector: 'app-skill-proposals',
   standalone: true,
   imports: [
+    CountKeyPipe,
     DatePipe,
     FormsModule,
     MatButtonModule,

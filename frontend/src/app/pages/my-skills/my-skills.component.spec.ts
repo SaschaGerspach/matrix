@@ -46,6 +46,17 @@ describe('MySkillsComponent', () => {
     expect(component.loading()).toBeFalse();
   });
 
+  it('uses the singular subtitle for one assessed skill', () => {
+    fixture.detectChanges();
+    flushInit(http, [
+      { id: 1, skill: 1, skill_name: 'Python', category_name: 'Programming', level: 3, status: 'pending', confirmed_at: null, created_at: '2026-01-01' },
+    ]);
+    fixture.detectChanges();
+
+    const subtitle = (fixture.nativeElement as HTMLElement).querySelector('.page-subtitle');
+    expect(subtitle?.textContent?.trim()).toBe('1 skill assessed');
+  });
+
   it('shows empty state when no skills', () => {
     fixture.detectChanges();
     flushInit(http);

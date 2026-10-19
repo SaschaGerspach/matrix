@@ -7,6 +7,7 @@ import { ChartConfiguration } from 'chart.js';
 
 import { TranslateModule } from '@ngx-translate/core';
 
+import { CountKeyPipe } from '../../core/count-key.pipe';
 import { SkillAnalyticsService } from '../../core/skill-analytics.service';
 import { ThemeService } from '../../core/theme.service';
 import { KpiEntry, LevelDistribution } from '../../core/skill.models';
@@ -21,7 +22,7 @@ const CHART_SECONDARY = '#515b8e';
 @Component({
   selector: 'app-kpi',
   standalone: true,
-  imports: [CountUpDirective, MatButtonModule, MatIconModule, RouterLink, BaseChartDirective, TranslateModule],
+  imports: [CountKeyPipe, CountUpDirective, MatButtonModule, MatIconModule, RouterLink, BaseChartDirective, TranslateModule],
   templateUrl: './kpi.component.html',
   styleUrl: './kpi.component.scss',
 })

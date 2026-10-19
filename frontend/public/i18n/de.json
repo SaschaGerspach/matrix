@@ -41,6 +41,7 @@
     "EMPTY": "Noch keine Skills zugewiesen. Klicke auf \"Skill hinzufügen\", um zu starten.",
     "EMPTY_TITLE": "Noch keine Skills",
     "SUBTITLE": "{{count}} Skills bewertet",
+    "SUBTITLE_ONE": "1 Skill bewertet",
     "GAP_SUMMARY": "Level {{current}} → {{required}} gefordert (Lücke: {{gap}})",
     "RECOMMENDATIONS": "Empfehlungen"
   },
@@ -56,8 +57,10 @@
     "EMPTY": "Keine offenen Zuweisungen zur Überprüfung.",
     "EMPTY_HINT": "Neue Selbsteinschätzungen aus deinem Team erscheinen hier zur Bestätigung.",
     "SUBTITLE": "{{count}} Zuweisungen warten auf Bestätigung",
+    "SUBTITLE_ONE": "1 Zuweisung wartet auf Bestätigung",
     "ADMIN_FALLBACK": "Du siehst alle offenen Bewertungen, weil du Admin bist. Normalerweise bestätigen Team-Leads ihre eigenen Mitglieder – greif dort ein, wo es sonst niemand kann.",
     "NO_LEAD_WARNING": "{{count}} davon gehören zu einem Team ohne Lead. Nur ein Admin kann sie bestätigen; dauerhaft hilft, dem Team einen Lead zuzuweisen.",
+    "NO_LEAD_WARNING_ONE": "1 davon gehört zu einem Team ohne Lead. Nur ein Admin kann sie bestätigen; dauerhaft hilft, dem Team einen Lead zuzuweisen.",
     "NO_LEAD": "kein Lead",
     "NO_TEAM": "kein Team",
     "CONFIRM": "Bestätigen"
@@ -66,13 +69,15 @@
     "TITLE": "Skill-Lücken",
     "EMPTY": "Keine Skill-Lücken gefunden.",
     "EMPTY_HINT": "Alle Teammitglieder erreichen das für ihre Rolle geforderte Level.",
-    "SUBTITLE": "{{count}} Lücken gegenüber den Rollenanforderungen"
+    "SUBTITLE": "{{count}} Lücken gegenüber den Rollenanforderungen",
+    "SUBTITLE_ONE": "1 Lücke gegenüber den Rollenanforderungen"
   },
   "EMPLOYEES": {
     "TITLE": "Mitarbeiter",
     "SEARCH": "Suche",
     "SEARCH_PLACEHOLDER": "Name oder E-Mail...",
     "SUBTITLE": "{{count}} Personen",
+    "SUBTITLE_ONE": "1 Person",
     "EMPTY": "Keine Mitarbeiter passen zur Suche.",
     "EMPTY_HINT": "Versuche einen anderen Namen oder E-Mail-Teil."
   },
@@ -107,7 +112,11 @@
     "ALL_CATEGORIES": "Alle Kategorien",
     "CLEAR": "Zurücksetzen",
     "EMPTY": "Keine Mitarbeiter gefunden.",
-    "SUBTITLE": "{{employees}} Personen über {{skills}} Skills",
+    "SUBTITLE": "{{people}} über {{skills}}",
+    "PEOPLE": "{{count}} Personen",
+    "PEOPLE_ONE": "1 Person",
+    "SKILLS": "{{count}} Skills",
+    "SKILLS_ONE": "1 Skill",
     "EMPTY_HINT": "Erweitere den Team- oder Kategoriefilter oder setze den Suchbegriff zurück.",
     "LEGEND": "Level",
     "NOT_ASSESSED": "Nicht bewertet",
@@ -235,6 +244,7 @@
     "EMPTY": "Noch keine Vorschläge.",
     "EMPTY_HINT": "Schlage einen Skill vor, der im Katalog fehlt – ein Admin prüft ihn.",
     "SUBTITLE": "{{count}} Vorschläge",
+    "SUBTITLE_ONE": "1 Vorschlag",
     "CATEGORY_HINT": "Pflichtfeld – ohne Kategorie kann der Vorschlag nicht genehmigt werden",
     "ALREADY_IN_CATEGORY": "Bereits in dieser Kategorie ({{count}})",
     "CATEGORY_EMPTY": "Diese Kategorie enthält noch keine Skills.",
@@ -313,6 +323,7 @@
     "LEADS": "Leads",
     "MEMBERS": "Mitglieder",
     "MEMBER_COUNT": "{{count}} Mitglieder",
+    "MEMBER_COUNT_ONE": "1 Mitglied",
     "ADD_LEAD": "Lead hinzufügen",
     "REMOVE_LEAD": "Lead entfernen",
     "NO_LEAD": "kein Lead zugewiesen",
@@ -324,7 +335,8 @@
     "EMPTY": "Keine Teams zu verwalten",
     "EMPTY_HINT_ADMIN": "Teams werden im Django-Admin angelegt; sobald sie existieren, kannst du sie hier besetzen.",
     "EMPTY_HINT_LEAD": "Du bist noch keinem Team als Lead zugewiesen.",
-    "NO_LEAD_WARNING": "{{count}} Team(s) haben Mitglieder, aber keinen Lead. Ihre Selbsteinschätzungen kann nur ein Admin bestätigen.",
+    "NO_LEAD_WARNING": "{{count}} Teams haben Mitglieder, aber keinen Lead. Ihre Selbsteinschätzungen kann nur ein Admin bestätigen.",
+    "NO_LEAD_WARNING_ONE": "1 Team hat Mitglieder, aber keinen Lead. Deren Selbsteinschätzungen kann nur ein Admin bestätigen.",
     "CREATE": "Neues Team",
     "NAME": "Teamname",
     "DEPARTMENT": "Abteilung",
@@ -337,6 +349,7 @@
     "ADD_DEPARTMENT": "Neue Abteilung",
     "PART_OF": "Teil von {{parent}}",
     "TEAM_COUNT": "{{count}} Teams",
+    "TEAM_COUNT_ONE": "1 Team",
     "NO_DEPARTMENTS_YET": "Noch keine Abteilungen.",
     "DEPARTMENT_DELETE_HINT": "Eine Abteilung zu löschen würde ihre Teams mitlöschen – das bleibt daher im Django-Admin."
   }

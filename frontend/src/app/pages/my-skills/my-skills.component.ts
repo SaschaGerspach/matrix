@@ -6,6 +6,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 
+import { CountKeyPipe } from '../../core/count-key.pipe';
 import { SkillAnalyticsService } from '../../core/skill-analytics.service';
 import { SkillAssignmentService } from '../../core/skill-assignment.service';
 import { MySkillAssignment, SkillRecommendation } from '../../core/skill.models';
@@ -14,7 +15,7 @@ import { AddSkillDialogComponent } from './add-skill-dialog.component';
 @Component({
   selector: 'app-my-skills',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, MatTableModule, TranslateModule],
+  imports: [CountKeyPipe, MatButtonModule, MatIconModule, MatTableModule, TranslateModule],
   templateUrl: './my-skills.component.html',
   styleUrl: './my-skills.component.scss',
 })

@@ -11,6 +11,7 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 
 import { TranslateModule } from '@ngx-translate/core';
 
+import { CountKeyPipe } from '../../core/count-key.pipe';
 import { Employee, EmployeeService } from '../../core/employee.service';
 import { MeService } from '../../core/me.service';
 import { Department, Team, TeamService } from '../../core/team.service';
@@ -22,6 +23,7 @@ type SearchMode = 'member' | 'lead';
   selector: 'app-teams',
   standalone: true,
   imports: [
+    CountKeyPipe,
     FormsModule,
     MatButtonModule,
     MatFormFieldModule,

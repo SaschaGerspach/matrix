@@ -3,7 +3,7 @@
     <div class="page-heading">
       <h2 class="page-title">{{ 'PROPOSALS.TITLE' | translate }}</h2>
       @if (proposals().length) {
-        <p class="page-subtitle">{{ 'PROPOSALS.SUBTITLE' | translate: { count: proposals().length } }}</p>
+        <p class="page-subtitle">{{ 'PROPOSALS.SUBTITLE' | countKey: proposals().length | translate: { count: proposals().length } }}</p>
       }
     </div>
     <div class="page-header-actions">

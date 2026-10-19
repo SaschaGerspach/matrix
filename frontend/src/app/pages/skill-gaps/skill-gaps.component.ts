@@ -4,13 +4,14 @@ import { MatTableModule } from '@angular/material/table';
 
 import { TranslateModule } from '@ngx-translate/core';
 
+import { CountKeyPipe } from '../../core/count-key.pipe';
 import { SkillAnalyticsService } from '../../core/skill-analytics.service';
 import { SkillGap } from '../../core/skill.models';
 
 @Component({
   selector: 'app-skill-gaps',
   standalone: true,
-  imports: [MatIconModule, MatTableModule, TranslateModule],
+  imports: [CountKeyPipe, MatIconModule, MatTableModule, TranslateModule],
   templateUrl: './skill-gaps.component.html',
   styleUrl: './skill-gaps.component.scss',
 })

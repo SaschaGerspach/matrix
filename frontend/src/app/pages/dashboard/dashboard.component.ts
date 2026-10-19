@@ -14,6 +14,7 @@ import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subject, catchError, EMPTY, switchMap } from 'rxjs';
 
+import { CountKeyPipe } from '../../core/count-key.pipe';
 import { SkillAnalyticsService } from '../../core/skill-analytics.service';
 import { SkillAssignmentService } from '../../core/skill-assignment.service';
 import { SkillCatalogService } from '../../core/skill-catalog.service';
@@ -25,6 +26,7 @@ import { Team, TeamService } from '../../core/team.service';
   selector: 'app-dashboard',
   standalone: true,
   imports: [
+    CountKeyPipe,
     FormsModule,
     MatButtonModule,
     MatFormFieldModule,

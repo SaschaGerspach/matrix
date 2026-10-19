@@ -4,7 +4,10 @@
       <h2 class="page-title">{{ 'DASHBOARD.TITLE' | translate }}</h2>
       @if (!loading() && employees().length > 0) {
         <p class="page-subtitle">
-          {{ 'DASHBOARD.SUBTITLE' | translate: { employees: employees().length, skills: skills().length } }}
+          {{ 'DASHBOARD.SUBTITLE' | translate: {
+            people: 'DASHBOARD.PEOPLE' | countKey: employees().length | translate: { count: employees().length },
+            skills: 'DASHBOARD.SKILLS' | countKey: skills().length | translate: { count: skills().length }
+          } }}
         </p>
       }
     </div>
