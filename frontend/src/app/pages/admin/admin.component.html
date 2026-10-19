@@ -284,7 +284,7 @@
           <table mat-table [dataSource]="auditLog()">
             <ng-container matColumnDef="timestamp">
               <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.DATE' | translate }}</th>
-              <td mat-cell *matCellDef="let row">{{ row.timestamp | date:'short' }}</td>
+              <td mat-cell *matCellDef="let row">{{ row.timestamp | localDate:'short' }}</td>
             </ng-container>
             <ng-container matColumnDef="username">
               <th mat-header-cell *matHeaderCellDef>{{ 'ADMIN.AUDIT_USER' | translate }}</th>

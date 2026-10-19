@@ -1,5 +1,4 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatBadgeModule } from '@angular/material/badge';
@@ -13,6 +12,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { AuthService } from '../core/auth.service';
 import { LanguageService } from '../core/language.service';
+import { LocalDatePipe } from '../core/local-date.pipe';
 import { MeProfile, MeService } from '../core/me.service';
 import { NotificationItem, NotificationService } from '../core/notification.service';
 import { ThemeService } from '../core/theme.service';
@@ -21,7 +21,7 @@ import { ThemeService } from '../core/theme.service';
   selector: 'app-shell',
   standalone: true,
   imports: [
-    DatePipe, MatBadgeModule, MatButtonModule, MatIconModule, MatMenuModule,
+    LocalDatePipe, MatBadgeModule, MatButtonModule, MatIconModule, MatMenuModule,
     MatSidenavModule, RouterLink, RouterLinkActive, RouterOutlet, TranslateModule,
   ],
   templateUrl: './shell.component.html',

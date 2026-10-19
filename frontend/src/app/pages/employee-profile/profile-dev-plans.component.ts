@@ -1,4 +1,4 @@
-import { DatePipe, UpperCasePipe } from '@angular/common';
+import { UpperCasePipe } from '@angular/common';
 import { Component, OnInit, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,14 +11,15 @@ import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { DevelopmentPlan, DevelopmentPlanService } from '../../core/development-plan.service';
+import { LocalDatePipe } from '../../core/local-date.pipe';
 import { Skill } from '../../core/skill.models';
 
 @Component({
   selector: 'app-profile-dev-plans',
   standalone: true,
   imports: [
-    DatePipe,
     FormsModule,
+    LocalDatePipe,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,

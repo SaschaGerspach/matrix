@@ -1,6 +1,6 @@
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DatePipe, UpperCasePipe } from '@angular/common';
+import { UpperCasePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,6 +11,7 @@ import { ChartConfiguration } from 'chart.js';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { EmployeeProfile, EmployeeService } from '../../core/employee.service';
+import { LocalDatePipe } from '../../core/local-date.pipe';
 import { MeService } from '../../core/me.service';
 import { SkillAnalyticsService } from '../../core/skill-analytics.service';
 import { SkillCatalogService } from '../../core/skill-catalog.service';
@@ -29,7 +30,7 @@ const TREND_COLORS = [
   standalone: true,
   imports: [
     BaseChartDirective,
-    DatePipe,
+    LocalDatePipe,
     MatButtonModule,
     MatIconModule,
     MatTableModule,

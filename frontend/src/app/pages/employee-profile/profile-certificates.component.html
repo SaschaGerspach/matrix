@@ -75,7 +75,7 @@
             @if (row.expiry_date) {
               <span [class.expired]="isExpired(row.expiry_date)"
                     [class.expiring-soon]="isExpiringSoon(row.expiry_date)">
-                {{ row.expiry_date | date:'mediumDate' }}
+                {{ row.expiry_date | localDate:'mediumDate' }}
               </span>
             } @else {
               –

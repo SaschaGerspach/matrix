@@ -1,4 +1,3 @@
-import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -17,6 +16,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { AuditLogEntry, AuditService } from '../../core/audit.service';
 import { CountKeyPipe } from '../../core/count-key.pipe';
+import { LocalDatePipe } from '../../core/local-date.pipe';
 import { SkillCatalogService } from '../../core/skill-catalog.service';
 import { Skill, SkillCategory, SkillLevelDescription, SkillRequirement } from '../../core/skill.models';
 import { Team, TeamService } from '../../core/team.service';
@@ -38,8 +38,8 @@ function accentSlot(id: number): number {
   standalone: true,
   imports: [
     CountKeyPipe,
-    DatePipe,
     FormsModule,
+    LocalDatePipe,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,

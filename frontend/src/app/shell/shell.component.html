@@ -100,7 +100,7 @@
         @for (n of notifications(); track n.id) {
           <button mat-menu-item [class.unread]="!n.is_read" (click)="markAsRead(n)">
             <span class="notif-message">{{ n.message }}</span>
-            <span class="notif-time">{{ n.created_at | date:'short' }}</span>
+            <span class="notif-time">{{ n.created_at | localDate:'short' }}</span>
           </button>
         } @empty {
           <div class="notif-empty">{{ 'NOTIFICATIONS.EMPTY' | translate }}</div>
