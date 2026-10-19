@@ -26,7 +26,11 @@
   "NOTIFICATIONS": {
     "TITLE": "Benachrichtigungen",
     "MARK_ALL_READ": "Alle gelesen",
-    "EMPTY": "Keine Benachrichtigungen"
+    "EMPTY": "Keine Benachrichtigungen",
+    "SOMEONE": "Jemand",
+    "MESSAGE_SKILL_PENDING": "{{actor}} hat {{skill}} (Level {{level}}) eingetragen – wartet auf Prüfung",
+    "MESSAGE_SKILL_CONFIRMED": "{{actor}} hat deinen Skill {{skill}} bestätigt",
+    "MESSAGE_SKILL_UPDATED": "{{actor}} hat deinen Skill {{skill}} von Level {{old_level}} auf {{new_level}} geändert"
   },
   "LOGIN": {
     "TITLE": "Anmelden",

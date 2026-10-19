@@ -165,6 +165,19 @@ describe('ShellComponent', () => {
     expect(badge?.textContent?.trim()).toBe('3');
   });
 
+  it('composes notification text in the UI language and falls back to the stored text', () => {
+    const base = { id: 1, is_read: false, actor: 2, actor_name: 'Bob B', created_at: '' };
+
+    expect(component.notificationText({
+      ...base, type: 'skill_updated', message: 'stored', params: { skill: 'Go', old_level: 2, new_level: 3 },
+    })).toBe('Bob B updated your Go from level 2 to 3');
+    expect(component.notificationText({
+      ...base, actor_name: null, type: 'skill_updated', message: 'stored', params: { skill: 'Go', old_level: 2, new_level: 3 },
+    })).toBe('Someone updated your Go from level 2 to 3');
+    expect(component.notificationText({ ...base, type: 'skill_updated', message: 'stored', params: {} })).toBe('stored');
+    expect(component.notificationText({ ...base, type: 'unknown', message: 'stored', params: { skill: 'Go' } })).toBe('stored');
+  });
+
   it('loads notifications on menu open', () => {
     component.loadNotifications();
     const req = http.expectOne(`${environment.apiUrl}/notifications/`);
@@ -181,7 +194,7 @@ describe('ShellComponent', () => {
   it('marks all as read', () => {
     component.notificationService.unreadCount.set(2);
     component.notifications.set([
-      { id: 1, type: 'skill_confirmed', message: 'test', is_read: false, actor: null, actor_name: null, created_at: '' },
+      { id: 1, type: 'skill_confirmed', message: 'test', params: {}, is_read: false, actor: null, actor_name: null, created_at: '' },
     ]);
     component.markAllAsRead();
     http.expectOne(`${environment.apiUrl}/notifications/read_all/`).flush({ status: 'ok' });

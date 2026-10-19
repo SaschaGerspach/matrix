@@ -8,7 +8,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { AuthService } from '../core/auth.service';
 import { LanguageService } from '../core/language.service';
@@ -34,6 +34,7 @@ export class ShellComponent implements OnInit, OnDestroy {
   readonly notificationService = inject(NotificationService);
   readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
+  private readonly translate = inject(TranslateService);
 
   readonly me = signal<MeProfile | null>(null);
   readonly isTeamLead = signal(false);
@@ -94,6 +95,17 @@ export class ShellComponent implements OnInit, OnDestroy {
     this.notificationService.list().subscribe({
       next: (r) => this.notifications.set(r.results),
     });
+  }
+
+  // Composed here so the text follows the UI language. Notifications stored
+  // before params existed, or of a type without a translation, keep the
+  // English text the backend wrote.
+  notificationText(n: NotificationItem): string {
+    if (!n.params || Object.keys(n.params).length === 0) return n.message;
+    const key = `NOTIFICATIONS.MESSAGE_${n.type.toUpperCase()}`;
+    const actor = n.actor_name ?? this.translate.instant('NOTIFICATIONS.SOMEONE');
+    const text: string = this.translate.instant(key, { ...n.params, actor });
+    return text === key ? n.message : text;
   }
 
   markAsRead(n: NotificationItem): void {

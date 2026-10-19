@@ -13,7 +13,10 @@ const EN = {
     GROUP_PERSONAL: 'Personal', GROUP_TEAM: 'Team', GROUP_ANALYSIS: 'Analysis',
     GROUP_ORGANISATION: 'Organisation', GROUP_ADMINISTRATION: 'Administration',
   },
-  NOTIFICATIONS: { TITLE: 'Notifications', MARK_ALL_READ: 'Mark all read', EMPTY: 'No notifications' },
+  NOTIFICATIONS: {
+    TITLE: 'Notifications', MARK_ALL_READ: 'Mark all read', EMPTY: 'No notifications', SOMEONE: 'Someone',
+    MESSAGE_SKILL_UPDATED: '{{actor}} updated your {{skill}} from level {{old_level}} to {{new_level}}',
+  },
   PROPOSALS: {
     TITLE: 'Skill Proposals', PROPOSE: 'Propose Skill', SKILL_NAME: 'Skill name',
     REASON: 'Reason', PROPOSED_BY: 'Proposed by', SUBMIT: 'Submit', ALL: 'All',

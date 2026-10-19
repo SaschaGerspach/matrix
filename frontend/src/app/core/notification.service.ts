@@ -9,6 +9,7 @@ export interface NotificationItem {
   id: number;
   type: string;
   message: string;
+  params: Record<string, string | number>;
   is_read: boolean;
   actor: number | null;
   actor_name: string | null;

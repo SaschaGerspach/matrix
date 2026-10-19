@@ -26,7 +26,11 @@
   "NOTIFICATIONS": {
     "TITLE": "Notifications",
     "MARK_ALL_READ": "Mark all read",
-    "EMPTY": "No notifications"
+    "EMPTY": "No notifications",
+    "SOMEONE": "Someone",
+    "MESSAGE_SKILL_PENDING": "{{actor}} added {{skill}} (level {{level}}) – pending review",
+    "MESSAGE_SKILL_CONFIRMED": "{{actor}} confirmed your {{skill}} skill",
+    "MESSAGE_SKILL_UPDATED": "{{actor}} updated your {{skill}} from level {{old_level}} to {{new_level}}"
   },
   "LOGIN": {
     "TITLE": "Sign in",
