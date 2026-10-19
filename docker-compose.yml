@@ -46,6 +46,9 @@ services:
         condition: service_healthy
     env_file:
       - ./backend/.env.docker
+    # Skip entrypoint.sh: the backend container already migrates, and two
+    # containers migrating at once collide on the same schema change.
+    entrypoint: []
     command: celery -A config worker --loglevel=info
 
   frontend:
