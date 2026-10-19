@@ -40,6 +40,16 @@ html {
 html.dark-theme {
   color-scheme: dark;
 
+  // M3's dark primary is the pale primary-80 tone, which turns the main call to
+  // action lavender. Filled buttons keep the light-mode brand blue instead;
+  // white on it clears 4.5:1.
+  @include mat.button-overrides((
+    filled-container-color: #3052d2,
+    filled-label-text-color: #ffffff,
+    filled-state-layer-color: #ffffff,
+    filled-ripple-color: rgba(255, 255, 255, 0.12),
+  ));
+
   .mat-mdc-raised-button:not([class*="mat-primary"]):not([class*="mat-accent"]):not([class*="mat-warn"]) {
     border: 1px solid rgba(255, 255, 255, 0.25);
   }
