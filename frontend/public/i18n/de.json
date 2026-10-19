@@ -104,6 +104,12 @@
     "EMPTY_SKILLS": "Noch keine Skills zugewiesen.",
     "NOT_FOUND": "Mitarbeiter nicht gefunden."
   },
+  "HISTORY_ACTION": {
+    "CREATED": "Angelegt",
+    "UPDATED": "Geändert",
+    "CONFIRMED": "Bestätigt",
+    "DELETED": "Gelöscht"
+  },
   "DASHBOARD": {
     "TITLE": "Skill-Matrix",
     "EXPORT_CSV": "CSV exportieren",

@@ -70,6 +70,7 @@ const EN = {
     SKILL_TRENDS: 'Skill Trends', HISTORY: 'History',
     EMPTY_SKILLS: 'No skills assigned yet.', NOT_FOUND: 'Employee not found.',
   },
+  HISTORY_ACTION: { CREATED: 'Created', UPDATED: 'Updated', CONFIRMED: 'Confirmed', DELETED: 'Deleted' },
   DASHBOARD: {
     TITLE: 'Skill Matrix', EXPORT_CSV: 'Export CSV', EXPORT_PDF: 'Export PDF',
     SEARCH: 'Search', SEARCH_PLACEHOLDER: 'Employee name...', TEAM: 'Team', CATEGORY: 'Category',

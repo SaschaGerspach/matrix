@@ -108,7 +108,7 @@
             </ng-container>
             <ng-container matColumnDef="action">
               <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.ACTION' | translate }}</th>
-              <td mat-cell *matCellDef="let row">{{ row.action }}</td>
+              <td mat-cell *matCellDef="let row">{{ ('HISTORY_ACTION.' + (row.action | uppercase)) | translate }}</td>
             </ng-container>
             <ng-container matColumnDef="old_level">
               <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.FROM' | translate }}</th>

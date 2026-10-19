@@ -153,7 +153,7 @@ describe('EmployeeProfileComponent', () => {
     expect(component.history().length).toBe(1);
     const el = fixture.nativeElement as HTMLElement;
     expect(el.textContent).toContain('History');
-    expect(el.textContent).toContain('created');
+    expect(el.textContent).toContain('Created');
   });
 
   it('hides history when empty', () => {
