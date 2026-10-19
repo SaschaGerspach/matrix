@@ -30,6 +30,11 @@ html {
   @include mat.table-overrides((
     row-item-outline-color: var(--mat-sys-outline-variant),
   ));
+  // The nav sits flush against the topbar; M3's rounded drawer edge leaves a
+  // notch at that seam.
+  @include mat.sidenav-overrides((
+    container-shape: 0,
+  ));
 }
 
 html.dark-theme {
