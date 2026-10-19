@@ -1,4 +1,6 @@
 import { TestBed } from '@angular/core/testing';
+import { Chart } from 'chart.js';
+import { ThemeService as ChartThemeService } from 'ng2-charts';
 import { ThemeService } from './theme.service';
 
 function createService(): ThemeService {
@@ -53,5 +55,28 @@ describe('ThemeService', () => {
     const service = createService();
     expect(service.isDark()).toBeTrue();
     expect(document.documentElement.classList.contains('dark-theme')).toBeTrue();
+  });
+
+  it('switches chart text and grid colours with the theme', () => {
+    localStorage.setItem('matrix.theme', 'light');
+    const service = createService();
+    const light = { text: Chart.defaults.color, grid: Chart.defaults.borderColor };
+
+    service.toggle();
+    expect(Chart.defaults.color).not.toEqual(light.text);
+    expect(Chart.defaults.borderColor).not.toEqual(light.grid);
+
+    service.toggle();
+    expect(Chart.defaults.color).toEqual(light.text);
+    expect(Chart.defaults.borderColor).toEqual(light.grid);
+  });
+
+  it('asks open charts to redraw when the theme changes', () => {
+    localStorage.setItem('matrix.theme', 'light');
+    const service = createService();
+    const redraw = spyOn(TestBed.inject(ChartThemeService), 'setColorschemesOptions');
+
+    service.toggle();
+    expect(redraw).toHaveBeenCalledTimes(1);
   });
 });
