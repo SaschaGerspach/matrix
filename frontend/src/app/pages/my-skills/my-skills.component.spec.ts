@@ -57,6 +57,17 @@ describe('MySkillsComponent', () => {
     expect(subtitle?.textContent?.trim()).toBe('1 skill assessed');
   });
 
+  it('shows the assignment status as translated text', () => {
+    fixture.detectChanges();
+    flushInit(http, [
+      { id: 1, skill: 1, skill_name: 'Python', category_name: 'Programming', level: 3, status: 'pending', confirmed_at: null, created_at: '2026-01-01' },
+    ]);
+    fixture.detectChanges();
+
+    const pill = (fixture.nativeElement as HTMLElement).querySelector('.status-pill');
+    expect(pill?.textContent?.trim()).toBe('Pending');
+  });
+
   it('shows empty state when no skills', () => {
     fixture.detectChanges();
     flushInit(http);

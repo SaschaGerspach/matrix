@@ -1,6 +1,6 @@
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DatePipe } from '@angular/common';
+import { DatePipe, UpperCasePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -37,6 +37,7 @@ const TREND_COLORS = [
     ProfileDevPlansComponent,
     RouterLink,
     TranslateModule,
+    UpperCasePipe,
   ],
   templateUrl: './employee-profile.component.html',
   styleUrl: './employee-profile.component.scss',

@@ -45,6 +45,10 @@
     "GAP_SUMMARY": "Level {{current}} → {{required}} required (gap: {{gap}})",
     "RECOMMENDATIONS": "Recommendations"
   },
+  "ASSIGNMENT_STATUS": {
+    "PENDING": "Pending",
+    "CONFIRMED": "Confirmed"
+  },
   "ADD_SKILL_DIALOG": {
     "TITLE": "Add Skill",
     "SKILL": "Skill",

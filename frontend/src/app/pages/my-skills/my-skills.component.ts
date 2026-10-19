@@ -1,3 +1,4 @@
+import { UpperCasePipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -15,7 +16,7 @@ import { AddSkillDialogComponent } from './add-skill-dialog.component';
 @Component({
   selector: 'app-my-skills',
   standalone: true,
-  imports: [CountKeyPipe, MatButtonModule, MatIconModule, MatTableModule, TranslateModule],
+  imports: [CountKeyPipe, MatButtonModule, MatIconModule, MatTableModule, TranslateModule, UpperCasePipe],
   templateUrl: './my-skills.component.html',
   styleUrl: './my-skills.component.scss',
 })

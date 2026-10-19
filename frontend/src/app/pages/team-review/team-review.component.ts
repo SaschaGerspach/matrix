@@ -1,3 +1,4 @@
+import { UpperCasePipe } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,7 +15,7 @@ import { ToastService } from '../../core/toast.service';
 @Component({
   selector: 'app-team-review',
   standalone: true,
-  imports: [CountKeyPipe, MatButtonModule, MatIconModule, MatTableModule, TranslateModule],
+  imports: [CountKeyPipe, MatButtonModule, MatIconModule, MatTableModule, TranslateModule, UpperCasePipe],
   templateUrl: './team-review.component.html',
   styleUrl: './team-review.component.scss',
 })

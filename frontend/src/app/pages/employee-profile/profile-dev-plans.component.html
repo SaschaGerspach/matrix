@@ -71,7 +71,7 @@
                   <mat-option value="completed">{{ 'DEV_PLANS.STATUS_COMPLETED' | translate }}</mat-option>
                 </mat-select>
               } @else {
-                {{ g.status }}
+                {{ ('DEV_PLANS.STATUS_' + (g.status | uppercase)) | translate }}
               }
             </td>
           </ng-container>

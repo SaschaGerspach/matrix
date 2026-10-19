@@ -37,6 +37,7 @@ const EN = {
     RECOMMENDATIONS: 'Recommendations',
   },
   ADD_SKILL_DIALOG: { TITLE: 'Add Skill', SKILL: 'Skill', LEVEL: 'Level (1-5)', CANCEL: 'Cancel', ADD: 'Add' },
+  ASSIGNMENT_STATUS: { PENDING: 'Pending', CONFIRMED: 'Confirmed' },
   TEAM_REVIEW: {
     TITLE: 'Team Review', EMPTY: 'No pending assignments to review.', CONFIRM: 'Confirm',
     EMPTY_HINT: 'New self-assessments from your team will show up here for confirmation.',

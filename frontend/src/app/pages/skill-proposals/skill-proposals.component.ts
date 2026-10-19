@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, UpperCasePipe } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -33,6 +33,7 @@ import { ToastService } from '../../core/toast.service';
     MatTableModule,
     MatTooltipModule,
     TranslateModule,
+    UpperCasePipe,
   ],
   templateUrl: './skill-proposals.component.html',
   styleUrl: './skill-proposals.component.scss',

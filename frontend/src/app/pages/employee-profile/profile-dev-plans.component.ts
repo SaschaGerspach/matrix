@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, UpperCasePipe } from '@angular/common';
 import { Component, OnInit, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,6 +26,7 @@ import { Skill } from '../../core/skill.models';
     MatSelectModule,
     MatTableModule,
     TranslateModule,
+    UpperCasePipe,
   ],
   templateUrl: './profile-dev-plans.component.html',
   styleUrl: './profile-dev-plans.component.scss',
