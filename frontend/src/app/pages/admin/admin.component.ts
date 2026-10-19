@@ -16,6 +16,7 @@ import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { AuditLogEntry, AuditService } from '../../core/audit.service';
+import { CountKeyPipe } from '../../core/count-key.pipe';
 import { SkillCatalogService } from '../../core/skill-catalog.service';
 import { Skill, SkillCategory, SkillLevelDescription, SkillRequirement } from '../../core/skill.models';
 import { Team, TeamService } from '../../core/team.service';
@@ -36,6 +37,7 @@ function accentSlot(id: number): number {
   selector: 'app-admin',
   standalone: true,
   imports: [
+    CountKeyPipe,
     DatePipe,
     FormsModule,
     MatButtonModule,

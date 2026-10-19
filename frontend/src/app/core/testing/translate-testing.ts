@@ -101,6 +101,8 @@ const EN = {
     ADD: 'Add', TEMPLATE_NAME: 'Template name', CREATE_TEMPLATE: 'Create Template',
     MANAGE_SKILLS: 'Manage Template Skills', APPLY_TO_TEAM: 'Apply Template to Team',
     TEMPLATE: 'Template', ADD_SKILL: 'Add Skill', ADD_REQUIREMENT: 'Add Requirement', APPLY: 'Apply', SKILLS_COUNT: 'Skills',
+    SKILL_COUNT: '{{count}} skills', SKILL_COUNT_ONE: '1 skill',
+    REQUIREMENT_COUNT: '{{count}} requirements', REQUIREMENT_COUNT_ONE: '1 requirement',
     TAB_IMPORT: 'Import', IMPORT_EMPLOYEES: 'Import Employees', IMPORT_SKILLS: 'Import Skills',
     IMPORT_EMPLOYEES_HINT: 'CSV with columns: first_name, last_name, email',
     IMPORT_SKILLS_HINT: 'CSV with columns: name, category',

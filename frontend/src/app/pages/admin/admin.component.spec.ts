@@ -3,6 +3,8 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
+import { By } from '@angular/platform-browser';
+import { MatTabGroup } from '@angular/material/tabs';
 import { TranslateTestingModule } from '../../core/testing/translate-testing';
 
 import { environment } from '../../../environments/environment';
@@ -59,6 +61,18 @@ describe('AdminComponent', () => {
     expect(component.categories().length).toBe(1);
     expect(component.skills().length).toBe(1);
     expect(component.teams().length).toBe(1);
+  });
+
+  it('counts the skills of a category section in translated singular form', async () => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+    fixture.debugElement.query(By.directive(MatTabGroup)).componentInstance.selectedIndex = 1;
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const count = (fixture.nativeElement as HTMLElement).querySelector('.section-count');
+    expect(count?.textContent?.trim()).toBe('1 skill');
   });
 
   it('warns about teams that have members but no lead', () => {

@@ -90,7 +90,7 @@
           <div class="section-header" [attr.data-accent]="group.accent">
             <span class="section-dot"></span>
             <span class="section-name">{{ group.category.name }}</span>
-            <span class="section-count">{{ group.skills.length }} skills</span>
+            <span class="section-count">{{ 'ADMIN.SKILL_COUNT' | countKey: group.skills.length | translate: { count: group.skills.length } }}</span>
           </div>
           <div class="skill-grid">
             @for (skill of group.skills; track skill.id) {
@@ -185,7 +185,7 @@
           <div class="section-header" [attr.data-accent]="group.accent">
             <span class="section-dot"></span>
             <span class="section-name">{{ group.team.name }}</span>
-            <span class="section-count">{{ group.requirements.length }} requirements</span>
+            <span class="section-count">{{ 'ADMIN.REQUIREMENT_COUNT' | countKey: group.requirements.length | translate: { count: group.requirements.length } }}</span>
           </div>
           <div class="skill-grid">
             @for (req of group.requirements; track req.id) {
