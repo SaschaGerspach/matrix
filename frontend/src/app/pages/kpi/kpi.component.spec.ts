@@ -128,10 +128,12 @@ describe('KpiComponent', () => {
 
     expect(component.doughnutConfig()?.data.datasets[0].backgroundColor)
       .toEqual(['#10312a', '#16483c', '#1c6350', '#248069', '#2da184']);
+    expect(component.doughnutConfig()?.data.datasets[0].borderWidth).toBe(1);
 
     theme.toggle();
     expect(component.doughnutConfig()?.data.datasets[0].backgroundColor)
       .toEqual(['#e8f6f1', '#c2e9dc', '#8ed9c0', '#4cbf9d', '#168f6d']);
+    expect(component.doughnutConfig()?.data.datasets[0].borderWidth).toBe(0);
     localStorage.removeItem('matrix.theme');
   });
 

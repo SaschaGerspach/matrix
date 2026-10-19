@@ -62,16 +62,19 @@ export class KpiComponent implements OnInit {
     const levels = ['1', '2', '3', '4', '5'];
     const values = levels.map((l) => dist.overall[l] ?? 0);
     if (values.every((v) => v === 0)) return null;
+    const dark = this.themeService.isDark();
     return {
       type: 'doughnut',
       data: {
         labels: levels.map((l) => `Level ${l}`),
         datasets: [{
           data: values,
-          backgroundColor: this.themeService.isDark() ? LEVEL_COLORS_DARK : LEVEL_COLORS,
+          backgroundColor: dark ? LEVEL_COLORS_DARK : LEVEL_COLORS,
           // Transparent gaps instead of Chart.js's white segment borders, which
-          // show up as rings on a dark card.
-          borderWidth: 0,
+          // show up as rings on a dark card. The dark level 1 tone sits almost on
+          // the card colour, so in dark mode a faint outline keeps its shape.
+          borderWidth: dark ? 1 : 0,
+          borderColor: 'rgba(255, 255, 255, 0.18)',
           spacing: 2,
         }],
       },
