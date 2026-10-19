@@ -42,6 +42,7 @@ def test_create_assignment_notifies_lead(setup):
     assert notifications.count() == 1
     assert notifications[0].type == Notification.Type.SKILL_PENDING
     assert 'Python' in notifications[0].message
+    assert notifications[0].params == {'skill': 'Python', 'level': 3}
 
 
 def test_confirm_assignment_notifies_employee(setup):
@@ -56,6 +57,7 @@ def test_confirm_assignment_notifies_employee(setup):
     notifications = Notification.objects.filter(recipient=emp)
     assert notifications.count() == 1
     assert notifications[0].type == Notification.Type.SKILL_CONFIRMED
+    assert notifications[0].params == {'skill': 'Python'}
 
 
 def test_update_by_lead_notifies_employee(setup):
@@ -70,6 +72,7 @@ def test_update_by_lead_notifies_employee(setup):
     notifications = Notification.objects.filter(recipient=emp, type=Notification.Type.SKILL_UPDATED)
     assert notifications.count() == 1
     assert 'level 3 to 5' in notifications[0].message
+    assert notifications[0].params == {'skill': 'Python', 'old_level': 3, 'new_level': 5}
 
 
 def test_self_update_does_not_notify(setup):

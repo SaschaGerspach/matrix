@@ -20,6 +20,7 @@ def _send_ws_notification(notification):
                 'id': notification.id,
                 'type': notification.type,
                 'message': notification.message,
+                'params': notification.params,
                 'actor_name': str(notification.actor) if notification.actor else None,
                 'created_at': notification.created_at.isoformat(),
             },
@@ -55,6 +56,7 @@ def notify_team_leads_pending(employee, skill, level):
             actor=employee,
             type=Notification.Type.SKILL_PENDING,
             message=f'{employee} added {skill.name} (level {level}) – pending review',
+            params={'skill': skill.name, 'level': level},
         )
         _dispatch(notification)
 
@@ -65,6 +67,7 @@ def notify_skill_confirmed(employee, skill, confirmed_by):
         actor=confirmed_by,
         type=Notification.Type.SKILL_CONFIRMED,
         message=f'{confirmed_by} confirmed your {skill.name} skill',
+        params={'skill': skill.name},
     )
     _dispatch(notification)
 
@@ -77,5 +80,6 @@ def notify_skill_updated(employee, skill, old_level, new_level, changed_by):
         actor=changed_by,
         type=Notification.Type.SKILL_UPDATED,
         message=f'{changed_by} updated your {skill.name} from level {old_level} to {new_level}',
+        params={'skill': skill.name, 'old_level': old_level, 'new_level': new_level},
     )
     _dispatch(notification)

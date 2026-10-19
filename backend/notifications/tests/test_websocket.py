@@ -46,6 +46,7 @@ def test_send_ws_notification_calls_channel_layer(employee):
     assert call_args[0][0] == f'notifications_{employee.user_id}'
     assert call_args[0][1]['type'] == 'send_notification'
     assert call_args[0][1]['data']['message'] == 'Test notification'
+    assert call_args[0][1]['data']['params'] == {}
 
 
 def test_send_ws_notification_sends_correct_data(employee):

@@ -36,6 +36,19 @@ def test_list_own_notifications(setup):
     assert r.data['count'] == 2
 
 
+def test_list_exposes_params_for_composing_the_text(setup):
+    user, emp = setup
+    Notification.objects.create(
+        recipient=emp, type=Notification.Type.SKILL_UPDATED,
+        message='Bob updated your Go from level 2 to 3',
+        params={'skill': 'Go', 'old_level': 2, 'new_level': 3},
+    )
+    c = APIClient()
+    c.force_authenticate(user=user)
+    newest = c.get(BASE_URL).data['results'][0]
+    assert newest['params'] == {'skill': 'Go', 'old_level': 2, 'new_level': 3}
+
+
 def test_unread_count(setup):
     user, _ = setup
     c = APIClient()

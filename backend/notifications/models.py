@@ -20,7 +20,10 @@ class Notification(models.Model):
         related_name='+',
     )
     type = models.CharField(max_length=32, choices=Type.choices)
+    # English text for e-mail and for notifications stored before params existed;
+    # the UI composes its own text from type, actor and params in its language.
     message = models.CharField(max_length=500)
+    params = models.JSONField(default=dict, blank=True)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
