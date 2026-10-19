@@ -143,7 +143,11 @@
     </header>
 
     <main class="content">
-      <router-outlet />
+      <!-- Re-creating the outlet on a language switch makes the page refetch, so
+           names the API translates follow the new language. -->
+      @for (lang of [langService.currentLang()]; track lang) {
+        <router-outlet />
+      }
     </main>
   </mat-sidenav-content>
 </mat-sidenav-container>

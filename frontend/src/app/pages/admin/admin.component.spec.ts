@@ -13,7 +13,7 @@ import { AdminComponent } from './admin.component';
 
 function flushInitRequests(http: HttpTestingController): void {
   http.expectOne(`${environment.apiUrl}/skill-categories/`).flush([
-    { id: 1, name: 'Programming', parent: null },
+    { id: 1, name: 'Programming', name_de: 'Programmierung', display_name: 'Programming', parent: null },
   ]);
   http.expectOne(`${environment.apiUrl}/skills/`).flush([
     { id: 1, name: 'Python', category: 1 },
@@ -86,7 +86,7 @@ describe('AdminComponent', () => {
 
   it('warns about teams that have members but no lead', () => {
     fixture.detectChanges();
-    http.expectOne(`${environment.apiUrl}/skill-categories/`).flush([{ id: 1, name: 'Programming', parent: null }]);
+    http.expectOne(`${environment.apiUrl}/skill-categories/`).flush([{ id: 1, name: 'Programming', name_de: 'Programmierung', display_name: 'Programming', parent: null }]);
     http.expectOne(`${environment.apiUrl}/skills/`).flush([{ id: 1, name: 'Python', category: 1 }]);
     http.expectOne(`${environment.apiUrl}/teams/`).flush([
       {
@@ -168,14 +168,33 @@ describe('AdminComponent', () => {
     component.newCategoryName = 'Ops';
     component.addCategory();
 
-    http.expectOne(`${environment.apiUrl}/skill-categories/`).flush({ id: 2, name: 'Ops', parent: null });
+    const create = http.expectOne(`${environment.apiUrl}/skill-categories/`);
+    expect(create.request.body).toEqual({ name: 'Ops', name_de: '' });
+    create.flush({ id: 2, name: 'Ops', name_de: '', display_name: 'Ops', parent: null });
     http.expectOne(`${environment.apiUrl}/skill-categories/`).flush([
-      { id: 1, name: 'Programming', parent: null },
-      { id: 2, name: 'Ops', parent: null },
+      { id: 1, name: 'Programming', name_de: 'Programmierung', display_name: 'Programming', parent: null },
+      { id: 2, name: 'Ops', name_de: '', display_name: 'Ops', parent: null },
     ]);
 
     expect(component.categories().length).toBe(2);
     expect(component.newCategoryName).toBe('');
+  });
+
+  it('edits a category including its German name', () => {
+    fixture.detectChanges();
+    flushInitRequests(http);
+
+    component.startEditCategory(component.categories()[0]);
+    component.editingCategory!.name_de = ' Programmieren ';
+    component.saveCategory();
+
+    const patch = http.expectOne(`${environment.apiUrl}/skill-categories/1/`);
+    expect(patch.request.method).toBe('PATCH');
+    expect(patch.request.body).toEqual({ name: 'Programming', name_de: 'Programmieren' });
+    patch.flush({});
+    http.expectOne(`${environment.apiUrl}/skill-categories/`).flush([]);
+
+    expect(component.editingCategory).toBeNull();
   });
 
   it('deletes a category', () => {

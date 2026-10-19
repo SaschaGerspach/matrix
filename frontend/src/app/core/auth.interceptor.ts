@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from 'rxjs';
 
 import { AuthService } from './auth.service';
+import { LanguageService } from './language.service';
 
 // Module-level state so concurrent 401s share a single refresh request
 // instead of each triggering its own.
@@ -21,7 +22,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   const isAuthUrl = req.url.includes('/auth/login') || req.url.includes('/auth/refresh');
 
-  const headers: Record<string, string> = {};
+  // Translatable data such as category names comes back in the UI language.
+  const headers: Record<string, string> = { 'Accept-Language': inject(LanguageService).currentLang() };
   const csrf = getCsrfToken();
   if (csrf && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
     headers['X-CSRFToken'] = csrf;

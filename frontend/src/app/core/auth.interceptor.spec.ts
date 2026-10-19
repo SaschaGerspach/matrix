@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 
 import { environment } from '../../environments/environment';
 import { authInterceptor } from './auth.interceptor';
+import { LanguageService } from './language.service';
+import { TranslateTestingModule } from './testing/translate-testing';
 
 describe('authInterceptor', () => {
   let http: HttpClient;
@@ -14,6 +16,7 @@ describe('authInterceptor', () => {
   beforeEach(() => {
     localStorage.clear();
     TestBed.configureTestingModule({
+      imports: [TranslateTestingModule],
       providers: [
         provideHttpClient(withInterceptors([authInterceptor])),
         provideHttpClientTesting(),
@@ -34,6 +37,14 @@ describe('authInterceptor', () => {
     http.get('/test').subscribe();
     const req = controller.expectOne('/test');
     expect(req.request.withCredentials).toBeTrue();
+    req.flush({});
+  });
+
+  it('asks for data in the UI language', () => {
+    TestBed.inject(LanguageService).currentLang.set('de');
+    http.get('/test').subscribe();
+    const req = controller.expectOne('/test');
+    expect(req.request.headers.get('Accept-Language')).toBe('de');
     req.flush({});
   });
 

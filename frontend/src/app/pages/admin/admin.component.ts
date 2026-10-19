@@ -83,6 +83,8 @@ export class AdminComponent implements OnInit {
   readonly auditLog = signal<AuditLogEntry[]>([]);
 
   newCategoryName = '';
+  newCategoryNameDe = '';
+  editingCategory: { id: number; name: string; name_de: string } | null = null;
   newSkillName = '';
   newSkillCategory: number | undefined;
   newReqTeam: number | undefined;
@@ -113,7 +115,7 @@ export class AdminComponent implements OnInit {
         skills: skills.filter((s) => s.category === cat.id),
       }))
       .filter((g) => g.skills.length > 0)
-      .sort((a, b) => a.category.name.localeCompare(b.category.name));
+      .sort((a, b) => a.category.display_name.localeCompare(b.category.display_name));
   });
 
   readonly groupedRequirements = computed(() => {
@@ -165,13 +167,35 @@ export class AdminComponent implements OnInit {
 
   addCategory(): void {
     if (!this.newCategoryName.trim()) return;
-    this.catalogService.createCategory(this.newCategoryName.trim()).subscribe({
+    this.catalogService.createCategory(this.newCategoryName.trim(), this.newCategoryNameDe.trim()).subscribe({
       next: () => {
         this.newCategoryName = '';
+        this.newCategoryNameDe = '';
         this.toast.success('TOAST.CATEGORY_CREATED');
         this.reloadCategories();
       },
       error: () => { this.toast.error('TOAST.ERROR'); this.reloadCategories(); },
+    });
+  }
+
+  startEditCategory(category: SkillCategory): void {
+    this.editingCategory = { id: category.id, name: category.name, name_de: category.name_de };
+  }
+
+  cancelEditCategory(): void {
+    this.editingCategory = null;
+  }
+
+  saveCategory(): void {
+    if (!this.editingCategory || !this.editingCategory.name.trim()) return;
+    const { id, name, name_de } = this.editingCategory;
+    this.catalogService.updateCategory(id, { name: name.trim(), name_de: name_de.trim() }).subscribe({
+      next: () => {
+        this.editingCategory = null;
+        this.toast.success('TOAST.CATEGORY_UPDATED');
+        this.reloadCategories();
+      },
+      error: () => this.toast.error('TOAST.ERROR'),
     });
   }
 
@@ -241,7 +265,7 @@ export class AdminComponent implements OnInit {
   }
 
   getCategoryName(id: number): string {
-    return this.categories().find((c) => c.id === id)?.name ?? '';
+    return this.categories().find((c) => c.id === id)?.display_name ?? '';
   }
 
   addRequirement(): void {

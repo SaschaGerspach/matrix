@@ -38,7 +38,7 @@
       <mat-select [(ngModel)]="selectedCategory" (selectionChange)="applyFilters()">
         <mat-option [value]="undefined">{{ 'DASHBOARD.ALL_CATEGORIES' | translate }}</mat-option>
         @for (cat of categories(); track cat.id) {
-          <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+          <mat-option [value]="cat.id">{{ cat.display_name }}</mat-option>
         }
       </mat-select>
     </mat-form-field>

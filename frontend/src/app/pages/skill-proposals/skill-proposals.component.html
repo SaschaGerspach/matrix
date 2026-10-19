@@ -41,7 +41,7 @@
           <mat-label>{{ 'TABLE.CATEGORY' | translate }}</mat-label>
           <mat-select [ngModel]="newCategory()" (ngModelChange)="newCategory.set($event)" required>
             @for (c of categories(); track c.id) {
-              <mat-option [value]="c.id">{{ c.name }}</mat-option>
+              <mat-option [value]="c.id">{{ c.display_name }}</mat-option>
             }
           </mat-select>
           <mat-hint>{{ 'PROPOSALS.CATEGORY_HINT' | translate }}</mat-hint>

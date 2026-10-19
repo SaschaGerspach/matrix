@@ -30,8 +30,12 @@ export class SkillCatalogService {
     return this.http.get<SkillCategory[]>(`${environment.apiUrl}/skill-categories/`);
   }
 
-  createCategory(name: string): Observable<SkillCategory> {
-    return this.http.post<SkillCategory>(`${environment.apiUrl}/skill-categories/`, { name });
+  createCategory(name: string, nameDe: string): Observable<SkillCategory> {
+    return this.http.post<SkillCategory>(`${environment.apiUrl}/skill-categories/`, { name, name_de: nameDe });
+  }
+
+  updateCategory(id: number, data: { name: string; name_de: string }): Observable<SkillCategory> {
+    return this.http.patch<SkillCategory>(`${environment.apiUrl}/skill-categories/${id}/`, data);
   }
 
   deleteCategory(id: number): Observable<unknown> {

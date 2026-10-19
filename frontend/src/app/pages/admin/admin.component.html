@@ -22,9 +22,13 @@
   <mat-tab [label]="'ADMIN.TAB_CATEGORIES' | translate">
     <div class="tab-content">
       <div class="data-toolbar">
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" class="category-field">
           <mat-label>{{ 'ADMIN.CATEGORY_NAME' | translate }}</mat-label>
           <input matInput [(ngModel)]="newCategoryName" (keyup.enter)="addCategory()">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="category-field">
+          <mat-label>{{ 'ADMIN.CATEGORY_NAME_DE' | translate }}</mat-label>
+          <input matInput [(ngModel)]="newCategoryNameDe" (keyup.enter)="addCategory()">
         </mat-form-field>
         <button mat-flat-button color="primary" (click)="addCategory()">{{ 'ADMIN.ADD' | translate }}</button>
       </div>
@@ -33,18 +37,56 @@
         <table mat-table [dataSource]="categories()">
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>{{ 'TABLE.NAME' | translate }}</th>
-            <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+            <td mat-cell *matCellDef="let row">
+              @if (editingCategory?.id === row.id) {
+                <mat-form-field appearance="outline" class="inline-edit">
+                  <input matInput [(ngModel)]="editingCategory!.name" (keyup.enter)="saveCategory()"
+                         [attr.aria-label]="'TABLE.NAME' | translate">
+                </mat-form-field>
+              } @else {
+                {{ row.name }}
+              }
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="name_de">
+            <th mat-header-cell *matHeaderCellDef>{{ 'ADMIN.GERMAN_NAME' | translate }}</th>
+            <td mat-cell *matCellDef="let row">
+              @if (editingCategory?.id === row.id) {
+                <mat-form-field appearance="outline" class="inline-edit">
+                  <input matInput [(ngModel)]="editingCategory!.name_de" (keyup.enter)="saveCategory()"
+                         [attr.aria-label]="'ADMIN.GERMAN_NAME' | translate">
+                </mat-form-field>
+              } @else {
+                {{ row.name_de || '–' }}
+              }
+            </td>
           </ng-container>
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef></th>
             <td mat-cell *matCellDef="let row">
-              <button mat-icon-button color="warn" (click)="deleteCategory(row.id)">
-                <mat-icon>delete</mat-icon>
-              </button>
+              @if (editingCategory?.id === row.id) {
+                <button mat-icon-button color="primary" (click)="saveCategory()"
+                        [attr.aria-label]="'ADMIN.SAVE' | translate">
+                  <mat-icon>check</mat-icon>
+                </button>
+                <button mat-icon-button (click)="cancelEditCategory()"
+                        [attr.aria-label]="'ADMIN.CANCEL' | translate">
+                  <mat-icon>close</mat-icon>
+                </button>
+              } @else {
+                <button mat-icon-button (click)="startEditCategory(row)"
+                        [attr.aria-label]="'ADMIN.EDIT' | translate">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="deleteCategory(row.id)"
+                        [attr.aria-label]="'ADMIN.DELETE' | translate">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
             </td>
           </ng-container>
-          <tr mat-header-row *matHeaderRowDef="['name', 'actions']"></tr>
-          <tr mat-row *matRowDef="let row; columns: ['name', 'actions']"></tr>
+          <tr mat-header-row *matHeaderRowDef="['name', 'name_de', 'actions']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['name', 'name_de', 'actions']"></tr>
         </table>
       </div>
     </div>
@@ -76,7 +118,7 @@
             <mat-label>{{ 'ADMIN.CATEGORY' | translate }}</mat-label>
             <mat-select [(ngModel)]="newSkillCategory">
               @for (cat of categories(); track cat.id) {
-                <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+                <mat-option [value]="cat.id">{{ cat.display_name }}</mat-option>
               }
             </mat-select>
           </mat-form-field>
@@ -89,7 +131,7 @@
         <div class="skill-section">
           <div class="section-header" [attr.data-accent]="group.accent">
             <span class="section-dot"></span>
-            <span class="section-name">{{ group.category.name }}</span>
+            <span class="section-name">{{ group.category.display_name }}</span>
             <span class="section-count">{{ 'ADMIN.SKILL_COUNT' | countKey: group.skills.length | translate: { count: group.skills.length } }}</span>
           </div>
           <div class="skill-grid">
@@ -102,7 +144,7 @@
                   <mat-form-field appearance="outline" class="inline-edit inline-edit-cat">
                     <mat-select [(ngModel)]="editingSkill!.category">
                       @for (cat of categories(); track cat.id) {
-                        <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+                        <mat-option [value]="cat.id">{{ cat.display_name }}</mat-option>
                       }
                     </mat-select>
                   </mat-form-field>

@@ -26,6 +26,9 @@ export interface Skill {
 export interface SkillCategory {
   id: number;
   name: string;
+  name_de: string;
+  // name_de when the request language is German and one is set, otherwise name.
+  display_name: string;
   parent: number | null;
 }
 
