@@ -44,7 +44,12 @@ class TeamComparisonView(APIView):
 
         result = []
         for skill in skills:
-            entry = {'skill_id': skill.id, 'skill_name': skill.name, 'category_name': skill.category.name, 'teams': {}}
+            entry = {
+                'skill_id': skill.id,
+                'skill_name': skill.name,
+                'category_name': skill.category.display_name,
+                'teams': {},
+            }
             skill_assignments = assignment_map.get(skill.id, {})
             for team in teams:
                 members = team_member_ids[team.id]

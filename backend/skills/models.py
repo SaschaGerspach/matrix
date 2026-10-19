@@ -1,9 +1,13 @@
 from django.db import models
 from django.db.models.functions import Lower
+from django.utils.translation import get_language
 
 
 class SkillCategory(models.Model):
     name = models.CharField(max_length=150)
+    # Optional German name; left empty when the name is the same in German,
+    # as with loanwords like "Soft Skills".
+    name_de = models.CharField(max_length=150, blank=True)
     parent = models.ForeignKey(
         'self',
         null=True,
@@ -17,6 +21,12 @@ class SkillCategory(models.Model):
         verbose_name_plural = 'Skill categories'
 
     def __str__(self):
+        return self.name
+
+    @property
+    def display_name(self):
+        if self.name_de and (get_language() or '').startswith('de'):
+            return self.name_de
         return self.name
 
 

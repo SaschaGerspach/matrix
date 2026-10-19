@@ -56,7 +56,7 @@ class SkillGapsView(APIView):
                         'team_name': req.team.name,
                         'skill_id': req.skill_id,
                         'skill_name': req.skill.name,
-                        'category_name': req.skill.category.name,
+                        'category_name': req.skill.category.display_name,
                         'required_level': req.required_level,
                         'actual_level': actual,
                         'gap': req.required_level - actual,
@@ -93,7 +93,7 @@ class SkillRecommendationsView(APIView):
                 recommendations.append({
                     'skill_id': req.skill_id,
                     'skill_name': req.skill.name,
-                    'category_name': req.skill.category.name,
+                    'category_name': req.skill.category.display_name,
                     'team_name': req.team.name,
                     'current_level': actual,
                     'required_level': req.required_level,

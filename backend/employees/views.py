@@ -136,7 +136,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
                     'id': a.id,
                     'skill_id': a.skill_id,
                     'skill_name': a.skill.name,
-                    'category_name': a.skill.category.name,
+                    'category_name': a.skill.category.display_name,
                     'level': a.level,
                     'status': a.status,
                 }

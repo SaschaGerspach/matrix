@@ -16,9 +16,11 @@ from .models import (
 
 
 class SkillCategorySerializer(serializers.ModelSerializer):
+    display_name = serializers.CharField(read_only=True)
+
     class Meta:
         model = SkillCategory
-        fields = ('id', 'name', 'parent')
+        fields = ('id', 'name', 'name_de', 'display_name', 'parent')
 
 
 class SkillLevelDescriptionSerializer(serializers.ModelSerializer):
@@ -53,7 +55,7 @@ class SkillSerializer(serializers.ModelSerializer):
 
 class MySkillAssignmentSerializer(serializers.ModelSerializer):
     skill_name = serializers.CharField(source='skill.name', read_only=True)
-    category_name = serializers.CharField(source='skill.category.name', read_only=True)
+    category_name = serializers.CharField(source='skill.category.display_name', read_only=True)
 
     class Meta:
         model = SkillAssignment
@@ -72,7 +74,7 @@ class MySkillAssignmentSerializer(serializers.ModelSerializer):
 
 class TeamAssignmentSerializer(serializers.ModelSerializer):
     skill_name = serializers.CharField(source='skill.name', read_only=True)
-    category_name = serializers.CharField(source='skill.category.name', read_only=True)
+    category_name = serializers.CharField(source='skill.category.display_name', read_only=True)
     employee_name = serializers.CharField(source='employee.__str__', read_only=True)
     team_names = serializers.SerializerMethodField()
     has_team_lead = serializers.SerializerMethodField()
@@ -122,7 +124,7 @@ class MatrixAssignmentSerializer(serializers.ModelSerializer):
 
 class SkillRequirementSerializer(serializers.ModelSerializer):
     skill_name = serializers.CharField(source='skill.name', read_only=True)
-    category_name = serializers.CharField(source='skill.category.name', read_only=True)
+    category_name = serializers.CharField(source='skill.category.display_name', read_only=True)
     team_name = serializers.CharField(source='team.name', read_only=True)
 
     class Meta:

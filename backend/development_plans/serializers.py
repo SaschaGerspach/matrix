@@ -5,7 +5,7 @@ from .models import DevelopmentGoal, DevelopmentPlan
 
 class DevelopmentGoalSerializer(serializers.ModelSerializer):
     skill_name = serializers.CharField(source='skill.name', read_only=True)
-    category_name = serializers.CharField(source='skill.category.name', read_only=True)
+    category_name = serializers.CharField(source='skill.category.display_name', read_only=True)
 
     class Meta:
         model = DevelopmentGoal

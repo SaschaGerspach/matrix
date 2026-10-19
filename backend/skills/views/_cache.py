@@ -1,6 +1,7 @@
 import hashlib
 
 from django.core.cache import cache
+from django.utils.translation import get_language
 
 CACHE_TTL = 300
 
@@ -9,7 +10,8 @@ CACHE_KEYS_REGISTRY = 'analytics_known_keys'
 
 
 def _cache_key(view_name, **params):
-    raw = f"{view_name}:{sorted(params.items())}"
+    # Cached payloads can carry translated names, so each language gets its own entry.
+    raw = f"{view_name}:{get_language()}:{sorted(params.items())}"
     return CACHE_KEYS_PREFIX + hashlib.sha256(raw.encode()).hexdigest()
 
 

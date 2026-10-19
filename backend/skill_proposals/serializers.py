@@ -5,7 +5,7 @@ from .models import SkillProposal
 
 class SkillProposalSerializer(serializers.ModelSerializer):
     proposed_by_name = serializers.CharField(source='proposed_by.__str__', read_only=True)
-    category_name = serializers.CharField(source='category.name', read_only=True, default=None)
+    category_name = serializers.CharField(source='category.display_name', read_only=True, default=None)
     reviewed_by_name = serializers.CharField(source='reviewed_by.__str__', read_only=True, default=None)
 
     class Meta:

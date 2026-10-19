@@ -60,7 +60,7 @@ class SkillMatrixView(APIView):
             {'id': e.id, 'full_name': str(e)} for e in employees
         ]
         skill_data = [
-            {'id': s.id, 'name': s.name, 'category_name': s.category.name} for s in skills
+            {'id': s.id, 'name': s.name, 'category_name': s.category.display_name} for s in skills
         ]
 
         data = {
