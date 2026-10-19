@@ -8,11 +8,13 @@ import { ChartConfiguration } from 'chart.js';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { SkillAnalyticsService } from '../../core/skill-analytics.service';
+import { ThemeService } from '../../core/theme.service';
 import { KpiEntry, LevelDistribution } from '../../core/skill.models';
 import { CountUpDirective } from './count-up.directive';
 
 // Mirrors the matrix heat scale so a level means the same colour everywhere.
 const LEVEL_COLORS = ['#e8f6f1', '#c2e9dc', '#8ed9c0', '#4cbf9d', '#168f6d'];
+const LEVEL_COLORS_DARK = ['#10312a', '#16483c', '#1c6350', '#248069', '#2da184'];
 const CHART_PRIMARY = '#3b5bdb';
 const CHART_SECONDARY = '#515b8e';
 
@@ -25,6 +27,7 @@ const CHART_SECONDARY = '#515b8e';
 })
 export class KpiComponent implements OnInit {
   private readonly skillService = inject(SkillAnalyticsService);
+  private readonly themeService = inject(ThemeService);
 
   readonly data = signal<KpiEntry[]>([]);
   readonly distribution = signal<LevelDistribution | null>(null);
@@ -64,7 +67,11 @@ export class KpiComponent implements OnInit {
         labels: levels.map((l) => `Level ${l}`),
         datasets: [{
           data: values,
-          backgroundColor: LEVEL_COLORS,
+          backgroundColor: this.themeService.isDark() ? LEVEL_COLORS_DARK : LEVEL_COLORS,
+          // Transparent gaps instead of Chart.js's white segment borders, which
+          // show up as rings on a dark card.
+          borderWidth: 0,
+          spacing: 2,
         }],
       },
       options: {

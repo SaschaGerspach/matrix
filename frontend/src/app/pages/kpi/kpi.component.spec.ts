@@ -8,6 +8,7 @@ import { TranslateTestingModule } from '../../core/testing/translate-testing';
 
 import { environment } from '../../../environments/environment';
 import { KpiEntry } from '../../core/skill.models';
+import { ThemeService } from '../../core/theme.service';
 import { KpiComponent } from './kpi.component';
 
 const kpiData: KpiEntry[] = [
@@ -117,6 +118,21 @@ describe('KpiComponent', () => {
     const el = fixture.nativeElement as HTMLElement;
     expect(el.querySelector('.page-subtitle')?.textContent?.trim()).toBe('1 team');
     expect(el.querySelector('.kpi-members')?.textContent?.trim()).toBe('1 member');
+  });
+
+  it('draws the level donut in the dark heat tones in dark mode', () => {
+    const theme = TestBed.inject(ThemeService);
+    if (!theme.isDark()) theme.toggle();
+    fixture.detectChanges();
+    flushInit(http);
+
+    expect(component.doughnutConfig()?.data.datasets[0].backgroundColor)
+      .toEqual(['#10312a', '#16483c', '#1c6350', '#248069', '#2da184']);
+
+    theme.toggle();
+    expect(component.doughnutConfig()?.data.datasets[0].backgroundColor)
+      .toEqual(['#e8f6f1', '#c2e9dc', '#8ed9c0', '#4cbf9d', '#168f6d']);
+    localStorage.removeItem('matrix.theme');
   });
 
   it('keeps team details collapsed until asked', () => {
