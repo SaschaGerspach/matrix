@@ -72,6 +72,22 @@ describe('MySkillsComponent', () => {
     expect(el.textContent).toContain('Docker');
   });
 
+  it('marks current and missing levels on the recommendation track', () => {
+    fixture.detectChanges();
+    flushInit(http, [], [
+      {
+        skill_id: 1, skill_name: 'Docker', category_name: 'Ops',
+        team_name: 'Alpha', current_level: 2, required_level: 4,
+        gap: 2, priority: 'medium',
+      },
+    ]);
+    fixture.detectChanges();
+
+    const steps = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('.level-step'));
+    expect(steps.map((s) => s.getAttribute('data-heat'))).toEqual(['2', '2', null, null, null]);
+    expect(steps.map((s) => s.classList.contains('level-step-need'))).toEqual([false, false, true, true, false]);
+  });
+
   it('hides recommendations when empty', () => {
     fixture.detectChanges();
     flushInit(http);

@@ -4,12 +4,6 @@
   gap: 1rem;
 }
 
-.recommendation-card {
-  border-left-width: 4px;
-  border-left-style: solid;
-  transition: border-color var(--motion-fast) var(--motion-ease);
-}
-
 .recommendation-head {
   display: flex;
   align-items: flex-start;
@@ -33,31 +27,51 @@
 }
 
 .recommendation-gap {
-  margin: 0.75rem 0 0;
+  margin: 0.5rem 0 0;
   font-size: 0.875rem;
   color: var(--mat-sys-on-surface-variant);
 }
 
-.priority-high {
-  border-left-color: var(--mat-sys-error);
+.recommendation-head .mat-icon {
+  flex-shrink: 0;
+  color: var(--mat-sys-outline);
+}
 
-  .recommendation-head .mat-icon {
-    color: var(--mat-sys-error);
+// A gap is a growth suggestion, not an error, so even top priority stays out of
+// the error palette and only borrows the amber used for pending states.
+.priority-high .recommendation-head .mat-icon {
+  color: light-dark(#ba7517, #ef9f27);
+}
+
+.priority-medium .recommendation-head .mat-icon {
+  color: var(--mat-sys-primary);
+}
+
+// Five steps, one per level: filled up to the current level in its heat tone,
+// dashed up to the required one.
+.level-track {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 3px;
+  margin-top: 0.75rem;
+}
+
+.level-step {
+  height: 6px;
+  border-radius: 999px;
+
+  // Scoped styles outrank the global heat slots, so only fill steps without one.
+  &:not([data-heat]) {
+    background: var(--mat-sys-surface-container-highest);
   }
 }
 
-.priority-medium {
-  border-left-color: light-dark(#ba7517, #ef9f27);
-
-  .recommendation-head .mat-icon {
-    color: light-dark(#ba7517, #ef9f27);
-  }
+.level-step.level-step-need {
+  background: transparent;
+  outline: 1.5px dashed var(--mat-sys-outline);
+  outline-offset: -1.5px;
 }
 
-.priority-low {
-  border-left-color: var(--mat-sys-outline);
-
-  .recommendation-head .mat-icon {
-    color: var(--mat-sys-outline);
-  }
+.priority-high .level-step-need {
+  outline-color: light-dark(#ba7517, #ef9f27);
 }

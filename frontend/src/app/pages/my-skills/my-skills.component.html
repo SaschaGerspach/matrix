@@ -66,11 +66,18 @@
         @for (rec of recommendations(); track rec.skill_id) {
           <div class="recommendation-card surface-card" [class]="'priority-' + rec.priority">
             <div class="recommendation-head">
-              <mat-icon>{{ rec.priority === 'high' ? 'priority_high' : rec.priority === 'medium' ? 'trending_up' : 'info' }}</mat-icon>
+              <mat-icon>{{ rec.priority === 'high' ? 'flag' : rec.priority === 'medium' ? 'trending_up' : 'info' }}</mat-icon>
               <div class="recommendation-heading">
                 <span class="recommendation-title">{{ rec.skill_name }}</span>
                 <span class="recommendation-meta">{{ rec.category_name }} &middot; {{ rec.team_name }}</span>
               </div>
+            </div>
+            <div class="level-track" aria-hidden="true">
+              @for (lvl of [1, 2, 3, 4, 5]; track lvl) {
+                <span class="level-step"
+                      [class.level-step-need]="lvl > rec.current_level && lvl <= rec.required_level"
+                      [attr.data-heat]="lvl <= rec.current_level ? rec.current_level : null"></span>
+              }
             </div>
             <p class="recommendation-gap tabular-nums">
               {{ 'MY_SKILLS.GAP_SUMMARY' | translate: { current: rec.current_level, required: rec.required_level, gap: rec.gap } }}
